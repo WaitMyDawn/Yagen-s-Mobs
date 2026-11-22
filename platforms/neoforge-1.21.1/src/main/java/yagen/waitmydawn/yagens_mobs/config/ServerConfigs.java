@@ -7,24 +7,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.core.SpawnDefaults;
 
 public final class ServerConfigs {
     private static final Map<ResourceLocation, Spawns> BY_ENTITY = new HashMap<>();
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-    public static final Spawns DESERT_SKATE = spawns("desert_skate", 2, 3, 4);
-    public static final Spawns VULTURE = spawns("condroc", 8, 1, 3);
-    public static final Spawns ROCK_HANGER = spawns("rock_hanger", 10, 1, 1);
-    public static final Spawns BUBBLE_SALAMANDER = spawns("bubble_salamander", 5, 1, 2);
-    public static final Spawns VELOCIPOD = spawns("velocipod", 6, 1, 2);
+    public static final Spawns DESERT_SKATE = spawns(SpawnDefaults.DESERT_SKATE);
+    public static final Spawns VULTURE = spawns(SpawnDefaults.CONDROC);
+    public static final Spawns ROCK_HANGER = spawns(SpawnDefaults.ROCK_HANGER);
+    public static final Spawns BUBBLE_SALAMANDER = spawns(SpawnDefaults.BUBBLE_SALAMANDER);
+    public static final Spawns VELOCIPOD = spawns(SpawnDefaults.VELOCIPOD);
     public static final ModConfigSpec.IntValue ROCK_HANGER_CEILING_CLEARANCE = BUILDER
             .comment("Minimum uninterrupted clearance measured from the ceiling for natural spawns, spawn eggs, and reattachment.")
-            .defineInRange("spawns.rock_hanger.minimumAirBelow", 16, 16, 256);
+            .defineInRange("spawns.rock_hanger.minimumAirBelow", SpawnDefaults.ROCK_HANGER_CEILING_CLEARANCE, 16, 256);
     public static final ModConfigSpec.DoubleValue DESERT_SKATE_JUVENILE_CHANCE = BUILDER
             .comment("Chance that each naturally spawned group member after the first is a juvenile.")
-            .defineInRange("spawns.desert_skate.juvenileChance", 0.25, 0.0, 1.0);
+            .defineInRange("spawns.desert_skate.juvenileChance", SpawnDefaults.DESERT_SKATE_JUVENILE_CHANCE, 0.0, 1.0);
     public static final ModConfigSpec.DoubleValue VULTURE_JUVENILE_CHANCE = BUILDER
             .comment("Chance that a naturally spawned Condroc is a juvenile.")
-            .defineInRange("spawns.condroc.juvenileChance", 0.20, 0.0, 1.0);
+            .defineInRange("spawns.condroc.juvenileChance", SpawnDefaults.CONDROC_JUVENILE_CHANCE, 0.0, 1.0);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ServerConfigs() {
@@ -34,18 +35,18 @@ public final class ServerConfigs {
         return BY_ENTITY.get(BuiltInRegistries.ENTITY_TYPE.getKey(type));
     }
 
-    private static Spawns spawns(String path, int weight, int min, int max) {
-        BUILDER.push("spawns").push(path);
+    private static Spawns spawns(SpawnDefaults defaults) {
+        BUILDER.push("spawns").push(defaults.path());
         var settings = new Spawns(
                 BUILDER.comment("Enable natural spawning.").worldRestart().define("enabled", true),
                 BUILDER.comment("Relative weight among the biome's eligible spawns. Zero disables this entry.")
-                        .worldRestart().defineInRange("weight", weight, 0, 1000),
+                        .worldRestart().defineInRange("weight", defaults.weight(), 0, 1000),
                 BUILDER.comment("Minimum number of spawn attempts when a group is selected.")
-                        .worldRestart().defineInRange("minGroupSize", min, 1, 16),
+                        .worldRestart().defineInRange("minGroupSize", defaults.minGroupSize(), 1, 16),
                 BUILDER.comment("Maximum group size. Values below the minimum are raised to the minimum.")
-                        .worldRestart().defineInRange("maxGroupSize", max, 1, 16));
+                        .worldRestart().defineInRange("maxGroupSize", defaults.maxGroupSize(), 1, 16));
         BUILDER.pop(2);
-        BY_ENTITY.put(ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, path), settings);
+        BY_ENTITY.put(ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, defaults.path()), settings);
         return settings;
     }
 

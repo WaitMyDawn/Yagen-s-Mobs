@@ -1,0 +1,68 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.17.21'
+}
+
+ext.platformLoader = 'fabric'
+apply from: '../../gradle/platform.gradle'
+
+repositories { mavenCentral() }
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    implementation commonProject.sourceSets.main.output
+    implementation 'com.electronwill.night-config:core:3.8.3'
+    implementation 'com.electronwill.night-config:toml:3.8.3'
+    include 'com.electronwill.night-config:core:3.8.3'
+    include 'com.electronwill.night-config:toml:3.8.3'
+}
+
+loom {
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet commonProject.sourceSets.main
+        }
+    }
+    runs {
+        client { runDir 'run/client'; ideConfigGenerated true }
+        server { runDir 'run/server'; ideConfigGenerated true }
+    }
+}
+
+tasks.named('jar') { from commonProject.sourceSets.main.output }
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('geckolibRepository').orElse('https://api.modrinth.com/maven').get() }
+        }
+        filter { includeModule('maven.modrinth', 'geckolib') }
+    }
+}
+dependencies { modImplementation "maven.modrinth:geckolib:${geckolib_artifact}" }
+
+// Vanilla source is shared at the same Minecraft ABI. Fabric files replace loader-specific
+// registrations or hooks by path before the common gameplay code is compiled.
+def reference = file('../neoforge-1.21.1/src/main')
+def overlays = file('src/main/java')
+def replacedSources = fileTree(overlays).matching { include '**/*.java' }.files.collect {
+    overlays.toPath().relativize(it.toPath()).toString().replace('\\', '/')
+}
+def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
+    from new File(reference, 'java')
+    exclude replacedSources
+    into layout.buildDirectory.dir('generated/reference/java')
+}
+sourceSets.main.java.srcDir(stageReferenceSources)
+
+tasks.named('processResources') {
+    from new File(reference, 'resources'), {
+        include 'assets/**', 'data/**'
+        exclude '**/neoforge/**'
+    }
+}
+loom {
+    accessWidenerPath = file('src/main/resources/yagens_mobs.accesswidener')
+}

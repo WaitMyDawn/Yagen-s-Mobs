@@ -46,7 +46,7 @@ final class LauncherScreen extends AbstractContainerScreen<LauncherMenu> {
         super.render(graphics, mouseX, mouseY, delta);
         renderTooltip(graphics, mouseX, mouseY);
         var extension = menu.getSlot(0);
-        if (!extension.hasItem() && getSlotUnderMouse() == extension) {
+        if (!extension.hasItem() && hoveredSlot == extension) {
             graphics.renderTooltip(font, Component.translatable("screen.yagens_mobs.silk_launcher.extension"), mouseX, mouseY);
         }
     }

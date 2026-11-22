@@ -49,7 +49,6 @@ public final class SilkLauncher extends Item {
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
-    @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (context.getPlayer() instanceof ServerPlayer player) {
             operate(player, context.getHand(), stack);

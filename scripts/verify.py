@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify scaffold release artifacts without loading Minecraft (Python 3.11+)."""
+"""Verify platform release artifacts without loading Minecraft (Python 3.11+)."""
 
 import argparse
 import hashlib
@@ -55,6 +55,24 @@ def verify_jar(project, target, jar):
             if path.is_file():
                 relative = path.relative_to(project / "common/src/main/resources").as_posix()
                 require(archive.read(relative) == path.read_bytes(), f"Shared resource differs: {relative}")
+        models = ("desert_skate", "condroc", "rock_hanger", "bubble_salamander", "velocipod")
+        assets = f"assets/{shared['mod_id']}"
+        gecko_version = local["geckolib_version"]
+        gecko_major = int(gecko_version.split(".", 1)[0])
+        model_folder = "geckolib/models" if gecko_major >= 5 else "geo"
+        animation_folder = "geckolib/animations" if gecko_major >= 5 else "animations"
+        for model in models:
+            require(f"{assets}/{model_folder}/entity/{model}.geo.json" in entries, f"Missing model {model}")
+            require(f"{assets}/{animation_folder}/entity/{model}.animation.json" in entries, f"Missing animation {model}")
+            if gecko_major >= 5:
+                egg = f"{model}_spawn_egg"
+                item_model = f"{assets}/models/item/{egg}.json"
+                expected_texture = f"{shared['mod_id']}:item/{egg}"
+                require(f"{assets}/items/{egg}.json" in entries and f"{assets}/textures/item/{egg}.png" in entries,
+                        f"Missing modern spawn egg definition or texture: {egg}")
+                require(json.loads(archive.read(item_model)).get("textures", {}).get("layer0") == expected_texture,
+                        f"Invalid spawn egg model: {egg}")
+        require("yagens_mobs.mixins.json" in entries, "Missing mixin configuration")
         if loader == "fabric":
             metadata = json.loads(archive.read("fabric.mod.json"))
             for key, property_key in (("id", "mod_id"), ("version", "mod_version"), ("name", "mod_name"),
@@ -64,6 +82,13 @@ def verify_jar(project, target, jar):
             expected = {"minecraft": minecraft, "java": f">={java}", "fabricloader": ">=" + local["loader_version"],
                         "fabric-api": ">=" + local["fabric_api_version"]}
             require(all(metadata["depends"].get(k) == v for k, v in expected.items()), "Wrong Fabric dependency ranges")
+            require(metadata["depends"].get("geckolib") == f">={gecko_version} <{gecko_major + 1}",
+                    "Wrong GeckoLib API range")
+            if (root / "resources/yagens_mobs.accesswidener").is_file():
+                require(metadata.get("accessWidener") in entries, "Missing Fabric access widener")
+            require("yagens_mobs.mixins.json" in metadata.get("mixins", []), "Missing Fabric mixin registration")
+            require(not any(path.startswith(f"data/{shared['mod_id']}/neoforge/") for path in entries),
+                    "NeoForge biome modifiers are not Fabric runtime resources")
             for side in ("main", "client"):
                 for entrypoint in metadata["entrypoints"][side]:
                     require(entrypoint.replace(".", "/") + ".class" in entries, f"Missing {side} entrypoint")
@@ -91,6 +116,18 @@ def verify_jar(project, target, jar):
             require(dependencies[loader]["versionRange"] == local["loader_range"], "Wrong loader compatibility range")
             if loader == "forge":
                 require(json.loads(archive.read("pack.mcmeta"))["pack"]["pack_format"] > 0, "Missing Forge resource-pack format")
+                require(dependencies["geckolib"]["versionRange"] == f"[{local['geckolib_version']},5)",
+                        "Wrong Forge GeckoLib API range")
+                mixin_config = json.loads(archive.read("yagens_mobs.mixins.json"))
+                require(mixin_config.get("refmap") == "yagens_mobs.refmap.json" and mixin_config["refmap"] in entries,
+                        "Missing Forge mixin reference map or registration")
+                manifest = archive.read("META-INF/MANIFEST.MF").decode("utf-8")
+                require("MixinConfigs: yagens_mobs.mixins.json" in manifest, "Missing Forge mixin manifest entry")
+                jars = json.loads(archive.read("META-INF/jarjar/metadata.json"))["jars"]
+                extras = next((jar for jar in jars if jar["identifier"]["artifact"] == "mixinextras-forge"), None)
+                require(extras and extras["path"] in entries, "Forge MixinExtras runtime is not bundled")
+                require(not any(path.startswith(f"data/{shared['mod_id']}/neoforge/") for path in entries),
+                        "NeoForge biome modifiers are not Forge runtime resources")
     return {"target": target, "jar": str(jar), "sha256": hashlib.sha256(jar.read_bytes()).hexdigest(), "status": "passed"}
 
 

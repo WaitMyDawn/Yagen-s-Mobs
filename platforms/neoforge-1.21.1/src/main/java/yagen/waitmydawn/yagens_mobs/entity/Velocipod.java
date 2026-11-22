@@ -3,7 +3,7 @@ package yagen.waitmydawn.yagens_mobs.entity;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -507,7 +507,6 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingA
         }
     }
 
-    @Override
     public boolean shouldRiderSit() {
         return false;
     }

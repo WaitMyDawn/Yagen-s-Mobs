@@ -1,0 +1,6 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#yagens_mobs:velocipod_habitat",
+  "entity": "yagens_mobs:velocipod",
+  "weight_factor": 1.0
+}

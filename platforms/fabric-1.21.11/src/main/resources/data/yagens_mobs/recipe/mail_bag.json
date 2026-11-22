@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  F",
+    "P P",
+    "PPP"
+  ],
+  "key": {
+    "F": "yagens_mobs:condroc_flight_feather",
+    "P": "minecraft:leather"
+  },
+  "result": {
+    "id": "yagens_mobs:mail_bag",
+    "count": 1
+  }
+}

@@ -25,7 +25,8 @@ def platformTask = { String name, String platform, int javaVersion, String task,
         if (installations) args "-Porg.gradle.java.installations.paths=${installations}"
     }
 }
-def platforms = new JsonSlurper().parse(layout.projectDirectory.file('gradle/platforms.json').asFile)
+def matrix = providers.fileContents(layout.projectDirectory.file('gradle/platforms.json')).asText
+def platforms = new JsonSlurper().parseText(matrix.get())
 def platformTasks = { String action ->
     platforms.collect { suffix, target ->
         platformTask("${action}${suffix}", target.directory, target.javaVersion, action, target.loom == true)

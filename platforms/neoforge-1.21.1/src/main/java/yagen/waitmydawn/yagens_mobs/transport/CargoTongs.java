@@ -22,7 +22,6 @@ public final class CargoTongs extends Item {
         super(settings);
     }
 
-    @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         var state = context.getLevel().getBlockState(context.getClickedPos());
         if (state.getBlock() instanceof VulturePostBlock && state.getValue(VulturePostBlock.UPPER)) {

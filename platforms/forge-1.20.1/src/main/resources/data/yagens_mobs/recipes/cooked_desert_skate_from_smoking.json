@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "ingredient": {
+    "item": "yagens_mobs:raw_desert_skate"
+  },
+  "result": "yagens_mobs:cooked_desert_skate",
+  "experience": 0.35,
+  "cookingtime": 100
+}

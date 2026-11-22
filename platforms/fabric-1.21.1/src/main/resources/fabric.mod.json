@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "name": "${mod_name}",
+  "version": "${mod_version}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "license": "${mod_license}",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "yagen.waitmydawn.yagens_mobs.YagensMobs"
+    ],
+    "client": [
+      "yagen.waitmydawn.yagens_mobs.client.ClientSetup"
+    ]
+  },
+  "depends": {
+    "minecraft": "${minecraft_version}",
+    "java": "${java_requirement}",
+    "fabricloader": "${loader_requirement}",
+    "fabric-api": "${fabric_api_requirement}",
+    "geckolib": ">=${geckolib_version} <5"
+  },
+  "mixins": [
+    "yagens_mobs.mixins.json"
+  ],
+  "accessWidener": "yagens_mobs.accesswidener"
+}

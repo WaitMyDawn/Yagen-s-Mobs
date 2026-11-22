@@ -1,0 +1,72 @@
+buildscript {
+    repositories { maven { url = 'https://maven.minecraftforge.net/' } }
+    dependencies { classpath 'org.spongepowered:mixingradle:0.7.38' }
+}
+
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '6.0.54'
+}
+
+apply plugin: 'org.spongepowered.mixin'
+ext.platformLoader = 'forge'
+apply from: '../../gradle/platform.gradle'
+apply from: '../../gradle/fml-common.gradle'
+
+repositories { mavenCentral() }
+dependencies { minecraft "net.minecraftforge:forge:${minecraft_version}-${loader_version}" }
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+    copyIdeResources = true
+    runs {
+        configureEach {
+            workingDirectory file("run/${name}")
+            mods { create(mod_id) { source sourceSets.main } }
+        }
+        client {}
+        server { args '--nogui' }
+    }
+}
+
+tasks.named('jar') {
+    destinationDirectory = layout.buildDirectory.dir('devlibs')
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json'
+    finalizedBy 'reobfJar'
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('geckolibRepository').orElse('https://api.modrinth.com/maven').get() }
+        }
+        filter { includeVersion('maven.modrinth', 'geckolib', geckolib_artifact) }
+    }
+}
+dependencies { implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artifact}") }
+
+tasks.named('processResources') {
+    from('../neoforge-1.21.1/src/main/resources') { include 'assets/**' }
+}
+
+jarJar.enable()
+dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly(annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1'))
+    implementation(jarJar('io.github.llamalad7:mixinextras-forge:0.4.1')) {
+        jarJar.ranged(it, '[0.4.1,)')
+    }
+}
+mixin {
+    add sourceSets.main, 'yagens_mobs.refmap.json'
+    config 'yagens_mobs.mixins.json'
+}
+tasks.named('jarJar') {
+    archiveClassifier = ''
+    from file('../../LICENSE.md')
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json'
+    finalizedBy 'reobfJarJar'
+}
+tasks.named('build') { dependsOn 'jarJar' }
+tasks.withType(JavaCompile).configureEach { options.release = 17 }

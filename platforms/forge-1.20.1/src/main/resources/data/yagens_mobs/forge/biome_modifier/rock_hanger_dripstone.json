@@ -1,0 +1,8 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": [
+    "minecraft:dripstone_caves"
+  ],
+  "entity": "yagens_mobs:rock_hanger",
+  "weight_factor": 1.0
+}

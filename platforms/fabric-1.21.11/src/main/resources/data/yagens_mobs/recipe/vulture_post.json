@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "P P",
+    "L L"
+  ],
+  "key": {
+    "P": "minecraft:acacia_planks",
+    "L": "minecraft:acacia_log"
+  },
+  "result": {
+    "id": "yagens_mobs:vulture_post",
+    "count": 1
+  }
+}

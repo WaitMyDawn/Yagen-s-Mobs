@@ -17,6 +17,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.core.SpawnDefaults;
 
 public record ConfiguredMobSpawns(HolderSet<Biome> biomes, EntityType<?> entityType, double weightFactor,
                                   Optional<HolderSet<Biome>> excludedBiomes) implements BiomeModifier {
@@ -42,7 +43,7 @@ public record ConfiguredMobSpawns(HolderSet<Biome> biomes, EntityType<?> entityT
         var spawns = ServerConfigs.forEntity(entityType);
         if (spawns != null && spawns.canSpawn()) {
             builder.getMobSpawnSettings().addSpawn(entityType.getCategory(), new MobSpawnSettings.SpawnerData(
-                    entityType, Math.max(1, (int) Math.round(spawns.weight().get() * weightFactor)),
+                    entityType, SpawnDefaults.scaledWeight(spawns.weight().get(), weightFactor),
                     spawns.minGroupSize().get(), spawns.maxGroupCount()));
         }
     }

@@ -499,7 +499,7 @@ public final class BubbleSalamander extends TamableAnimal implements Bucketable,
 
     @Override
     public ItemStack getBucketItemStack() {
-        return ModItems.BUBBLE_SALAMANDER_BUCKET.toStack();
+        return new ItemStack(ModItems.BUBBLE_SALAMANDER_BUCKET.get());
     }
 
     @Override

@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "yagens_mobs:vulture_post"
+        }
+      ],
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "blocks": "yagens_mobs:vulture_post",
+            "state": {
+              "upper": "false"
+            },
+            "type": "minecraft:match_block"
+          },
+          {
+            "type": "minecraft:survives_explosion"
+          }
+        ]
+      }
+    }
+  ]
+}

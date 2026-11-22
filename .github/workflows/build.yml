@@ -9,6 +9,14 @@ jobs:
         include:
           - platform: 'neoforge-1.21.1'
             java: '21'
+          - platform: 'fabric-1.21.1'
+            java: '21'
+          - platform: 'forge-1.20.1'
+            java: '17'
+          - platform: 'fabric-1.21.11'
+            java: '21'
+          - platform: 'fabric-26.3'
+            java: '25'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

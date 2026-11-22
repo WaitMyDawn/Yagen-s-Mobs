@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -79,7 +80,7 @@ public final class MailBag extends Item {
             return false;
         }
         // Captured block entities retain their serialized inventories inside the tongs' custom data.
-        String bagId = ModItems.MAIL_BAG.getId().toString();
+        String bagId = BuiltInRegistries.ITEM.getKey(ModItems.MAIL_BAG.get()).toString();
         var pending = new ArrayDeque<Tag>();
         pending.push(data.copyTag());
         while (!pending.isEmpty()) {

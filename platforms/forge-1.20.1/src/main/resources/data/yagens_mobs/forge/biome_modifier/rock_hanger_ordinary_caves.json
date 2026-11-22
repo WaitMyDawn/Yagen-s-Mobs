@@ -1,0 +1,6 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#minecraft:is_overworld",
+  "entity": "yagens_mobs:rock_hanger",
+  "excluded_biomes": "#yagens_mobs:rock_hanger_ordinary_cave_exclusions"
+}

@@ -235,7 +235,6 @@ public final class RockSilkGrip extends Entity {
         return entityData.get(MOVING);
     }
 
-    @Override
     public boolean shouldRiderSit() {
         return false;
     }

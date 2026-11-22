@@ -1,0 +1,7 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#minecraft:is_overworld",
+  "entity": "yagens_mobs:condroc",
+  "weight_factor": 0.13,
+  "excluded_biomes": "#yagens_mobs:condroc_habitat"
+}

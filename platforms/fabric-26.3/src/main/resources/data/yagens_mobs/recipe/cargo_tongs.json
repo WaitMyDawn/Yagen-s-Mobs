@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "P P",
+    " P ",
+    " P "
+  ],
+  "key": {
+    "P": "minecraft:acacia_planks"
+  },
+  "result": {
+    "id": "yagens_mobs:cargo_tongs",
+    "count": 1
+  }
+}

@@ -1,6 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.mixin;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Slime;
