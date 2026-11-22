@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    " S "
+  ],
+  "key": {
+    "R": {
+      "item": "yagens_mobs:rock_silk"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "yagens_mobs:rock_silk_spool",
+    "count": 1
+  }
+}

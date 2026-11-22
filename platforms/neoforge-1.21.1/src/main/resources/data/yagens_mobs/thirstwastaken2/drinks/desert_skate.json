@@ -1,0 +1,12 @@
+{
+  "values": {
+    "yagens_mobs:raw_desert_skate": {
+      "thirst": 20,
+      "quenched": 10
+    },
+    "yagens_mobs:cooked_desert_skate": {
+      "thirst": 16,
+      "quenched": 8
+    }
+  }
+}

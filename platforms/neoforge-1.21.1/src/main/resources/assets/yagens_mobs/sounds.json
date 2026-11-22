@@ -1,0 +1,17 @@
+{
+  "condroc.chick": {
+    "subtitle": "subtitles.yagens_mobs.condroc.chick",
+    "sounds": [
+      {
+        "name": "yagens_mobs:entity/condroc/chick_1",
+        "pitch": 1.0,
+        "volume": 0.67
+      },
+      {
+        "name": "yagens_mobs:entity/condroc/chick_2",
+        "pitch": 0.97,
+        "volume": 0.67
+      }
+    ]
+  }
+}

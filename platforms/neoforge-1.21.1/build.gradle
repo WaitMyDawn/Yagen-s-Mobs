@@ -1,0 +1,44 @@
+import net.neoforged.gradle.userdev.runtime.tasks.ClasspathSerializer
+
+plugins {
+    id 'java-library'
+    id 'net.neoforged.gradle.userdev' version '7.1.38'
+}
+
+ext.platformLoader = 'neoforge'
+apply from: '../../gradle/platform.gradle'
+apply from: '../../gradle/fml-common.gradle'
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'GeckoLib'
+                url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            }
+        }
+        filter { includeGroup('software.bernie.geckolib') }
+    }
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${loader_version}"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+}
+
+runs {
+    configureEach {
+        workingDirectory layout.projectDirectory.dir('run').dir(name)
+        modSource sourceSets.main
+    }
+    client {}
+    server { argument '--nogui' }
+}
+
+tasks.withType(ClasspathSerializer).configureEach { serializer ->
+    // NeoGradle writes absolute paths even though its input fingerprint ignores paths.
+    serializer.inputs.files(serializer.inputFiles)
+            .withPropertyName('absoluteClasspathLocations')
+            .withPathSensitivity(PathSensitivity.ABSOLUTE)
+}

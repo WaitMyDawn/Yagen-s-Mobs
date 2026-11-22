@@ -1,0 +1,112 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis": "x",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upper",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "upper": "false",
+        "start": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_lower",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "upper": "false",
+        "end": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "upper": "true",
+        "start": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upright",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "upper": "true",
+        "end": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upright",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "upper": "false",
+        "start": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "upper": "false",
+        "end": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "upper": "true",
+        "start": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upright",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "upper": "true",
+        "end": "true"
+      },
+      "apply": {
+        "model": "yagens_mobs:block/vulture_post_upright",
+        "y": 270
+      }
+    }
+  ]
+}

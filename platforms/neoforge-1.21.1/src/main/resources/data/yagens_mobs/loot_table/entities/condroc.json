@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:entity",
+  "random_sequence": "yagens_mobs:entities/condroc",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "flags": { "is_baby": true } }
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "yagens_mobs:condroc_flight_feather",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "type": "minecraft:uniform", "min": 1, "max": 2 }
+            },
+            {
+              "function": "minecraft:set_count",
+              "add": true,
+              "count": {
+                "type": "minecraft:binomial",
+                "n": {
+                  "type": "yagens_mobs:attacker_enchantment_level",
+                  "enchantment": "minecraft:looting"
+                },
+                "p": 0.5
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/water_bucket",
+    "layer1": "yagens_mobs:item/bubble_salamander_bucket"
+  }
+}

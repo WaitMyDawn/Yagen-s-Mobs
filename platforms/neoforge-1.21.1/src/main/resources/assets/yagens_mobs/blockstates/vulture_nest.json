@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "eggs=1": {
+      "model": "yagens_mobs:block/vulture_nest_1"
+    },
+    "eggs=2": {
+      "model": "yagens_mobs:block/vulture_nest_2"
+    },
+    "eggs=3": {
+      "model": "yagens_mobs:block/vulture_nest_3"
+    }
+  }
+}

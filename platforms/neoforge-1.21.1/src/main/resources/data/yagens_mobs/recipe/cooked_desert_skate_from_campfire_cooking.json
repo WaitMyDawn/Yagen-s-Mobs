@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "ingredient": { "item": "yagens_mobs:raw_desert_skate" },
+  "result": { "id": "yagens_mobs:cooked_desert_skate" },
+  "experience": 0.35,
+  "cookingtime": 600
+}

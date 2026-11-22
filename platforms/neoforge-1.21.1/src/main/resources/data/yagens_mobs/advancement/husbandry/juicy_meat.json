@@ -1,0 +1,19 @@
+{
+  "parent": "minecraft:husbandry/root",
+  "display": {
+    "icon": { "id": "yagens_mobs:cooked_desert_skate" },
+    "title": { "translate": "advancements.yagens_mobs.juicy_meat.title" },
+    "description": { "translate": "advancements.yagens_mobs.juicy_meat.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "obtain_cooked_desert_skate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "yagens_mobs:cooked_desert_skate" }]
+      }
+    }
+  }
+}

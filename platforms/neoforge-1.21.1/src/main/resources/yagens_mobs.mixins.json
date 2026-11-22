@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "yagen.waitmydawn.yagens_mobs.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["PlayerBubbleSalamanderMining", "LivingEntityJumpInput", "SlimeFlightAvoidance"],
+  "client": [
+    "client.BubbleSalamanderNightVision",
+    "client.HumanoidRockSilkPose",
+    "client.PlayerRockSilkOrientation",
+    "client.HumanoidVelocipodPose",
+    "client.PlayerVelocipodOrientation",
+    "client.NfpVelocipodCamera",
+    "client.NfpVelocipodCameraRig"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
