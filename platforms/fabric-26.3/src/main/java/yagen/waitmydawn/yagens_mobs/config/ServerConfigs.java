@@ -30,6 +30,25 @@ public final class ServerConfigs {
             "spawns.condroc.juvenileChance", SpawnDefaults.CONDROC_JUVENILE_CHANCE, 0, 1,
             "Chance that a naturally spawned Condroc is a juvenile."));
 
+    public static final NestSpawns SALVAGE_RAY = new NestSpawns(
+            register(FabricConfig.flag("spawns.salvage_ray.enabled", true,
+                    "Generate Salvage Ray nests and their resident groups in new End chunks.")),
+            register(FabricConfig.decimal("spawns.salvage_ray.nestChance", .75, 0, 1,
+                    "Probability that an eligible outer-island nest location generates a structure.")),
+            register(FabricConfig.integer("spawns.salvage_ray.minGroupSize", 2, 1, 12, "Minimum resident group size.")),
+            register(FabricConfig.integer("spawns.salvage_ray.maxGroupSize", 3, 1, 12, "Maximum resident group size.")));
+
+    public record NestSpawns(Supplier<Boolean> enabled, Supplier<Double> nestChance, Supplier<Integer> minGroupSize,
+                             Supplier<Integer> maxGroupSize) {
+        public boolean canSpawn() {
+            return enabled.get() && nestChance.get() > 0;
+        }
+
+        public int maxGroupCount() {
+            return Math.max(minGroupSize.get(), maxGroupSize.get());
+        }
+    }
+
     private ServerConfigs() {
     }
 

@@ -77,10 +77,10 @@ public final class RockSilkGrip extends Entity {
             lateral = lateral.scale(-1);
         }
 
-        Vec3 feet = feetAt(player, point, lateral);
+        Vec3 feet = feetAt(player, point, lateral, span.normalize().y);
         if (!roomFor(player, player.position(), feet)) {
             lateral = lateral.scale(-1);
-            feet = feetAt(player, point, lateral);
+            feet = feetAt(player, point, lateral, span.normalize().y);
             if (!roomFor(player, player.position(), feet)) {
                 return;
             }
@@ -155,7 +155,7 @@ public final class RockSilkGrip extends Entity {
         }
 
         double next = Mth.clamp(travel + step, END_MARGIN, length - END_MARGIN);
-        Vec3 feet = feetAt(player, start.add(axis.scale(next)), side);
+        Vec3 feet = feetAt(player, start.add(axis.scale(next)), side, axis.y);
         boolean moving = Math.abs(next - travel) > 1e-5 && roomFor(player, position(), feet);
         entityData.set(MOVING, moving);
         if (moving) {
@@ -183,16 +183,27 @@ public final class RockSilkGrip extends Entity {
         return (input & key) == 0 ? 0 : 1;
     }
 
-    private static Vec3 feetAt(Player player, Vec3 point, Vec3 side) {
-        return point.add(side.scale(GRIP_OFFSET)).add(0, -holdHeight(player), 0);
+    private static Vec3 feetAt(Player player, Vec3 point, Vec3 side, double vertical) {
+        float hang = hangAmount(vertical);
+        return point.add(side.scale(GRIP_OFFSET * (1 - hang))).add(0, -holdHeight(player, hang), 0);
     }
 
-    public static double holdHeight(Player player) {
-        return player.getDimensions(Pose.STANDING).height() * 0.69;
+    public static double holdHeight(Player player, float hanging) {
+        return player.getDimensions(Pose.STANDING).height() * Mth.lerp(hanging, .69F, 1.07F);
+    }
+
+    private static float hangAmount(double vertical) {
+        float slope = Mth.clamp((float) ((.9 - Math.abs(vertical)) / .55), 0, 1);
+        return slope * slope * (3 - 2 * slope);
+    }
+
+    public float hangAmount() {
+        return hangAmount(entityData.get(MODEL_UP).y());
     }
 
     public Vector3f modelUp() {
-        return new Vector3f(entityData.get(MODEL_UP));
+        var silk = entityData.get(MODEL_UP);
+        return new Vector3f(silk).lerp(new Vector3f(0, 1, 0), hangAmount()).normalize();
     }
 
     private static boolean roomFor(Player player, Vec3 from, Vec3 to) {

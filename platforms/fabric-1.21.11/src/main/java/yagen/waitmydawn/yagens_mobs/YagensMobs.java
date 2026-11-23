@@ -42,6 +42,7 @@ public final class YagensMobs implements ModInitializer {
         StationData.register();
         ModEntities.register();
         ModBlocks.register();
+        yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.register();
         ModItems.register();
         LumenButterflies.register();
         ModSounds.register();

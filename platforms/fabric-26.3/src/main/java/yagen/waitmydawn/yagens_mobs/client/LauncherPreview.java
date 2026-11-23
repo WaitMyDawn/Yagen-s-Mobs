@@ -36,7 +36,7 @@ public final class LauncherPreview {
         ItemStack stack = player.getMainHandItem().getItem() instanceof SilkLauncher
                 ? player.getMainHandItem() : player.getOffhandItem();
         if (stack.getItem() instanceof SilkLauncher) {
-            aim = SilkLauncher.preview(player, stack);
+            aim = SilkLauncher.preview(player, stack, game.options.getEffectiveRenderDistance());
             first = SilkLauncher.pendingPin(player, stack);
             budget = SilkLauncher.available(stack);
             if (aim.status() == RockSilkPath.Status.HANG && first != null) {
@@ -115,9 +115,9 @@ public final class LauncherPreview {
     private static void line(VertexConsumer buffer, PoseStack.Pose pose, Vec3 from, Vec3 to, int color) {
         Vec3 direction = to.subtract(from).normalize();
         buffer.addVertex(pose, (float) from.x, (float) from.y, (float) from.z).setColor(color)
-                .setNormal(pose, (float) direction.x, (float) direction.y, (float) direction.z);
+                .setNormal(pose, (float) direction.x, (float) direction.y, (float) direction.z).setLineWidth(2.5F);
         buffer.addVertex(pose, (float) to.x, (float) to.y, (float) to.z).setColor(color)
-                .setNormal(pose, (float) direction.x, (float) direction.y, (float) direction.z);
+                .setNormal(pose, (float) direction.x, (float) direction.y, (float) direction.z).setLineWidth(2.5F);
     }
 }
 

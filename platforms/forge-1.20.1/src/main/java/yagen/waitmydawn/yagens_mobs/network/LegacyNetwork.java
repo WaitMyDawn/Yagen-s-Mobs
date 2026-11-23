@@ -17,6 +17,8 @@ import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderWear;
 import yagen.waitmydawn.yagens_mobs.entity.VelocipodSprintInput;
 import yagen.waitmydawn.yagens_mobs.silk.RockSilkPackets;
+import yagen.waitmydawn.yagens_mobs.salvage.SalvageRoutes;
+import yagen.waitmydawn.yagens_mobs.salvage.SalvageClient;
 import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
 
 public final class LegacyNetwork {
@@ -49,6 +51,13 @@ public final class LegacyNetwork {
                 .decoder(buf -> new StationPackets.Snapshot(buf.readNbt()))
                 .consumerMainThread((msg, ctx) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                         () -> () -> LegacyClientPackets.updateStation(msg))).add();
+        toServer(7, SalvageRoutes.Request.class, (msg, buf) -> buf.writeNbt(msg.data()),
+                buf -> new SalvageRoutes.Request(buf.readNbt()), SalvageRoutes::handle);
+        CHANNEL.messageBuilder(SalvageRoutes.Snapshot.class, 8, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((msg, buf) -> buf.writeNbt(msg.data()))
+                .decoder(buf -> new SalvageRoutes.Snapshot(buf.readNbt()))
+                .consumerMainThread((msg, ctx) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        () -> () -> SalvageClient.receive(msg))).add();
         CHANNEL.messageBuilder(StationPackets.MailName.class, 6, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder((msg, buf) -> { buf.writeVarInt(msg.containerId()); buf.writeUtf(msg.name()); })
                 .decoder(buf -> new StationPackets.MailName(buf.readVarInt(), buf.readUtf()))

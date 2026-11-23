@@ -32,7 +32,7 @@ minecraft {
 
 tasks.named('jar') {
     destinationDirectory = layout.buildDirectory.dir('devlibs')
-    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json'
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json,yagens_mobs.salvage.mixins.json'
     finalizedBy 'reobfJar'
 }
 
@@ -48,7 +48,7 @@ dependencies { implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artif
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
-        include 'assets/**'
+        include 'assets/**', 'data/yagens_mobs/worldgen/**/salvage_ray*.json', 'data/yagens_mobs/tags/worldgen/biome/salvage_ray_nests.json'
     }
 }
 
@@ -64,11 +64,12 @@ mixin {
     add sourceSets.main, 'yagens_mobs.refmap.json'
     config 'yagens_mobs.mixins.json'
     config 'yagens_mobs.lumen_butterfly.mixins.json'
+    config 'yagens_mobs.salvage.mixins.json'
 }
 tasks.named('jarJar') {
     archiveClassifier = ''
     from file('../../LICENSE.md')
-    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json'
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json,yagens_mobs.salvage.mixins.json'
     finalizedBy 'reobfJarJar'
 }
 tasks.named('build') { dependsOn 'jarJar' }

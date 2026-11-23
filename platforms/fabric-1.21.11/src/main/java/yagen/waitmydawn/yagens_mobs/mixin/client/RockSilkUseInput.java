@@ -13,7 +13,7 @@ abstract class RockSilkUseInput {
     private void yagensMobs$tryRockSilkGrip(CallbackInfo callback) {
         var game = (Minecraft) (Object) this;
         if (game.gameMode != null && game.player != null && !game.player.isUsingItem()
-                && RockSilkControls.tryGrab()) {
+                && (yagen.waitmydawn.yagens_mobs.salvage.SalvageClient.cutPointedLink() || RockSilkControls.tryGrab())) {
             callback.cancel();
         }
     }

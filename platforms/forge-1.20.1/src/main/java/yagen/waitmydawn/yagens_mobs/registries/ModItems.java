@@ -51,6 +51,10 @@ public final class ModItems {
             () -> new ForgeSpawnEggItem(ModEntities.BUBBLE_SALAMANDER, 0x1E5054, 0x87C69B, new Item.Properties()));
     public static final RegistryObject<ForgeSpawnEggItem> VELOCIPOD_SPAWN_EGG = ITEMS.register("velocipod_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.VELOCIPOD, 0x574659, 0x76A59A, new Item.Properties()));
+    public static final RegistryObject<BlockItem> SALVAGE_NEST_BOX = ITEMS.register("salvage_nest_box",
+            () -> new BlockItem(yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.NEST_BOX.get(), new Item.Properties()));
+    public static final RegistryObject<ForgeSpawnEggItem> SALVAGE_RAY_SPAWN_EGG = ITEMS.register("salvage_ray_spawn_egg",
+            () -> new ForgeSpawnEggItem(yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.RAY, 0x2b2138, 0x987BA7, new Item.Properties()));
     public static final RegistryObject<CreativeModeTab> YAGENS_MOBS = TABS.register("yagens_mobs",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.yagens_mobs"))

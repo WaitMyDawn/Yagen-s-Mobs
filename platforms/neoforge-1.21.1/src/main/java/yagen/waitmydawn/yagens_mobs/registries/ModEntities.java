@@ -42,7 +42,7 @@ public final class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<RockSilkLine>> ROCK_SILK_LINE = TYPES.register(
             "rock_silk_line", id -> EntityType.Builder.<RockSilkLine>of(RockSilkLine::new, MobCategory.MISC)
-                    .sized(0.28F, 0.28F).clientTrackingRange(16).updateInterval(20).fireImmune().build(id.toString()));
+                    .sized(0.28F, 0.28F).clientTrackingRange(32).updateInterval(20).fireImmune().build(id.toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<RockSilkGrip>> ROCK_SILK_GRIP = TYPES.register(
             "rock_silk_grip", id -> EntityType.Builder.<RockSilkGrip>of(RockSilkGrip::new, MobCategory.MISC)

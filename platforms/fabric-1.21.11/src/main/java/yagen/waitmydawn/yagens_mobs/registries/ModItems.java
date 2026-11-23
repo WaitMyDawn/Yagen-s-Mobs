@@ -60,7 +60,7 @@ public final class ModItems {
     private ModItems() {
     }
 
-    private static <T extends Item> Supplier<T> item(String name, Function<Item.Properties, T> factory) {
+    public static <T extends Item> Supplier<T> item(String name, Function<Item.Properties, T> factory) {
         var id = Identifier.fromNamespaceAndPath(ModIdentity.ID, name);
         T item = Registry.register(BuiltInRegistries.ITEM, id, factory.apply(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
         ENTRIES.add(item);

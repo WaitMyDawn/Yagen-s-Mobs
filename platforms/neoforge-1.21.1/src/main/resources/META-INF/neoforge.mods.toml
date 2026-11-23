@@ -36,3 +36,6 @@ config="yagens_mobs.mixins.json"
 
 [[mixins]]
 config="yagens_mobs.lumen_butterfly.mixins.json"
+
+[[mixins]]
+config="yagens_mobs.salvage.mixins.json"

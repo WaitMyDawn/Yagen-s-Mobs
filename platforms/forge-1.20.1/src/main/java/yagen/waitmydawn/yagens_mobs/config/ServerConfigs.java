@@ -27,7 +27,25 @@ public final class ServerConfigs {
     public static final ForgeConfigSpec.DoubleValue VULTURE_JUVENILE_CHANCE = BUILDER
             .comment("Chance that a naturally spawned Condroc is a juvenile.")
             .defineInRange("spawns.condroc.juvenileChance", SpawnDefaults.CONDROC_JUVENILE_CHANCE, 0.0, 1.0);
+    public static final NestSpawns SALVAGE_RAY = new NestSpawns(
+            BUILDER.comment("Generate Salvage Ray nests and their resident groups in new End chunks.")
+                    .worldRestart().define("spawns.salvage_ray.enabled", true),
+            BUILDER.comment("Probability that an eligible outer-island nest location generates a structure.")
+                    .worldRestart().defineInRange("spawns.salvage_ray.nestChance", .75, 0, 1),
+            BUILDER.worldRestart().defineInRange("spawns.salvage_ray.minGroupSize", 2, 1, 12),
+            BUILDER.worldRestart().defineInRange("spawns.salvage_ray.maxGroupSize", 3, 1, 12));
     public static final ForgeConfigSpec SPEC = BUILDER.build();
+
+    public record NestSpawns(ForgeConfigSpec.BooleanValue enabled, ForgeConfigSpec.DoubleValue nestChance,
+                             ForgeConfigSpec.IntValue minGroupSize, ForgeConfigSpec.IntValue maxGroupSize) {
+        public boolean canSpawn() {
+            return enabled.get() && nestChance.get() > 0;
+        }
+
+        public int maxGroupCount() {
+            return Math.max(minGroupSize.get(), maxGroupSize.get());
+        }
+    }
 
     private ServerConfigs() {
     }

@@ -44,7 +44,7 @@ dependencies { implementation "maven.modrinth:geckolib:${geckolib_artifact}" }
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
-        include 'assets/**'
+        include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'
         includeEmptyDirs = false
         eachFile { asset ->

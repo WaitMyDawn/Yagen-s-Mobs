@@ -23,7 +23,7 @@ abstract class PlayerRockSilkOrientation {
         float partialTick = game.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         if (player.getVehicle() instanceof RockSilkGrip grip) {
             // Tilt about the attachment height so the hands stay at the same point on the line.
-            double pivot = RockSilkGrip.holdHeight(player) / scale;
+            double pivot = RockSilkGrip.holdHeight(player, grip.hangAmount()) / scale;
             stack.translate(0, pivot, 0);
             var up = grip.modelUp();
             stack.mulPose(new Quaternionf().rotationTo(0, 1, 0, up.x, up.y, up.z));

@@ -51,13 +51,21 @@ public final class RockSilkLineRenderer extends EntityRenderer<RockSilkLine, Roc
                     || game.level.isOutsideBuildHeight(line.blockPosition())
                     || game.levelRenderer.isSectionCompiledAndVisible(line.blockPosition())
                     || frustum != null && !spanVisible(line, frustum)
-                    || line.position().distanceToSqr(camera.pos) > 128 * 128) {
+                    || !spanNearby(line, camera.pos)) {
                 continue;
             }
             var state = dispatcher.extractEntity(line, tick);
             dispatcher.submit(state, camera, state.x - camera.pos.x, state.y - camera.pos.y, state.z - camera.pos.z,
                     context.matrices(), context.commandQueue());
         }
+    }
+
+    private static boolean spanNearby(RockSilkLine line, Vec3 camera) {
+        Vec3 from = line.first().tip();
+        Vec3 span = line.tip().subtract(from);
+        double fraction = span.lengthSqr() < 1.e-8 ? 0
+                : Math.clamp(camera.subtract(from).dot(span) / span.lengthSqr(), 0, 1);
+        return camera.distanceToSqr(from.add(span.scale(fraction))) <= 128 * 128;
     }
 
     private static boolean spanVisible(RockSilkLine line, Frustum frustum) {

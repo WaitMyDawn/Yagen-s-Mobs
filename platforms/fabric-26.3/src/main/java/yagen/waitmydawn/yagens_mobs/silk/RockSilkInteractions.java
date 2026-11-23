@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import yagen.waitmydawn.yagens_mobs.core.SegmentApproach;
 
 public final class RockSilkInteractions {
+    // A valid span can start farther away than a hand-fired pin when a courier carried the far end.
+    private static final double ANCHOR_SEARCH = 32 * 16;
     private static final double PIN_RADIUS = 0.16;
     private static final double GRAB_RADIUS = 0.19;
     private static final double PIN_CLEARANCE = 0.33;
@@ -47,8 +49,8 @@ public final class RockSilkInteractions {
         var level = player.level();
         Vec3 ray = view.scale(visible);
         AABB trace = new AABB(eye, eye.add(ray)).inflate(GRAB_RADIUS);
-        AABB search = new AABB(trace.minX - RockSilkPath.REACH, level.getMinY(), trace.minZ - RockSilkPath.REACH,
-                trace.maxX + RockSilkPath.REACH, level.getMaxY() + 1, trace.maxZ + RockSilkPath.REACH);
+        AABB search = new AABB(trace.minX - ANCHOR_SEARCH, level.getMinY(), trace.minZ - ANCHOR_SEARCH,
+                trace.maxX + ANCHOR_SEARCH, level.getMaxY() + 1, trace.maxZ + ANCHOR_SEARCH);
         GripTarget nearest = null;
         for (var line : level.getEntitiesOfClass(RockSilkLine.class, search, RockSilkLine::supportsGrip)) {
             Vec3 top = line.first().tip();
@@ -83,8 +85,8 @@ public final class RockSilkInteractions {
         Vec3 end = from.add(view.scale(player.blockInteractionRange()));
         double distance = RockSilkPath.visibleReach(player, from, end);
         end = from.add(view.scale(distance));
-        // The entity is saved at the first pin. The second pin can be up to 64 blocks away.
-        AABB hosts = new AABB(from, end).inflate(RockSilkPath.REACH + PIN_RADIUS);
+        // The line entity is indexed by its first pin.
+        AABB hosts = new AABB(from, end).inflate(ANCHOR_SEARCH + PIN_RADIUS);
         RockSilkLine nearest = null;
         for (var line : player.level().getEntitiesOfClass(RockSilkLine.class, hosts,
                 candidate -> candidate.canRecover(player))) {

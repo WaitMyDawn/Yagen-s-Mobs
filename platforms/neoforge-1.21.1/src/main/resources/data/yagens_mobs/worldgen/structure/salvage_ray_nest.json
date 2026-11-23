@@ -1,0 +1,7 @@
+{
+  "type": "yagens_mobs:salvage_ray_nest",
+  "biomes": "#yagens_mobs:salvage_ray_nests",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

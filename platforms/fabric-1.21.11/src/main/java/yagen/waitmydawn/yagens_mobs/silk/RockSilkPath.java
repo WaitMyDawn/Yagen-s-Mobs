@@ -97,6 +97,39 @@ public final class RockSilkPath {
         return new Aim(spools <= available ? Status.READY : Status.NO_SPOOLS, pin.tip(), pin, spools);
     }
 
+    static Aim relayAim(Player player, Pin first, int available, int viewChunks) {
+        Level level = player.level();
+        Vec3 eye = player.getEyePosition();
+        Vec3 direction = player.getViewVector(1);
+        double reach = relayReach(eye.y, direction.y, level.getMinY(), level.getMaxY() + 1, viewChunks);
+        Vec3 end = eye.add(direction.scale(reach));
+        var hit = trace(level, eye, end, ClipContext.Block.OUTLINE).hit();
+        if (hit == null) {
+            return new Aim(Status.NO_TARGET, end, null, 0);
+        }
+        var pin = new Pin(hit.getBlockPos().immutable(), hit.getDirection());
+        if (!supports(level, pin) || !level.getWorldBorder().isWithinBounds(pin.block())) {
+            return new Aim(Status.UNSUPPORTED, hit.getLocation(), pin, 0);
+        }
+        double length = first.tip().distanceTo(pin.tip());
+        int cost = Math.max(1, (int) Math.ceil((length - EPSILON) / PER_SPOOL));
+        var status = length < .25 || !clear(level, first.tip(), pin.tip()) ? Status.OBSTRUCTED
+                : cost > available ? Status.NO_SPOOLS : Status.READY;
+        return new Aim(status, pin.tip(), pin, cost);
+    }
+
+    static double relayReach(double eyeY, double vertical, int minY, int maxY, int viewChunks) {
+        double reach = (double) Math.clamp(viewChunks, 2, 32) * 16;
+        // Distance along the ray is vertical displacement divided by its normalized vertical component.
+        if (vertical > EPSILON) {
+            return Math.clamp((maxY - eyeY) / vertical, 0, reach);
+        }
+        if (vertical < -EPSILON) {
+            return Math.clamp((minY - eyeY) / vertical, 0, reach);
+        }
+        return reach;
+    }
+
     public static boolean supports(Level level, Pin pin) {
         var pos = pin.block();
         if (level.isOutsideBuildHeight(pos) || !level.hasChunkAt(pos)) {

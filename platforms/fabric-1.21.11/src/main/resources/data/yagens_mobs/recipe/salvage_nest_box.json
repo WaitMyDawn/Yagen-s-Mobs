@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "PEP",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:purpur_block",
+    "C": "minecraft:chorus_fruit",
+    "E": "minecraft:end_stone_bricks"
+  },
+  "result": {
+    "id": "yagens_mobs:salvage_nest_box",
+    "count": 1
+  }
+}

@@ -42,7 +42,7 @@ public final class ModEntities {
 
     public static final RegistryObject<EntityType<RockSilkLine>> ROCK_SILK_LINE = TYPES.register(
             "rock_silk_line", () -> EntityType.Builder.<RockSilkLine>of(RockSilkLine::new, MobCategory.MISC)
-                    .sized(0.28F, 0.28F).clientTrackingRange(16).updateInterval(20).fireImmune().build(ModIdentity.ID + ":rock_silk_line"));
+                    .sized(0.28F, 0.28F).clientTrackingRange(32).updateInterval(20).fireImmune().build(ModIdentity.ID + ":rock_silk_line"));
 
     public static final RegistryObject<EntityType<RockSilkGrip>> ROCK_SILK_GRIP = TYPES.register(
             "rock_silk_grip", () -> EntityType.Builder.<RockSilkGrip>of(RockSilkGrip::new, MobCategory.MISC)

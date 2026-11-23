@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "yagens_mobs:block/salvage_nest_box_top",
+    "side": "yagens_mobs:block/salvage_nest_box_side",
+    "bottom": "yagens_mobs:block/salvage_nest_box_bottom"
+  }
+}

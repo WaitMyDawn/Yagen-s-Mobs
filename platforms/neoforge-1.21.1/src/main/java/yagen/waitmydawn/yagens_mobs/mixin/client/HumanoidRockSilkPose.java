@@ -30,15 +30,15 @@ abstract class HumanoidRockSilkPose {
             return;
         }
         float stride = grip.isClimbing() ? Mth.sin(age * 0.47F) * 0.19F : 0;
-        body.xRot = 0.075F;
+        float hanging = grip.hangAmount();
+        body.xRot = Mth.lerp(hanging, .075F, 0);
         head.yRot = Mth.clamp(Mth.wrapDegrees(entity.getYHeadRot() - grip.getYRot()), -65, 65) * Mth.DEG_TO_RAD;
         head.xRot = Mth.clamp(headPitch * Mth.DEG_TO_RAD, -0.85F, 0.64F);
         hat.copyFrom(head);
 
-        rightArm.setRotation(-1.71F + stride, -0.56F, -0.08F);
-        leftArm.setRotation(-1.53F - stride, 0.56F, 0.08F);
-        rightLeg.setRotation(-1.14F - stride * 0.65F, -0.36F, 0.24F);
-        leftLeg.setRotation(-1.02F + stride * 0.65F, 0.36F, -0.24F);
+        rightArm.setRotation(Mth.lerp(hanging, -1.71F, -3.06F) + stride, -.56F * (1 - hanging), -.08F);
+        leftArm.setRotation(Mth.lerp(hanging, -1.53F, -3.06F) - stride, .56F * (1 - hanging), .08F);
+        rightLeg.setRotation(Mth.lerp(hanging, -1.14F, .16F) - stride * .65F, -.36F * (1 - hanging), .24F - .18F * hanging);
+        leftLeg.setRotation(Mth.lerp(hanging, -1.02F, .23F) + stride * .65F, .36F * (1 - hanging), -.24F + .18F * hanging);
     }
 }
-

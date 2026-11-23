@@ -1,6 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.silk;
 
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,6 +31,135 @@ import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 
 public final class SilkLauncher extends Item {
     private static final String PENDING = "SilkShot";
+
+    private static final String COURIER = "SilkCourier";
+    private static final String COURIER_UNTIL = "SilkCourierUntil";
+
+    public interface Courier {
+        boolean canRelay();
+        default boolean reserveRelay(ServerPlayer player) { return canRelay(); }
+        void acceptRelay(Relay relay);
+    }
+
+    public record Relay(BlockPos anchor, UUID lineId, UUID courier, RockSilkPath.Pin pin, long deadline) {
+        private @Nullable RockSilkLine line(ServerLevel level) {
+            return level.getEntity(lineId) instanceof RockSilkLine line && line.relayedBy(courier) ? line : null;
+        }
+
+        public boolean alive(ServerLevel level) {
+            return level.getGameTime() < deadline && (!level.hasChunkAt(anchor) || line(level) != null);
+        }
+
+        public Vec3 approach() {
+            return pin.tip().add(Vec3.atLowerCornerOf(pin.face().getNormal()).scale(1.06));
+        }
+
+        public boolean finish(ServerLevel level) {
+            RockSilkLine line = line(level);
+            if (line == null) {
+                return false;
+            }
+            if (!RockSilkPath.supports(level, pin) || !RockSilkPath.clear(level, line.first().tip(), pin.tip())) {
+                line.recover(null);
+            } else {
+                line.finishRelay(pin);
+            }
+            return true;
+        }
+
+        public void cancel(ServerLevel level) {
+            RockSilkLine line = line(level);
+            if (line != null) {
+                line.recover(null);
+            }
+        }
+
+        public CompoundTag save() {
+            var tag = new CompoundTag();
+            tag.putLong("Anchor", anchor.asLong());
+            tag.putUUID("Line", lineId);
+            tag.putUUID("Courier", courier);
+            tag.put("Pin", pin.save());
+            tag.putLong("Expiry", deadline);
+            return tag;
+        }
+
+        @Nullable public static Relay load(CompoundTag tag) {
+            return tag.hasUUID("Line") && tag.hasUUID("Courier") && tag.contains("Pin")
+                    ? new Relay(BlockPos.of(tag.getLong("Anchor")), tag.getUUID("Line"), tag.getUUID("Courier"),
+                            RockSilkPath.Pin.load(tag.getCompound("Pin")), tag.getLong("Expiry")) : null;
+        }
+    }
+
+    public static boolean selectCourier(ServerPlayer owner, ItemStack stack, Entity entity) {
+        Shot shot = shot(stack);
+        if (!(entity instanceof Courier courier) || !courier.canRelay() || shot == null
+                || !shot.position().dimension().equals(owner.level().dimension()) || owner.distanceToSqr(entity) > 64
+                || !(owner.serverLevel().getEntity(shot.line()) instanceof RockSilkLine line)
+                || !line.ownedBy(owner) || !line.heldBy(owner) || !courier.reserveRelay(owner)) {
+            return false;
+        }
+        LegacyItemData.updateCustom(stack, tag -> {
+            tag.putUUID(COURIER, entity.getUUID());
+            tag.putLong(COURIER_UNTIL, owner.level().getGameTime() + 300);
+        });
+        owner.displayClientMessage(Component.translatable("message.yagens_mobs.salvage_ray.relay_ready"), true);
+        return true;
+    }
+
+    private static void launchRelay(ServerPlayer owner, ItemStack stack, RockSilkLine line, UUID courierId) {
+        ServerLevel level = owner.serverLevel();
+        Entity entity = level.getEntity(courierId);
+        if (!(entity instanceof Courier courier) || !courier.canRelay() || owner.distanceToSqr(entity) > 100) {
+            clearCourier(stack);
+            owner.displayClientMessage(Component.translatable("message.yagens_mobs.salvage_ray.busy"), true);
+            return;
+        }
+        var aim = RockSilkPath.relayAim(owner, line.first(), available(stack), viewChunks(owner));
+        if (aim.status() == RockSilkPath.Status.NO_TARGET) {
+            clearCourier(stack);
+            feedback(owner, aim.status());
+            return;
+        }
+        if (!aim.canPin() || !level.mayInteract(owner, aim.pin().block())) {
+            feedback(owner, aim.canPin() ? RockSilkPath.Status.UNSUPPORTED : aim.status());
+            return;
+        }
+        long expiry = level.getGameTime() + Math.max(400, Math.round(entity.position().distanceTo(aim.pin().tip()) * 7));
+        var job = new Relay(line.first().block(), line.getUUID(), courierId, aim.pin(), expiry);
+        if (courier.reserveRelay(owner) && line.startRelay(owner, stack, entity, aim.spools(), expiry)) {
+            courier.acceptRelay(job);
+        }
+    }
+
+    public static boolean isSelectedCourier(ServerPlayer owner, Entity courier) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack held = owner.getItemInHand(hand);
+            if (held.getItem() instanceof SilkLauncher) {
+                var data = LegacyItemData.custom(held);
+                if (selectingCourier(owner.level(), data) && courier.getUUID().equals(data.getUUID(COURIER))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static int viewChunks(Player player) {
+        return player instanceof ServerPlayer serverPlayer ? Math.min(yagen.waitmydawn.yagens_mobs.salvage.SalvagePlayerMotion.viewDistance(serverPlayer),
+                serverPlayer.serverLevel().getServer().getPlayerList().getViewDistance()) : 16;
+    }
+
+    private static void clearCourier(ItemStack stack) {
+        LegacyItemData.updateCustom(stack, tag -> {
+            tag.remove(COURIER);
+            tag.remove(COURIER_UNTIL);
+        });
+    }
+
+    private static boolean selectingCourier(Level level, CompoundTag tag) {
+        return tag.hasUUID(COURIER) && level.getGameTime() < tag.getLong(COURIER_UNTIL);
+    }
 
     record Shot(UUID line, GlobalPos position, RockSilkPath.Pin pin, boolean extend) {
     }
@@ -72,6 +202,11 @@ public final class SilkLauncher extends Item {
         if (player.isShiftKeyDown()) {
             player.openMenu(new SimpleMenuProvider((id, inventory, owner) -> new LauncherMenu(id, inventory, hand, stack),
                     Component.translatable("screen.yagens_mobs.silk_launcher")));
+            return;
+        }
+        var customs = LegacyItemData.custom(stack);
+        if (line != null && selectingCourier(level, customs)) {
+            launchRelay(player, stack, line, customs.getUUID(COURIER));
             return;
         }
         var aim = preview(player, stack);
@@ -124,6 +259,10 @@ public final class SilkLauncher extends Item {
                 .contains(PENDING) || player.tickCount % 10 != 0) {
             return;
         }
+        var data = LegacyItemData.custom(stack);
+        if (data.hasUUID(COURIER) && !selectingCourier(level, data)) {
+            clearCourier(stack);
+        }
         Shot shot = shot(stack);
         if (shot == null || !level.dimension().equals(shot.position().dimension())) {
             clear(stack);
@@ -141,9 +280,16 @@ public final class SilkLauncher extends Item {
     }
 
     public static RockSilkPath.Aim preview(Player player, ItemStack stack) {
+        return preview(player, stack, viewChunks(player));
+    }
+
+    public static RockSilkPath.Aim preview(Player player, ItemStack stack, int viewChunks) {
         Shot shot = shot(stack);
         RockSilkPath.Pin first = shot != null && shot.position().dimension().equals(player.level().dimension())
                 ? shot.pin() : null;
+        if (first != null && selectingCourier(player.level(), LegacyItemData.custom(stack))) {
+            return RockSilkPath.relayAim(player, first, available(stack), viewChunks);
+        }
         return RockSilkPath.aim(player, first, first == null ? loaded(stack) : available(stack));
     }
 
@@ -246,7 +392,11 @@ public final class SilkLauncher extends Item {
     }
 
     static void clear(ItemStack stack) {
-        LegacyItemData.updateCustom(stack, tag -> tag.remove(PENDING));
+        LegacyItemData.updateCustom(stack, tag -> {
+            tag.remove(PENDING);
+            tag.remove(COURIER);
+            tag.remove(COURIER_UNTIL);
+        });
     }
 }
 

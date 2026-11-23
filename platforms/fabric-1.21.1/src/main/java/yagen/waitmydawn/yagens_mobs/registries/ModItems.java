@@ -57,7 +57,7 @@ public final class ModItems {
     private ModItems() {
     }
 
-    private static <T extends Item> Supplier<T> item(String name, Supplier<T> factory) {
+    public static <T extends Item> Supplier<T> item(String name, Supplier<T> factory) {
         var id = ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, name);
         T item = Registry.register(BuiltInRegistries.ITEM, id, factory.get());
         ENTRIES.add(item);

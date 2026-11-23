@@ -41,7 +41,7 @@ public final class LauncherPreview {
         ItemStack stack = player.getMainHandItem().getItem() instanceof SilkLauncher
                 ? player.getMainHandItem() : player.getOffhandItem();
         if (stack.getItem() instanceof SilkLauncher) {
-            aim = SilkLauncher.preview(player, stack);
+            aim = SilkLauncher.preview(player, stack, game.options.getEffectiveRenderDistance());
             first = SilkLauncher.pendingPin(player, stack);
             budget = SilkLauncher.available(stack);
             if (aim.status() == RockSilkPath.Status.HANG && first != null) {

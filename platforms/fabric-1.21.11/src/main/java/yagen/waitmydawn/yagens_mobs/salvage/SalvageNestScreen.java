@@ -1,0 +1,111 @@
+package yagen.waitmydawn.yagens_mobs.salvage;
+
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.resources.Identifier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import org.lwjgl.glfw.GLFW;
+
+final class SalvageNestScreen extends AbstractContainerScreen<SalvageNestMenu> {
+    private static final Identifier BACKGROUND = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private final SalvageNestMenu nest;
+    private Component name;
+    private EditBox editor;
+
+    private SalvageNestScreen(SalvageNestMenu menu, Inventory inventory, Component name) {
+        super(menu, inventory, name);
+        imageHeight = 168;
+        inventoryLabelY = imageHeight - 94;
+        this.nest = menu;
+        this.name = name;
+    }
+
+    public static void register() {
+        net.minecraft.client.gui.screens.MenuScreens.register(SalvageNestMenu.TYPE.get(), SalvageNestScreen::new);
+    }
+
+    static void renamed(CompoundTag data) {
+        if (Minecraft.getInstance().screen instanceof SalvageNestScreen screen
+                && screen.nest.containerId == data.getIntOr("Menu", 0)) {
+            String text = data.getStringOr("Name", "");
+            screen.name = text.isEmpty() ? Component.translatable("block.yagens_mobs.salvage_nest_box") : Component.literal(text);
+        }
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        editor = null;
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics gui, float partial, int mouseX, int mouseY) {
+        gui.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos, 0, 0, imageWidth, 71, 256, 256);
+        gui.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, BACKGROUND, leftPos, topPos + 71, 0, 126, imageWidth, 96, 256, 256);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
+        if (editor == null) {
+            gui.drawString(font, font.plainSubstrByWidth(name.getString(), imageWidth - 18), titleLabelX, titleLabelY,
+                    hoverName(mouseX, mouseY) && nest.canRename ? 0x55337b : 0x404040, false);
+        }
+        gui.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+    }
+
+    @Override
+    public void render(GuiGraphics gui, int mouseX, int mouseY, float partial) {
+        super.render(gui, mouseX, mouseY, partial);
+        renderTooltip(gui, mouseX, mouseY);
+        if (editor == null && nest.canRename && hoverName(mouseX, mouseY)) {
+            gui.setTooltipForNextFrame(font, Component.translatable("screen.yagens_mobs.salvage.rename"), mouseX, mouseY);
+        }
+    }
+
+    private boolean hoverName(double x, double y) {
+        return x >= leftPos + titleLabelX && x < leftPos + imageWidth - 8
+                && y >= topPos + 3 && y < topPos + 17;
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0 && nest.canRename && editor == null && hoverName(event.x(), event.y())) {
+            editor = new EditBox(font, leftPos + 7, topPos + 3, imageWidth - 14, 13,
+                    Component.translatable("screen.yagens_mobs.salvage.rename"));
+            editor.setMaxLength(64);
+            editor.setValue(name.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents ? "" : name.getString());
+            addRenderableWidget(editor);
+            setFocused(editor);
+            editor.setFocused(true);
+            return true;
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (editor != null) {
+            if (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) {
+                var data = SalvageRoutes.action("Rename");
+                data.putInt("Menu", nest.containerId);
+                data.putString("Name", editor.getValue());
+                ClientPlayNetworking.send(new SalvageRoutes.Request(data));
+            } else if (event.key() != GLFW.GLFW_KEY_ESCAPE) {
+                editor.keyPressed(event);
+                return true;
+            }
+            removeWidget(editor);
+            editor = null;
+            setFocused(null);
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+}

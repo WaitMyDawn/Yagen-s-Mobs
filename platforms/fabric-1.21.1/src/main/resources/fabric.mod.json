@@ -27,7 +27,8 @@
   },
   "mixins": [
     "yagens_mobs.mixins.json",
-    "yagens_mobs.lumen_butterfly.mixins.json"
+    "yagens_mobs.lumen_butterfly.mixins.json",
+    "yagens_mobs.salvage.mixins.json"
   ],
   "accessWidener": "yagens_mobs.accesswidener"
 }

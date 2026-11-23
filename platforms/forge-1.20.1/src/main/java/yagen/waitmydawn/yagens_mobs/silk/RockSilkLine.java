@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.silk;
 
+import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -70,6 +71,9 @@ public final class RockSilkLine extends Entity {
         if (data.contains("Second", Tag.TAG_COMPOUND)) {
             return second().tip();
         }
+        if (data.hasUUID("Courier")) {
+            return new Vec3(data.getDouble("TipX"), data.getDouble("TipY"), data.getDouble("TipZ"));
+        }
         if (data.hasUUID("Owner")) {
             var player = level().getPlayerByUUID(data.getUUID("Owner"));
             if (player != null) {
@@ -110,6 +114,17 @@ public final class RockSilkLine extends Entity {
             return;
         }
         var data = entityData.get(GEOMETRY);
+        if (data.hasUUID("Courier")) {
+            Entity courier = level.getEntity(data.getUUID("Courier"));
+            if (level.getGameTime() >= data.getLong("RelayDeadline")) {
+                recover(null);
+            } else if (courier != null && tickCount % 3 == 0) {
+                var updated = data.copy();
+                writeTip(updated, courier);
+                entityData.set(GEOMETRY, updated);
+            }
+            return;
+        }
         ServerPlayer owner = level.getServer().getPlayerList().getPlayer(data.getUUID("Owner"));
         boolean sameLevel = owner != null && owner.level() == level && owner.isAlive();
         double releaseDistance = RockSilkPath.REACH + 1;
@@ -127,6 +142,44 @@ public final class RockSilkLine extends Entity {
 
     private boolean invalidSupport(RockSilkPath.Pin pin) {
         return level().hasChunkAt(pin.block()) && !RockSilkPath.supports(level(), pin);
+    }
+
+    boolean relayedBy(UUID courier) {
+        var data = entityData.get(GEOMETRY);
+        return data.hasUUID("Courier") && data.getUUID("Courier").equals(courier);
+    }
+
+    boolean startRelay(ServerPlayer owner, ItemStack stack, Entity courier, int cost, long deadline) {
+        if (!pending() || !ownedBy(owner) || !heldBy(owner) || !SilkLauncher.spend(stack, cost - 1)) {
+            return false;
+        }
+        var data = entityData.get(GEOMETRY).copy();
+        data.putUUID("Courier", courier.getUUID());
+        data.putLong("RelayDeadline", deadline);
+        writeTip(data, courier);
+        entityData.set(GEOMETRY, data);
+        paidSpools = cost;
+        SilkLauncher.clear(stack);
+        return true;
+    }
+
+    private static void writeTip(CompoundTag data, Entity courier) {
+        data.putDouble("TipX", courier.getX());
+        data.putDouble("TipY", courier.getY() + .11);
+        data.putDouble("TipZ", courier.getZ());
+    }
+
+    void finishRelay(RockSilkPath.Pin second) {
+        var data = entityData.get(GEOMETRY).copy();
+        data.remove("Owner");
+        data.remove("Courier");
+        data.remove("RelayDeadline");
+        data.remove("TipX");
+        data.remove("TipY");
+        data.remove("TipZ");
+        data.put("Second", second.save());
+        entityData.set(GEOMETRY, data);
+        playSound(SoundEvents.CHAIN_PLACE, .8F, 1.2F);
     }
 
     boolean connect(Player player, ItemStack stack, RockSilkPath.Pin second, int cost) {

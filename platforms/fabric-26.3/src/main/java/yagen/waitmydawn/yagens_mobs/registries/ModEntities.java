@@ -44,7 +44,7 @@ public final class ModEntities {
 
     public static final Supplier<EntityType<RockSilkLine>> ROCK_SILK_LINE = entity(
             "rock_silk_line", id -> EntityType.Builder.<RockSilkLine>of(RockSilkLine::new, MobCategory.MISC)
-                    .sized(0.28F, 0.28F).clientTrackingRange(16).updateInterval(20).fireImmune().build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+                    .sized(0.28F, 0.28F).clientTrackingRange(32).updateInterval(20).fireImmune().build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
     public static final Supplier<EntityType<RockSilkGrip>> ROCK_SILK_GRIP = entity(
             "rock_silk_grip", id -> EntityType.Builder.<RockSilkGrip>of(RockSilkGrip::new, MobCategory.MISC)

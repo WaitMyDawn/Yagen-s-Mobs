@@ -2,6 +2,8 @@
 
 Adds new creatures and encounters to Minecraft.
 
+See the [bilingual gameplay guide](GamePlay.md) for creature behavior, controls, recipes, and configuration.
+
 ## Installation
 
 Install the JAR in the `mods` directory on the client and server.
@@ -100,6 +102,13 @@ The stamina bar appears in the experience bar's place. Sprinting requires at lea
 
 The rear camera pulls back as you gain speed in vanilla third person and in the free and fixed views from Ninjas Free Play. Set `velocipodMaxCameraPullback` in `config/yagens_mobs/yagens_mobs-client.toml` to choose the maximum extra distance. The default is 4 blocks. Use 0 to disable the effect.
 
+## More creatures
+
+| Creature | Description |
+| --- | --- |
+| Lumen Butterfly | A tameable butterfly that stores experience and grants abilities based on its color. |
+| Salvage Ray | A ray from the outer End islands that retrieves falling items and carries players between nest boxes. |
+
 ## Server configuration
 
 Edit `config/yagens_mobs/yagens_mobs-server.toml`. To override the instance settings for one world, place the file under that world's `serverconfig/yagens_mobs/` directory. Restart the server or reopen the singleplayer world to apply spawn changes.
@@ -125,6 +134,10 @@ Rock Hangers, Bubble Salamanders, and Velocipods each have their own `enabled`, 
 | `[spawns.velocipod]` | 6 | 1–2 |
 
 `minimumAirBelow` under `[spawns.rock_hanger]` sets the required clearance beneath a ceiling. It defaults to 16 blocks and also applies to ceiling placement with spawn eggs and reattachment.
+
+## Changelog
+
+See the [version history](docs/changelog/).
 
 ## License
 
