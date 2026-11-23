@@ -7,6 +7,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
@@ -31,6 +32,7 @@ public final class YagensMobs {
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfigs.SPEC, ModIdentity.CLIENT_CONFIG);
         container.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, ModIdentity.SERVER_CONFIG);
         ModEntities.register(modBus);
+        LumenButterflies.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModSounds.register(modBus);

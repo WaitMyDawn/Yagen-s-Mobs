@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "yagen.waitmydawn.yagens_mobs.butterfly.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "LumenOrbAccess",
+    "LumenLivingEntity",
+    "LumenWitherRose",
+    "LumenRegenerationClock",
+    "LumenLootCache",
+    "LumenFortune",
+    "LumenLootingFunction",
+    "LumenLootingCondition",
+    "LumenFurnace",
+    "LumenBrewing"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -32,7 +32,7 @@ minecraft {
 
 tasks.named('jar') {
     destinationDirectory = layout.buildDirectory.dir('devlibs')
-    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json'
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json'
     finalizedBy 'reobfJar'
 }
 
@@ -47,7 +47,9 @@ repositories {
 dependencies { implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artifact}") }
 
 tasks.named('processResources') {
-    from('../neoforge-1.21.1/src/main/resources') { include 'assets/**' }
+    from('../neoforge-1.21.1/src/main/resources') {
+        include 'assets/**'
+    }
 }
 
 jarJar.enable()
@@ -61,11 +63,12 @@ dependencies {
 mixin {
     add sourceSets.main, 'yagens_mobs.refmap.json'
     config 'yagens_mobs.mixins.json'
+    config 'yagens_mobs.lumen_butterfly.mixins.json'
 }
 tasks.named('jarJar') {
     archiveClassifier = ''
     from file('../../LICENSE.md')
-    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json'
+    manifest.attributes 'MixinConfigs': 'yagens_mobs.mixins.json,yagens_mobs.lumen_butterfly.mixins.json'
     finalizedBy 'reobfJarJar'
 }
 tasks.named('build') { dependsOn 'jarJar' }

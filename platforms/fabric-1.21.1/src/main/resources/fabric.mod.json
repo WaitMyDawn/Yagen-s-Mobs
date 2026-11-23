@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "${mod_id}",
   "name": "${mod_name}",
+  "icon": "assets/yagens_mobs/icon.png",
   "version": "${mod_version}",
   "description": "${mod_description}",
   "authors": [
@@ -25,7 +26,8 @@
     "geckolib": ">=${geckolib_version} <5"
   },
   "mixins": [
-    "yagens_mobs.mixins.json"
+    "yagens_mobs.mixins.json",
+    "yagens_mobs.lumen_butterfly.mixins.json"
   ],
   "accessWidener": "yagens_mobs.accesswidener"
 }

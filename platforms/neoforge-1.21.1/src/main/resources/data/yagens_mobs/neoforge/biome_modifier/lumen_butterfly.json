@@ -1,0 +1,6 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#yagens_mobs:lumen_butterfly_habitat",
+  "entity": "yagens_mobs:lumen_butterfly",
+  "weight_factor": 1.0
+}

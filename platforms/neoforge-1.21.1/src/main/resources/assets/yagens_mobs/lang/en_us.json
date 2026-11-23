@@ -1,4 +1,11 @@
 {
+  "message.yagens_mobs.lumen_debt": "Paid %s XP. Remaining debt %s XP.",
+  "entity.yagens_mobs.lumen_butterfly": "Lumen Butterfly",
+  "item.yagens_mobs.lumen_butterfly_spawn_egg": "Lumen Butterfly Spawn Egg",
+  "message.yagens_mobs.lumen_wait": "The butterfly is waiting here.",
+  "message.yagens_mobs.lumen_follow": "The butterfly is following you.",
+  "message.yagens_mobs.lumen_full": "Seven butterflies are already following you.",
+  "message.yagens_mobs.lumen_withdraw": "Recovered %s XP from the butterfly.",
   "item.yagens_mobs.condroc_flight_feather": "Condroc Flight Feather",
   "item.yagens_mobs.mail_bag": "Mailbag",
   "item.yagens_mobs.mail_bag.bound": "Home: %s (%s, %s, %s)",

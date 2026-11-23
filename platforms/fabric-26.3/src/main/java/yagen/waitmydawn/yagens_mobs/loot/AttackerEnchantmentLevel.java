@@ -11,6 +11,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenLootContext;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 
 public record AttackerEnchantmentLevel(Holder<Enchantment> enchantment) implements ContextIntProvider,
@@ -26,7 +27,7 @@ public record AttackerEnchantmentLevel(Holder<Enchantment> enchantment) implemen
     @Override
     public int getIntUnsafe(LootContext context) {
         return context.getOptional(LootContextParams.ATTACKING_ENTITY) instanceof LivingEntity attacker
-                ? EnchantmentHelper.getEnchantmentLevel(enchantment, attacker)
+                ? EnchantmentHelper.getEnchantmentLevel(enchantment, attacker) + LumenLootContext.looting(context, enchantment)
                 : 0;
     }
 

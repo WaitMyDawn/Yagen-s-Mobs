@@ -15,6 +15,7 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenLootContext;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 
 public record AttackerEnchantmentLevel(Holder<Enchantment> enchantment) implements NumberProvider {
@@ -37,7 +38,7 @@ public record AttackerEnchantmentLevel(Holder<Enchantment> enchantment) implemen
     @Override
     public int getInt(LootContext context) {
         return context.getParamOrNull(LootContextParams.ATTACKING_ENTITY) instanceof LivingEntity attacker
-                ? EnchantmentHelper.getEnchantmentLevel(enchantment, attacker)
+                ? EnchantmentHelper.getEnchantmentLevel(enchantment, attacker) + LumenLootContext.looting(context, enchantment)
                 : 0;
     }
 

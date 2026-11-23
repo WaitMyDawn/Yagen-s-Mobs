@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionResultHolder;
 import yagen.waitmydawn.yagens_mobs.entity.RockHangerSilkInteraction;
 import yagen.waitmydawn.yagens_mobs.silk.RockSilkInteractions;
 
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderWear;
@@ -41,6 +42,7 @@ public final class YagensMobs implements ModInitializer {
         ModEntities.register();
         ModBlocks.register();
         ModItems.register();
+        LumenButterflies.register();
         ModSounds.register();
         MailBagMenu.register();
         LauncherMenu.register();

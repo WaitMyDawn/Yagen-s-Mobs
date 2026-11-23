@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.butterfly.client.LumenRenderer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -34,6 +35,7 @@ import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
 public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        LumenRenderer.register();
         ClientConfigs.reload();
         MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
         MenuScreens.register(LauncherMenu.TYPE.get(), LauncherScreen::new);

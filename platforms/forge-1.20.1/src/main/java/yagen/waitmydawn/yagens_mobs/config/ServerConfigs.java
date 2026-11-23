@@ -17,6 +17,7 @@ public final class ServerConfigs {
     public static final Spawns ROCK_HANGER = spawns(SpawnDefaults.ROCK_HANGER);
     public static final Spawns BUBBLE_SALAMANDER = spawns(SpawnDefaults.BUBBLE_SALAMANDER);
     public static final Spawns VELOCIPOD = spawns(SpawnDefaults.VELOCIPOD);
+    public static final Spawns LUMEN_BUTTERFLY = spawns(SpawnDefaults.LUMEN_BUTTERFLY);
     public static final ForgeConfigSpec.IntValue ROCK_HANGER_CEILING_CLEARANCE = BUILDER
             .comment("Minimum uninterrupted clearance measured from the ceiling for natural spawns, spawn eggs, and reattachment.")
             .defineInRange("spawns.rock_hanger.minimumAirBelow", SpawnDefaults.ROCK_HANGER_CEILING_CLEARANCE, 16, 256);

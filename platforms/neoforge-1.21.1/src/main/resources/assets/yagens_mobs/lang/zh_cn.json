@@ -1,4 +1,11 @@
 {
+  "message.yagens_mobs.lumen_debt": "偿还了 %s 点经验，还欠 %s 点。",
+  "entity.yagens_mobs.lumen_butterfly": "蓄辉蝶",
+  "item.yagens_mobs.lumen_butterfly_spawn_egg": "蓄辉蝶刷怪蛋",
+  "message.yagens_mobs.lumen_wait": "蓄辉蝶正在原地等待。",
+  "message.yagens_mobs.lumen_follow": "蓄辉蝶开始跟随你。",
+  "message.yagens_mobs.lumen_full": "已有七只蓄辉蝶跟随你。",
+  "message.yagens_mobs.lumen_withdraw": "已从蓄辉蝶取回 %s 点经验。",
   "item.yagens_mobs.condroc_flight_feather": "秃鹫长羽",
   "item.yagens_mobs.mail_bag": "邮袋",
   "item.yagens_mobs.mail_bag.bound": "已绑定 %s（%s，%s，%s）",

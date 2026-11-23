@@ -14,6 +14,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.SpawnEggItem;
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderBucket;
 import yagen.waitmydawn.yagens_mobs.entity.RockHangerSpawnEgg;
@@ -50,6 +51,9 @@ public final class ModItems {
             () -> new SpawnEggItem(ModEntities.BUBBLE_SALAMANDER.get(), 0x1E5054, 0x87C69B, new Item.Properties()));
     public static final Supplier<SpawnEggItem> VELOCIPOD_SPAWN_EGG = item("velocipod_spawn_egg",
             () -> new SpawnEggItem(ModEntities.VELOCIPOD.get(), 0x574659, 0x76A59A, new Item.Properties()));
+    public static final Supplier<SpawnEggItem> LUMEN_BUTTERFLY_SPAWN_EGG = item("lumen_butterfly_spawn_egg",
+            () -> new SpawnEggItem(LumenButterflies.TYPE.get(), 0x80542F, 0xEBDD76, new Item.Properties()));
+
     private ModItems() {
     }
 

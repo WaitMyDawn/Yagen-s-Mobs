@@ -7,6 +7,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
@@ -32,6 +33,7 @@ public final class YagensMobs {
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfigs.SPEC, ModIdentity.CLIENT_CONFIG);
         container.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, ModIdentity.SERVER_CONFIG);
         ModEntities.register(modBus);
+        LumenButterflies.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModSounds.register(modBus);
