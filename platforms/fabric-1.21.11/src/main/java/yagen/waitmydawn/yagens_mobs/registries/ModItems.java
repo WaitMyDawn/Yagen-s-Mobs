@@ -17,6 +17,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.block.Block;
 import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderBucket;
@@ -34,7 +35,7 @@ public final class ModItems {
             new Item.Properties().food(new FoodProperties.Builder().nutrition(12).saturationModifier(0.5F).build()));
     public static final Supplier<SpawnEggItem> DESERT_SKATE_SPAWN_EGG = item("desert_skate_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.DESERT_SKATE.get())));
-    public static final Supplier<BlockItem> VULTURE_POST = item("vulture_post", properties -> new BlockItem(ModBlocks.VULTURE_POST.get(), properties));
+    public static final Supplier<BlockItem> VULTURE_POST = blockItem("vulture_post", ModBlocks.VULTURE_POST.get());
     public static final Supplier<CargoTongs> CARGO_TONGS = item("cargo_tongs",
             properties -> new CargoTongs(properties.stacksTo(1)));
     public static final Supplier<Item> CONDROC_FLIGHT_FEATHER = item("condroc_flight_feather", Item::new);
@@ -65,6 +66,10 @@ public final class ModItems {
         T item = Registry.register(BuiltInRegistries.ITEM, id, factory.apply(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
         ENTRIES.add(item);
         return () -> item;
+    }
+
+    public static Supplier<BlockItem> blockItem(String name, Block block) {
+        return item(name, properties -> new BlockItem(block, properties.useBlockDescriptionPrefix()));
     }
 
     private static Supplier<Item> food(String name, Item.Properties properties) {

@@ -14,6 +14,15 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
+                name = 'JEI'
+                url = providers.gradleProperty('jeiRepository').orElse('https://maven.blamejared.com').get()
+            }
+        }
+        filter { includeGroup('mezz.jei') }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
                 name = 'GeckoLib'
                 url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
             }
@@ -24,6 +33,11 @@ repositories {
 
 dependencies {
     implementation "net.neoforged:neoforge:${loader_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    if (providers.gradleProperty('withJei').isPresent()) {
+        runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
+    }
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 }
 

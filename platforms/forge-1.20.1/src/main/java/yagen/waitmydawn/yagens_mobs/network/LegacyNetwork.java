@@ -20,6 +20,8 @@ import yagen.waitmydawn.yagens_mobs.silk.RockSilkPackets;
 import yagen.waitmydawn.yagens_mobs.salvage.SalvageRoutes;
 import yagen.waitmydawn.yagens_mobs.salvage.SalvageClient;
 import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
+import yagen.waitmydawn.yagens_mobs.weasel.WeaselPackets;
+import yagen.waitmydawn.yagens_mobs.weasel.client.WeaselClient;
 
 public final class LegacyNetwork {
     private static final String VERSION = "1";
@@ -29,6 +31,13 @@ public final class LegacyNetwork {
     private LegacyNetwork() {}
 
     public static void register() {
+        toServer(9, WeaselPackets.Request.class, (msg, buf) -> buf.writeNbt(msg.tag()),
+                buf -> new WeaselPackets.Request(buf.readNbt()), WeaselPackets::handle);
+        CHANNEL.messageBuilder(WeaselPackets.Opening.class, 10, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((msg, buf) -> buf.writeNbt(msg.tag()))
+                .decoder(buf -> new WeaselPackets.Opening(buf.readNbt()))
+                .consumerMainThread((msg, ctx) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        () -> () -> WeaselClient.open(msg.tag()))).add();
         toServer(0, StationPackets.Request.class, (msg, buf) -> buf.writeNbt(msg.data()),
                 buf -> new StationPackets.Request(buf.readNbt()), StationPackets::handleRequest);
         toServer(1, RockSilkPackets.Grab.class, (msg, buf) -> {

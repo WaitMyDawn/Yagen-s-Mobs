@@ -43,12 +43,14 @@ public final class StationPackets {
         if (station == null) {
             return;
         }
-        boolean owner = station.owner().equals(player.getUUID());
+        boolean owner = station.isOwnedBy(player);
         int page = nbt.getIntOr("Page", 0);
         switch (nbt.getStringOr("Action", "")) {
             case "configure" -> {
                 if (owner) {
-                    data.configure(station, nbt.getStringOr("Name", ""), nbt.getBooleanOr("Public", false), nbt.getBooleanOr("Return", false));
+                    data.configure(station, nbt.getStringOr("Name", station.name()),
+                            nbt.getBooleanOr("Public", station.publicListing()),
+                            nbt.getBooleanOr("Return", station.returnBirds()));
                 }
             }
             case "deploy" -> {
@@ -110,7 +112,7 @@ public final class StationPackets {
         int cargo = data.cargoCount(source);
         int birds = data.perchedBirds(level, source).size();
         int fuel = data.fuel(source);
-        boolean owner = player.getUUID().equals(source.owner());
+        boolean owner = source.isOwnedBy(player);
         var result = new CompoundTag();
         result.putLong("Origin", origin.asLong());
         result.putBoolean("Open", openScreen);
@@ -132,7 +134,7 @@ public final class StationPackets {
             int cost = StationData.shippingCost(source, other, cargo);
             entry.putLong("Pos", other.anchor().asLong());
             entry.putString("Name", other.name());
-            entry.putBoolean("Yours", other.owner().equals(player.getUUID()));
+            entry.putBoolean("Yours", other.isOwnedBy(player));
             entry.putInt("Distance", (int) Math.round(source.center().distanceTo(other.center())));
             var direction = other.center().subtract(source.center());
             entry.putInt("Direction", Math.floorMod((int) Math.round(Math.atan2(direction.x, direction.z) / (Math.PI / 4.0)), 8));

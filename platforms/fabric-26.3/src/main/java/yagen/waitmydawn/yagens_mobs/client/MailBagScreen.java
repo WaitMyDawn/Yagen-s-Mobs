@@ -44,8 +44,8 @@ final class MailBagScreen extends AbstractContainerScreen<MailBagMenu> {
         Component heading = destination == null ? title
                 : Component.translatable("screen.yagens_mobs.mail_bag.bound_title", destination);
         graphics.text(font, font.plainSubstrByWidth(heading.getString(), titleWidth() - titleLabelX),
-                titleLabelX, titleLabelY, 0x404040, false);
-        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0x404040, false);
+                titleLabelX, titleLabelY, 0xFF404040, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFF404040, false);
     }
 
     private int titleWidth() {

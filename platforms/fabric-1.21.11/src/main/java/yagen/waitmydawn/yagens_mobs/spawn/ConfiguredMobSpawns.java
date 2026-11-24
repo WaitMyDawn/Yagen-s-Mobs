@@ -42,6 +42,8 @@ public final class ConfiguredMobSpawns {
         add("velocipod", tagged("velocipod_habitat"), ModEntities.VELOCIPOD.get(), ServerConfigs.VELOCIPOD, 1);
         add("lumen_butterfly", tagged("lumen_butterfly_habitat"), LumenButterflies.TYPE.get(),
                 ServerConfigs.LUMEN_BUTTERFLY, 1);
+        add("snowcache_weasel", tagged("snowcache_weasel_spawns"),
+                yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels.TYPE.get(), ServerConfigs.SNOWCACHE_WEASEL, 1);
     }
 
     private static Predicate<BiomeSelectionContext> tagged(String name) {

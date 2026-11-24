@@ -108,6 +108,7 @@ The rear camera pulls back as you gain speed in vanilla third person and in the 
 | --- | --- |
 | Lumen Butterfly | A tameable butterfly that stores experience and grants abilities based on its color. |
 | Salvage Ray | A ray from the outer End islands that retrieves falling items and carries players between nest boxes. |
+| Snowcache Weasel | A tameable snow weasel that sorts chests and gathers materials from JEI recipe blueprints. |
 
 ## Server configuration
 
@@ -132,6 +133,7 @@ Rock Hangers, Bubble Salamanders, and Velocipods each have their own `enabled`, 
 | `[spawns.rock_hanger]` | 10 | 1 |
 | `[spawns.bubble_salamander]` | 5 | 1–2 |
 | `[spawns.velocipod]` | 6 | 1–2 |
+| `[spawns.snowcache_weasel]` | 6 | 1–2 |
 
 `minimumAirBelow` under `[spawns.rock_hanger]` sets the required clearance beneath a ceiling. It defaults to 16 blocks and also applies to ceiling placement with spawn eggs and reattachment.
 

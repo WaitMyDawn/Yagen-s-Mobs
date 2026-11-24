@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "D P",
+    "PIP",
+    "P P"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "I": {
+      "item": "minecraft:ink_sac"
+    },
+    "D": {
+      "item": "minecraft:light_blue_dye"
+    }
+  },
+  "result": {
+    "count": 1,
+    "item": "yagens_mobs:recipe_blueprint"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "jei"
+    }
+  ]
+}

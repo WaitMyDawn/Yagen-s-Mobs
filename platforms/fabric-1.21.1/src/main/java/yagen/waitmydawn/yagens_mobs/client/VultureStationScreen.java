@@ -8,12 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
 
 public final class VultureStationScreen extends Screen {
@@ -21,9 +23,7 @@ public final class VultureStationScreen extends Screen {
     private final long origin;
     private CompoundTag data;
     @Nullable private EditBox name;
-    private boolean forwardHome;
-    private boolean publicListing;
-    private boolean editing;
+    @Nullable private PlainTextButton titleButton;
     private int refreshTicks;
     private int panelLeft;
     private int panelTop;
@@ -33,8 +33,6 @@ public final class VultureStationScreen extends Screen {
         super(tr("title"));
         origin = snapshot.getLong("Origin");
         data = snapshot;
-        forwardHome = data.getBoolean("Return");
-        publicListing = data.getBoolean("Public");
     }
 
     public static void accept(StationPackets.Snapshot payload) {
@@ -54,26 +52,15 @@ public final class VultureStationScreen extends Screen {
         if (snapshot.equals(previous)) {
             return;
         }
-        String draft = editing && name != null ? name.getValue() : snapshot.getString("Name");
-        boolean focused = name != null && name.isFocused();
         data = snapshot;
-        if (!editing) {
-            forwardHome = data.getBoolean("Return");
-            publicListing = data.getBoolean("Public");
-        }
         rebuildWidgets();
-        if (name != null) {
-            name.setResponder(value -> {});
-            name.setValue(draft);
-            name.setResponder(value -> editing = true);
-            if (focused) {
-                setFocused(name);
-            }
-        }
     }
 
     @Override
     protected void init() {
+        EditBox previousEditor = name;
+        name = null;
+        titleButton = null;
         panelWidth = Math.min(width - 16, 424);
         panelLeft = (width - panelWidth) / 2;
         panelTop = Math.max(8, (height - 220) / 2);
@@ -84,24 +71,27 @@ public final class VultureStationScreen extends Screen {
                 button(tr("take_mail", data.getInt("Mail")), panelLeft + panelWidth - 120, panelTop + 5, 111,
                         ignored -> send(request("take_mail", data.getInt("Page"))));
             }
-            name = addRenderableWidget(new EditBox(font, x, y, panelWidth - 87, 20, tr("name")));
-            name.setMaxLength(40);
-            name.setHint(tr("name"));
-            name.setValue(data.getString("Name"));
-            name.setResponder(value -> editing = true);
-            button(tr("save"), panelLeft + panelWidth - 73, y, 64, ignored -> saveSettings());
-            y += 23;
+            var title = Component.literal(visibleTitle());
+            titleButton = addRenderableWidget(new PlainTextButton(x + 1, panelTop + 10,
+                    Math.max(8, font.width(title)), font.lineHeight + 2, title, ignored -> editName(data.getString("Name")), font) {
+                @Override
+                public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+                    int color = isHoveredOrFocused() ? 0xFFFFC986 : 0xFFF5E7D2;
+                    graphics.drawString(VultureStationScreen.this.font, getMessage(), getX(), getY(), color, false);
+                }
+            });
+            titleButton.setTooltip(Tooltip.create(tr("rename")));
+            if (previousEditor != null) {
+                editName(previousEditor.getValue());
+                name.setCursorPosition(previousEditor.getCursorPosition());
+            }
+            boolean publicListing = data.getBoolean("Public");
+            boolean forwardHome = data.getBoolean("Return");
             int half = (panelWidth - 21) / 2;
-            button(tr(publicListing ? "public" : "private"), x, y, half, which -> {
-                publicListing = !publicListing;
-                editing = true;
-                which.setMessage(tr(publicListing ? "public" : "private"));
-            });
-            button(tr(forwardHome ? "return" : "stay"), x + half + 3, y, half, which -> {
-                forwardHome = !forwardHome;
-                editing = true;
-                which.setMessage(tr(forwardHome ? "return" : "stay"));
-            });
+            button(tr(publicListing ? "public" : "private"), x, y, half,
+                    ignored -> setOption("Public", !publicListing));
+            button(tr(forwardHome ? "return" : "stay"), x + half + 3, y, half,
+                    ignored -> setOption("Return", !forwardHome));
             y += 24;
         }
         for (Tag value : data.getList("Rows", Tag.TAG_COMPOUND)) {
@@ -151,15 +141,65 @@ public final class VultureStationScreen extends Screen {
         }
     }
 
-    private void saveSettings() {
-        if (name != null) {
-            var values = request("configure", data.getInt("Page"));
-            values.putString("Name", name.getValue());
-            values.putBoolean("Public", publicListing);
-            values.putBoolean("Return", forwardHome);
-            editing = false;
-            send(values);
+    private int titleWidth() {
+        return panelWidth - (data.getInt("Mail") > 0 ? 135 : 20);
+    }
+
+    private String visibleTitle() {
+        return font.plainSubstrByWidth(nameOf(data).getString(), titleWidth());
+    }
+
+    private void editName(String value) {
+        if (name != null || titleButton == null) {
+            return;
         }
+        titleButton.visible = false;
+        name = addRenderableWidget(new EditBox(font, panelLeft + 9, panelTop + 5, titleWidth(), 19, tr("name")));
+        name.setMaxLength(40);
+        name.setHint(tr("name"));
+        name.setValue(value);
+        setInitialFocus(name);
+    }
+
+    private void endRename() {
+        removeWidget(name);
+        name = null;
+        titleButton.visible = true;
+        setInitialFocus(titleButton);
+    }
+
+    private void setOption(String option, boolean enabled) {
+        var values = request("configure", data.getInt("Page"));
+        values.putBoolean(option, enabled);
+        send(values);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean wasEditing = name != null;
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+        if (!wasEditing && name != null) {
+            setInitialFocus(name);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean keyPressed(int key, int scan, int modifiers) {
+        if (name != null) {
+            if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
+                var values = request("configure", data.getInt("Page"));
+                values.putString("Name", name.getValue());
+                endRename();
+                send(values);
+                return true;
+            }
+            if (key == GLFW.GLFW_KEY_ESCAPE) {
+                endRename();
+                return true;
+            }
+        }
+        return super.keyPressed(key, scan, modifiers);
     }
 
     @Override
@@ -174,9 +214,9 @@ public final class VultureStationScreen extends Screen {
         super.renderBackground(graphics, mouseX, mouseY, delta);
         graphics.fill(panelLeft, panelTop, panelLeft + panelWidth, Math.min(height - 3, panelTop + 236), 0xE92D241D);
         graphics.fill(panelLeft, panelTop, panelLeft + panelWidth, panelTop + 2, 0xFFD18856);
-        int titleWidth = panelWidth - (data.getInt("Mail") > 0 ? 135 : 20);
-        graphics.drawString(font, font.plainSubstrByWidth(nameOf(data).getString(), titleWidth),
-                panelLeft + 10, panelTop + 10, 0xFFF5E7D2);
+        if (titleButton == null) {
+            graphics.drawString(font, visibleTitle(), panelLeft + 10, panelTop + 10, 0xFFF5E7D2, false);
+        }
         graphics.drawString(font, tr("summary", data.getInt("Cargo"), data.getInt("Birds"), data.getInt("Fuel"), data.getInt("FuelCapacity")),
                 panelLeft + 10, panelTop + 26, 0xFFDFC4AA);
         if (data.getList("Rows", Tag.TAG_COMPOUND).isEmpty()) {

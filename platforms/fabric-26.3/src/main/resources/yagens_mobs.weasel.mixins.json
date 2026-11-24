@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_25",
+  "package": "yagen.waitmydawn.yagens_mobs.weasel.mixin",
+  "mixins": [
+    "WeaselShoulder",
+    "WeaselChestChanges"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "WeaselInventoryPosition"
+  ]
+}

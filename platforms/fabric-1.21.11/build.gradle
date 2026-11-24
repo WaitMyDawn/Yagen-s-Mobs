@@ -46,11 +46,27 @@ dependencies { modImplementation "maven.modrinth:geckolib:${geckolib_artifact}" 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
         include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'
         includeEmptyDirs = false
         eachFile { asset ->
             asset.path = asset.path.replaceFirst('^assets/yagens_mobs/geo/', 'assets/yagens_mobs/geckolib/models/')
                     .replaceFirst('^assets/yagens_mobs/animations/', 'assets/yagens_mobs/geckolib/animations/')
         }
+    }
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('jeiRepository').orElse('https://maven.blamejared.com').get() }
+        }
+        filter { includeGroup('mezz.jei') }
+    }
+}
+dependencies {
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
+    if (providers.gradleProperty('withJei').isPresent()) {
+        modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
     }
 }

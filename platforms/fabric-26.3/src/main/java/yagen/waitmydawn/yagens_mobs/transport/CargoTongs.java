@@ -43,7 +43,7 @@ public final class CargoTongs extends Item {
             BlockState state = level.getBlockState(point);
             if (state.getBlock() instanceof VulturePostBlock && !state.getValue(VulturePostBlock.UPPER)) {
                 var station = StationData.get(level).station(point);
-                if (station != null && station.owner().equals(player.getUUID())) {
+                if (station != null && station.isOwnedBy(player)) {
                     onStation(level, player, held, station, point);
                 }
                 return InteractionResult.CONSUME;

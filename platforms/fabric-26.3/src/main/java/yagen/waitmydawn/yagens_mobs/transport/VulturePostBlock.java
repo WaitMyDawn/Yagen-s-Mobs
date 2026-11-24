@@ -166,17 +166,17 @@ public final class VulturePostBlock extends BaseEntityBlock {
             }
             if (stack.getItem() instanceof MailBag bag) {
                 bag.onStation(server, user, hand, stack, lower);
-            } else if (stack.is(Items.ROTTEN_FLESH) && !user.isShiftKeyDown() && station.owner().equals(user.getUUID())) {
+            } else if (stack.is(Items.ROTTEN_FLESH) && !user.isShiftKeyDown() && station.isOwnedBy(user)) {
                 int moved = data.addFuel(station, stack.getCount());
                 stack.consume(moved, user);
                 user.sendOverlayMessage(Component.translatable("message.yagens_mobs.station_fuel", data.fuel(station)));
             } else if (upper) {
                 StationPackets.open(user, lower);
-            } else if (station.owner().equals(user.getUUID()) && stack.getItem() instanceof CargoTongs tongs) {
+            } else if (station.isOwnedBy(user) && stack.getItem() instanceof CargoTongs tongs) {
                 tongs.onStation(server, user, stack, station, lower);
             } else if (user.isShiftKeyDown()) {
                 takeOrdinary(server, lower, user);
-            } else if (station.owner().equals(user.getUUID()) && stack.getItem() instanceof BlockItem block) {
+            } else if (station.isOwnedBy(user) && stack.getItem() instanceof BlockItem block) {
                 var destination = block.getBlock().defaultBlockState();
                 if (destination.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
                     destination = destination.setValue(BlockStateProperties.HORIZONTAL_FACING, player.getDirection().getOpposite());
@@ -198,7 +198,7 @@ public final class VulturePostBlock extends BaseEntityBlock {
         var data = StationData.get(level);
         var station = data.station(pos);
         var cargo = data.cargo(pos);
-        if (station == null || cargo == null || !station.owner().equals(player.getUUID())) {
+        if (station == null || cargo == null || !station.isOwnedBy(player)) {
             return;
         }
         ItemStack restored = cargo.toItem();

@@ -36,6 +36,7 @@ public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LumenRenderer.register();
+        yagen.waitmydawn.yagens_mobs.weasel.client.WeaselClient.register();
         yagen.waitmydawn.yagens_mobs.salvage.SalvageClient.register();
         ClientConfigs.reload();
         MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);

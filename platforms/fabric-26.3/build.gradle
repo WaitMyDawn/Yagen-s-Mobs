@@ -1,4 +1,5 @@
 plugins {
+    id 'idea'
     id 'net.fabricmc.fabric-loom' version '1.17.21'
 }
 
@@ -45,6 +46,7 @@ dependencies { implementation "maven.modrinth:geckolib:${geckolib_artifact}" }
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
         include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'
         includeEmptyDirs = false
         eachFile { asset ->
@@ -59,3 +61,33 @@ tasks.named('processResources') {
         include 'assets/**'
     }
 }
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('jeiRepository').orElse('https://maven.blamejared.com').get() }
+        }
+        filter {
+            includeGroup('mezz.jei')
+            includeModule('net.mezzdev.config', 'mezz_config-26.3-fabric')
+        }
+    }
+}
+dependencies {
+    compileOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
+    if (providers.gradleProperty('withJei').isPresent()) {
+        runtimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
+        runtimeOnly("net.mezzdev.config:mezz_config-26.3-fabric:${jei_config_version}") { transitive = false }
+    }
+}
+
+def modernWeaselJava = file('../fabric-1.21.11/src/main/java')
+def stagedWeasel = tasks.register('stageModernWeaselSources', Sync) {
+    from(modernWeaselJava) {
+        include 'yagen/waitmydawn/yagens_mobs/weasel/**/*.java'
+        exclude '**/SnowcacheWeasel.java', '**/WeaselPlatform.java', '**/weasel/client/**'
+    }
+    into layout.buildDirectory.dir('generated/sources/modern-weasel')
+}
+sourceSets.main.java.srcDir(stagedWeasel)
+idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/sources/modern-weasel').get().asFile

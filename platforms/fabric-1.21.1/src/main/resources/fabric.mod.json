@@ -14,6 +14,7 @@
     "main": [
       "yagen.waitmydawn.yagens_mobs.YagensMobs"
     ],
+    "jei_mod_plugin": ["yagen.waitmydawn.yagens_mobs.weasel.client.WeaselJei"],
     "client": [
       "yagen.waitmydawn.yagens_mobs.client.ClientSetup"
     ]
@@ -28,7 +29,8 @@
   "mixins": [
     "yagens_mobs.mixins.json",
     "yagens_mobs.lumen_butterfly.mixins.json",
-    "yagens_mobs.salvage.mixins.json"
+    "yagens_mobs.salvage.mixins.json",
+    "yagens_mobs.weasel.mixins.json"
   ],
   "accessWidener": "yagens_mobs.accesswidener"
 }

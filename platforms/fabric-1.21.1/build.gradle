@@ -1,4 +1,5 @@
 plugins {
+    id 'idea'
     id 'net.fabricmc.fabric-loom-remap' version '1.17.21'
 }
 
@@ -56,13 +57,30 @@ def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
     into layout.buildDirectory.dir('generated/reference/java')
 }
 sourceSets.main.java.srcDir(stageReferenceSources)
+idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/reference/java').get().asFile
 
 tasks.named('processResources') {
     from new File(reference, 'resources'), {
         include 'assets/**', 'data/**'
+        exclude 'data/yagens_mobs/recipe/recipe_blueprint.json'
         exclude '**/neoforge/**'
     }
 }
 loom {
     accessWidenerPath = file('src/main/resources/yagens_mobs.accesswidener')
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('jeiRepository').orElse('https://maven.blamejared.com').get() }
+        }
+        filter { includeGroup('mezz.jei') }
+    }
+}
+dependencies {
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
+    if (providers.gradleProperty('withJei').isPresent()) {
+        modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
+    }
 }

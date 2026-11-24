@@ -33,6 +33,7 @@ public final class YagensMobs {
         container.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, ModIdentity.SERVER_CONFIG);
         ModEntities.register(modBus);
         LumenButterflies.register(modBus);
+        yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels.register(modBus);
         yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);

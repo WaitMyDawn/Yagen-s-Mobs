@@ -19,6 +19,7 @@ import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
 import yagen.waitmydawn.yagens_mobs.salvage.SalvageRays;
+import yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels;
 import yagen.waitmydawn.yagens_mobs.silk.LauncherMenu;
 import yagen.waitmydawn.yagens_mobs.silk.RockSilkPackets;
 import yagen.waitmydawn.yagens_mobs.spawn.ConfiguredMobSpawns;
@@ -36,6 +37,7 @@ public final class YagensMobs {
         ModEntities.register(modBus);
         LumenButterflies.register(modBus);
         SalvageRays.register(modBus);
+        SnowcacheWeasels.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModSounds.register(modBus);

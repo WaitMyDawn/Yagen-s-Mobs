@@ -129,7 +129,7 @@ public final class MailBag extends Item {
     void onStation(ServerLevel level, ServerPlayer player, InteractionHand hand, ItemStack bag, BlockPos column) {
         var stations = StationData.get(level);
         var station = stations.station(column);
-        if (station == null || !station.owner().equals(player.getUUID())) {
+        if (station == null || !station.isOwnedBy(player)) {
             message(player, "own_station");
             return;
         }
@@ -185,7 +185,7 @@ public final class MailBag extends Item {
         var stations = StationData.get(level);
         BlockPos to = destination(level, stations, bag);
         var home = to == null ? null : stations.station(to);
-        if (home == null || !home.owner().equals(player.getUUID())) {
+        if (home == null || !home.isOwnedBy(player)) {
             message(player, "destination");
             return false;
         }

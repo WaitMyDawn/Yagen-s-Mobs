@@ -1,0 +1,5 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#yagens_mobs:snowcache_weasel_spawns",
+  "entity": "yagens_mobs:snowcache_weasel"
+}

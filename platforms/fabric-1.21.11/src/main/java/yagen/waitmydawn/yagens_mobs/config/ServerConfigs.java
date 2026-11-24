@@ -20,6 +20,7 @@ public final class ServerConfigs {
     public static final Spawns BUBBLE_SALAMANDER = spawns(SpawnDefaults.BUBBLE_SALAMANDER);
     public static final Spawns VELOCIPOD = spawns(SpawnDefaults.VELOCIPOD);
     public static final Spawns LUMEN_BUTTERFLY = spawns(SpawnDefaults.LUMEN_BUTTERFLY);
+    public static final Spawns SNOWCACHE_WEASEL = spawns(SpawnDefaults.SNOWCACHE_WEASEL);
     public static final Supplier<Integer> ROCK_HANGER_CEILING_CLEARANCE = register(FabricConfig.integer(
             "spawns.rock_hanger.minimumAirBelow", SpawnDefaults.ROCK_HANGER_CEILING_CLEARANCE, 16, 256,
             "Minimum uninterrupted clearance below the Rock Hanger's ceiling."));

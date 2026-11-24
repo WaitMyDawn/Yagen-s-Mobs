@@ -98,12 +98,12 @@ final class SalvageRouteScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor gui, int mouseX, int mouseY, float tick) {
         super.extractRenderState(gui, mouseX, mouseY, tick);
-        gui.centeredText(font, title, width / 2, height / 2 - 85, 0xf2e7fb);
+        gui.centeredText(font, title, width / 2, height / 2 - 85, 0xfff2e7fb);
         if (view.getListOrEmpty("Rows").isEmpty()) {
             gui.centeredText(font, Component.translatable("screen.yagens_mobs.salvage.no_links"),
-                    width / 2, height / 2 - 34, 0xd0b9db);
+                    width / 2, height / 2 - 34, 0xffd0b9db);
         }
-        gui.centeredText(font, (view.getIntOr("Page", 0) + 1) + " / " + view.getIntOr("Pages", 0), width / 2, height / 2 + 73, 0xf2e7fb);
+        gui.centeredText(font, (view.getIntOr("Page", 0) + 1) + " / " + view.getIntOr("Pages", 0), width / 2, height / 2 + 73, 0xfff2e7fb);
     }
 
     @Override

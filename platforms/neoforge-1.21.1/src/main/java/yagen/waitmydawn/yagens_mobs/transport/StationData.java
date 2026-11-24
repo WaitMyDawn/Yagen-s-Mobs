@@ -165,7 +165,7 @@ public final class StationData extends SavedData {
             }
             var station = station(key);
             seen.addAll(station.columns());
-            if (station.publicListing() || station.owner().equals(player.getUUID())) {
+            if (station.publicListing() || station.isOwnedBy(player)) {
                 result.add(station);
             }
         }
@@ -475,8 +475,8 @@ public final class StationData extends SavedData {
     }
 
     public boolean dispatch(ServerLevel level, ServerPlayer sender, Station origin, Station destination) {
-        if (!origin.owner().equals(sender.getUUID()) || origin.anchor().equals(destination.anchor())
-                || !destination.publicListing() && !destination.owner().equals(sender.getUUID())) {
+        if (!origin.isOwnedBy(sender) || origin.anchor().equals(destination.anchor())
+                || !destination.publicListing() && !destination.isOwnedBy(sender)) {
             return false;
         }
         var manifest = manifest(origin);
@@ -684,6 +684,13 @@ public final class StationData extends SavedData {
 
     public record Station(List<BlockPos> columns, UUID owner, String name, boolean publicListing, boolean returnBirds,
                           Direction.Axis axis) {
+        public boolean isOwnedBy(ServerPlayer player) {
+            var server = player.serverLevel().getServer();
+            // The private world host can manage stations placed under a previous local profile.
+            return owner.equals(player.getUUID())
+                    || (server.isSingleplayer() && !server.isPublished() && server.isSingleplayerOwner(player.getGameProfile()));
+        }
+
         public BlockPos anchor() {
             return columns.getFirst();
         }
