@@ -1,6 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
 import net.minecraft.core.registries.Registries;
+import yagen.waitmydawn.yagens_mobs.kavat.Kavat;
+import yagen.waitmydawn.yagens_mobs.kavat.KavatSpawns;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -53,6 +55,10 @@ public final class ModEntities {
             id -> EntityType.Builder.of(Velocipod::new, MobCategory.CREATURE)
                     .sized(1.24F, 1.73F).eyeHeight(1.40F).clientTrackingRange(10).updateInterval(1).build(id.toString()));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<Kavat>> KAVAT = TYPES.register("kavat",
+            id -> EntityType.Builder.of(Kavat::new, MobCategory.MONSTER).sized(.62F,.95F).eyeHeight(.69F).clientTrackingRange(10).build(id.toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<Kavat>> KAVAT_DECOY = TYPES.register("kavat_decoy",
+            id -> EntityType.Builder.of(Kavat::new, MobCategory.MISC).sized(.62F,.95F).noSave().noSummon().clientTrackingRange(10).build(id.toString()));
     private ModEntities() {
     }
 
@@ -63,6 +69,8 @@ public final class ModEntities {
     }
 
     private static void attributes(EntityAttributeCreationEvent event) {
+        event.put(KAVAT.get(), Kavat.attributes().build());
+        event.put(KAVAT_DECOY.get(), Kavat.attributes().build());
         event.put(BUBBLE_SALAMANDER.get(), BubbleSalamander.createAttributes().build());
         event.put(DESERT_SKATE.get(), DesertSkate.createAttributes().build());
         event.put(VULTURE.get(), Vulture.createAttributes().build());
@@ -71,6 +79,7 @@ public final class ModEntities {
     }
 
     private static void placements(RegisterSpawnPlacementsEvent event) {
+        event.register(KAVAT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, KavatSpawns::placement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(VELOCIPOD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Velocipod::checkSpawnPlacement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BUBBLE_SALAMANDER.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,

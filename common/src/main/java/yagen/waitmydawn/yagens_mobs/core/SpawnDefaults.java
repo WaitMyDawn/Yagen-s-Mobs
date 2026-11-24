@@ -7,7 +7,8 @@ public enum SpawnDefaults {
     BUBBLE_SALAMANDER("bubble_salamander", 5, 1, 2),
     VELOCIPOD("velocipod", 6, 1, 2),
     LUMEN_BUTTERFLY("lumen_butterfly", 8, 2, 4),
-    SNOWCACHE_WEASEL("snowcache_weasel", 6, 1, 2);
+    SNOWCACHE_WEASEL("snowcache_weasel", 6, 1, 2),
+    KAVAT("kavat", 10, 1, 4);
 
     public static final double DESERT_SKATE_JUVENILE_CHANCE = 0.25;
     public static final double CONDROC_JUVENILE_CHANCE = 0.20;

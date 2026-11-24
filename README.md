@@ -109,6 +109,7 @@ The rear camera pulls back as you gain speed in vanilla third person and in the 
 | Lumen Butterfly | A tameable butterfly that stores experience and grants abilities based on its color. |
 | Salvage Ray | A ray from the outer End islands that retrieves falling items and carries players between nest boxes. |
 | Snowcache Weasel | A tameable snow weasel that sorts chests and gathers materials from JEI recipe blueprints. |
+| Kavat (NeoForge 1.21.1) | Incubate a feline companion from genetic codes or traded imprints, inherit its breed ability, and revive it from its owner's memories. |
 
 ## Server configuration
 

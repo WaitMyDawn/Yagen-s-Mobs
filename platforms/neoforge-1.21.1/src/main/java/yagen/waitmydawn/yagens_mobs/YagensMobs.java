@@ -1,6 +1,9 @@
 package yagen.waitmydawn.yagens_mobs;
 
 import net.neoforged.bus.api.IEventBus;
+import yagen.waitmydawn.yagens_mobs.kavat.KavatCombat;
+import yagen.waitmydawn.yagens_mobs.kavat.KavatMemories;
+import yagen.waitmydawn.yagens_mobs.kavat.KavatSpawns;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -51,6 +54,11 @@ public final class YagensMobs {
         modBus.addListener(BubbleSalamanderWear::registerPayloads);
         modBus.addListener(StationData::registerTickets);
         NeoForge.EVENT_BUS.addListener(YagensMobs::tickTransport);
+        NeoForge.EVENT_BUS.addListener(KavatCombat::damage);
+        NeoForge.EVENT_BUS.addListener(KavatCombat::redirect);
+        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, KavatCombat::rescue);
+        NeoForge.EVENT_BUS.addListener(KavatMemories::login);
+        NeoForge.EVENT_BUS.addListener(KavatSpawns::pool);
     }
 
     private static void tickTransport(LevelTickEvent.Post event) {

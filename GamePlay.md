@@ -15,6 +15,7 @@ This guide documents implemented gameplay in the current source tree, using **Ne
 - [蓄辉蝶 / Lumen Butterfly](#lumen-butterfly)
 - [拾遗鳐 / Salvage Ray](#salvage-ray)
 - [雪藏鼬 / Snowcache Weasel](#snowcache-weasel)
+- [库娃与孵化器 / Kavat and incubator](#kavat)
 - [Xaero 生物头像 / Xaero entity icons](#xaero-entity-icons)
 - [合成与获取 / Crafting and acquisition](#recipes)
 
@@ -296,6 +297,52 @@ With Xaero’s Minimap installed, all eight creatures have face icons in its Ent
 | 岩丝索卷 / Rock Silk Spool | `RRR` / `·S·` | R 岩丝 / Rock Silk, S 木棍 / Stick |
 | 铁制抛索器 / Iron Silk Launcher | `II·` / `IXI` / `·S·` | I 铁锭 / Iron Ingot, X 弩 / Crossbow, S 木棍 / Stick |
 | 拾遗巢匣 / Salvage Nest Box | `PCP` / `PEP` / `PPP` | P 紫珀块 / Purpur Block, C 紫颂果 / Chorus Fruit, E 末地石砖 / End Stone Bricks |
+
+<a id="kavat"></a>
+## 库娃与孵化器 / Kavat and incubator
+
+**NeoForge 1.21.1**。库娃成年体采用 1.5× 模型体型，基础生命 40、攻击 8。野生库娃可供采样。孵化器产出的库娃属于启动任务的玩家，空手右键可切换跟随和原地休息。 / Adult Kavats use a 1.5× species scale, have 40 health and deal 8 base damage. Wild Kavats supply genetic samples. Incubated Kavats belong to the player who starts the job. Interact empty-handed to switch between following and resting.
+
+| 野生体色 / Wild coat | 来源 / Habitat | 复活材料 / Revival item |
+| --- | --- | --- |
+| 铜棕、铁灰、金黄、钻石蓝、绿宝石绿、青金石蓝、红石红 / Seven mineral coats | 常规地表、普通洞穴和下界一般区域 / Ordinary surface, caves and Nether terrain | 铜锭、铁锭、金锭、钻石、绿宝石、青金石、红石粉 / Copper ingot, iron ingot, gold ingot, diamond, emerald, lapis lazuli, redstone dust |
+| 雪白 / Snow white | 下雪的露天地表 / Snowy surface | 雪块 / Snow block |
+| 凋零黑 / Wither black | 下界凋零骷髅生成区域 / Nether wither skeleton spawning areas | 凋零玫瑰 / Wither rose |
+| 龙息紫 / Dragon breath purple | 末地主岛 / Central End island | 龙息 / Dragon's breath |
+| 紫颂花白 / Chorus flower white | 末地外岛 / Outer End islands | 紫颂花 / Chorus flower |
+| 孢子粉 / Spore blossom pink | 繁茂洞穴 / Lush caves | 孢子花 / Spore blossom |
+| 岩浆红 / Magma red | 玄武岩三角洲 / Basalt deltas | 岩浆块 / Magma block |
+| 菌光体橙 / Shroomlight orange | 绯红森林、诡异森林 / Crimson and warped forests | 菌光体 / Shroomlight |
+| 樱花粉 / Cherry pink | 樱花树林地表 / Cherry grove surface | 樱花原木 / Cherry log |
+| 沙漠黄 / Desert yellow | 沙漠地表 / Desert surface | 沙子 / Sand |
+
+库娃会走到点燃的熔炉、高炉、烟熏炉或营火旁盘卧，也会偶尔侧躺。在主人四格内会偶尔打滚，附近至多还有一位旁观玩家且头上有空间时，有很小概率后空翻。着火的库娃可以在地面翻滚扑火。 / Kavats curl up beside lit furnaces, blast furnaces, smokers and campfires, and sometimes lie on their side. Within four blocks of their owner they sometimes roll and very rarely backflip with sufficient headroom and at most one other player nearby. A burning Kavat rolls on the ground to put itself out.
+
+入水后库娃划水浮在水面。跟随中的库娃会随潜水的主人下潜，换气或主人上浮时返回水面。 / Kavats paddle on the surface and dive after a submerged owner while following. They surface for air or when the owner resurfaces.
+
+Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬血型成功救助时，主人会看到同款头像从屏幕中央浮现，附近可听到一声猫叫。 / Xaero’s Minimap shows a distinct face for each breed. A successful Vasca rescue flashes its radar portrait on the owner’s screen and plays a cat meow nearby.
+
+自然生成使用怪物池和原版怪物光照判定，默认权重 10、组大小 1–4。服务器可在 `spawns.kavat` 中调整开关、权重和组大小。各地实际出现率还取决于当地生成池和可用位置。 / Natural spawns use the monster pool and vanilla monster light checks with weight 10 and groups of 1–4. The server can change all three settings under `spawns.kavat`. Encounter rates depend on the local pool and eligible positions.
+
+**采样和孵化 / Sampling and incubation**
+
+- 基因提取器配方为 `G·G / G·G / ·I·`，G 为玻璃板，I 为铁锭。右键库娃消耗一个提取器，每只终生可提取一次，产出 1–3 个记录四项性状的遗传密码。 / Craft an extractor with four glass panes and one iron ingot. Use one on a Kavat to obtain 1–3 codes encoding its four traits, once per animal.
+- 孵化器配方为 `IGI / G·G / IRI`，I 为铁锭，G 为玻璃，R 为红石粉。在孵化器里点击背包中的样本来选入，Shift 点击批量选择，点击上方样本撤回。放入十个密码或两份模板后点击时钟。孵化和复活均需 6000 游戏刻。中途拆除退回投入材料，复活记录回到主人名下。 / Craft an incubator from four iron ingots, three glass blocks and redstone dust. Click inventory samples to select them, Shift-click to select several, and click a selected sample to undo. Click the clock with ten codes or two imprints selected. Incubation and revival each take 6,000 game ticks. Breaking a working incubator refunds its inputs and returns any revival record.
+- 十个密码有一半概率全随机，另一半对每项性状独立从十个密码中抽一个来源，每个实际投入的密码占一票。 / Ten codes give a 50% chance of an entirely random phenotype. Otherwise each trait independently samples one of the ten codes, counting duplicate inputs.
+- 空闲孵化器可为附近 8 格的自有库娃切片，终生限两份。模板记录原主人和代数。玩家可以搭配自己与他人的模板，或使用两份他人的模板。两份都属于操作者时拒绝培育。 / An idle incubator can imprint an owned Kavat within eight blocks, twice in its lifetime. Imprints retain the source owner and generation. An operator may use one personal and one traded imprint, or two traded imprints.
+- 四项相同的模板按较高代数独立判定每一项的变异概率。第 0 代完整复制；第 10 代每项有 10% 概率变成其他值。全同的子代加一代；发生任何变异或使用不同性状的模板，代数归零。 / Matching phenotypes use the higher generation as an independent mutation percentage for each trait. Generation zero clones exactly. At generation ten each trait has a 10% chance to change. A complete match advances one generation; mutation or crossing different phenotypes resets it to zero.
+- 不同模板按各性状的固定环序继承。相同值保留，不同值等概率取最短闭区间，两边等长则全环随机。品种有特例：不同品种可产生三种中的任意一种。环序如下。 / Different imprints retain matching traits. Other traits sample the inclusive shortest arc uniformly, using the whole ring when the arcs tie. Different breeds can produce any of the three breeds.
+  - 笑面 → 镜像 → 噬血 / Smeeta → Adarza → Vasca
+  - 长耳长毛 → 长耳 → 中耳 → 折耳 / Tufted → Long → Medium → Folded
+  - 凤尾 → 扇尾 → 鱼尾 → 叶尾 → 箭尾 / Phoenix → Fan → Fish → Leaf → Arrow
+  - 铜棕 → 铁灰 → 金黄 → 钻石蓝 → 绿宝石绿 → 青金石蓝 → 红石红 → 雪白 → 凋零黑 → 龙息紫 → 紫颂花白 → 孢子粉 / Copper → Iron → Gold → Diamond → Emerald → Lapis → Redstone → Snow → Wither → Dragon breath → Chorus flower → Spore blossom
+- 驯服的库娃死亡后，主人可在空闲孵化器的已故库娃列表选中该个体，消耗一份对应材料复活，或二次确认永久删除。复活保留个体身份、命名、性状、代数、提取标记和剩余模板次数。 / Select a deceased companion in an idle incubator and spend one matching material to revive it, or confirm twice to erase its record. Identity, name, traits, generation and both lifetime sampling limits survive revival.
+
+| 品种 / Breed | 能力 / Ability |
+| --- | --- |
+| 镜像型 / Adarza | 受到来自活体的伤害时，有 50% 概率把实际受到的伤害以双倍数值反射给攻击者。 / Each damaging hit from a living attacker has a 50% chance to reflect twice the damage received. |
+| 笑面型 / Smeeta | 有攻击目标时隐形并召唤诱饵，主人能看见体色描边。目标消失或分身死亡后显形，冷却 18 秒。 / In combat the Kavat vanishes, showing its owner a coat-colored outline, and lures enemies to a decoy. Losing its target or decoy reveals it and starts an 18-second cooldown. |
+| 噬血型 / Vasca | 攻击 10。同维度跟随中的库娃可在主人受到致命伤害时转移最多 20% 自身最大生命，至少为自己保留 1 点；无冷却。 / Attack damage 10. A following Vasca in the same dimension can spend up to 20% of its maximum health to save a mortally injured owner. It retains at least 1 HP and has no cooldown. |
 
 ## 维护索引 / Maintenance index
 

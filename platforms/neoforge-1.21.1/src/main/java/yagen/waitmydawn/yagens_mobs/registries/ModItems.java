@@ -61,6 +61,12 @@ public final class ModItems {
                             .forEach(output::accept))
                     .build());
 
+    public static final DeferredItem<BlockItem> KAVAT_INCUBATOR = ITEMS.registerSimpleBlockItem(ModBlocks.INCUBATOR);
+    public static final DeferredItem<Item> KAVAT_CODE = ITEMS.registerSimpleItem("kavat_genetic_code");
+    public static final DeferredItem<Item> KAVAT_TEMPLATE = ITEMS.registerSimpleItem("kavat_imprint");
+    public static final DeferredItem<Item> KAVAT_EXTRACTOR = ITEMS.registerSimpleItem("kavat_extractor");
+    public static final DeferredItem<DeferredSpawnEggItem> KAVAT_EGG = ITEMS.register("kavat_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
     private ModItems() {
     }
 

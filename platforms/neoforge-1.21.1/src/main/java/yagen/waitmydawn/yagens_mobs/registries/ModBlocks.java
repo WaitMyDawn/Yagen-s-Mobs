@@ -1,6 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
 import net.minecraft.core.registries.Registries;
+import yagen.waitmydawn.yagens_mobs.kavat.Incubator;
+import yagen.waitmydawn.yagens_mobs.kavat.IncubatorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -42,10 +44,19 @@ public final class ModBlocks {
             ENTITIES.register("mail_parcel", () -> BlockEntityType.Builder.of(
                     MailParcelEntity::new, MAIL_PARCEL.get()).build(null));
 
+    public static final DeferredHolder<Block, IncubatorBlock> INCUBATOR = BLOCKS.register("kavat_incubator",
+            () -> new IncubatorBlock(BlockBehaviour.Properties.of().strength(3).sound(SoundType.METAL)
+                    .noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<Incubator>> INCUBATOR_ENTITY =
+            ENTITIES.register("kavat_incubator", () -> BlockEntityType.Builder.of(Incubator::new, INCUBATOR.get()).build(null));
+    private static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ModIdentity.ID);
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>, net.minecraft.world.inventory.MenuType<yagen.waitmydawn.yagens_mobs.kavat.IncubatorMenu>> INCUBATOR_MENU =
+            MENUS.register("kavat_incubator", () -> new net.minecraft.world.inventory.MenuType<>(yagen.waitmydawn.yagens_mobs.kavat.IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
     private ModBlocks() {}
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
         ENTITIES.register(bus);
+        MENUS.register(bus);
     }
 }

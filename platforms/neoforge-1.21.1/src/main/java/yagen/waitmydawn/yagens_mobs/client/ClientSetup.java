@@ -28,6 +28,8 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(yagen.waitmydawn.yagens_mobs.kavat.KavatRescue.ID,
+                yagen.waitmydawn.yagens_mobs.kavat.KavatRescueView::draw);
         event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, VelocipodControls.STAMINA, VelocipodControls::renderStamina);
     }
 
@@ -35,6 +37,7 @@ public final class ClientSetup {
     public static void registerMenus(RegisterMenuScreensEvent event) {
         event.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
         event.register(LauncherMenu.TYPE.get(), LauncherScreen::new);
+        event.register(ModBlocks.INCUBATOR_MENU.get(), yagen.waitmydawn.yagens_mobs.kavat.IncubatorScreen::new);
     }
 
     @SubscribeEvent
@@ -50,6 +53,8 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.ROCK_HANGER.get(), RockHangerRenderer::new);
         event.registerEntityRenderer(ModEntities.BUBBLE_SALAMANDER.get(), BubbleSalamanderRenderer::new);
         event.registerEntityRenderer(ModEntities.VELOCIPOD.get(), VelocipodRenderer::new);
+        event.registerEntityRenderer(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.kavat.KavatView::new);
+        event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.kavat.KavatView::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_LINE.get(), RockSilkLineRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_GRIP.get(), NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.VULTURE_POST_ENTITY.get(), VulturePostRenderer::new);
