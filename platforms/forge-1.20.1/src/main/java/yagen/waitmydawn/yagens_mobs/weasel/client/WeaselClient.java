@@ -13,6 +13,10 @@ public final class WeaselClient {
     }
 
     public static void open(CompoundTag payload) {
+        if (payload != null && payload.getBoolean("Storage")) {
+            WeaselPortScreen.open(payload);
+            return;
+        }
         if (ModList.get().isLoaded("jei") && WeaselJei.runtime() != null && payload.hasUUID("Session")) {
             Minecraft client = Minecraft.getInstance();
             client.setScreen(new BlueprintScreen(payload.getUUID("Session"),

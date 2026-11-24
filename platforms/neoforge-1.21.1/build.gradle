@@ -29,6 +29,29 @@ repositories {
         }
         filter { includeGroup('software.bernie.geckolib') }
     }
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('storageCompatRepository').orElse('https://api.modrinth.com/maven').get() }
+        }
+        filter {
+            includeModule('maven.modrinth', 'create')
+            includeModule('maven.modrinth', 'refined-storage')
+            includeModule('maven.modrinth', 'sophisticated-backpacks')
+            includeModule('maven.modrinth', 'sophisticated-core')
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('storageCompatRepository').orElse('https://maven.createmod.net').get() }
+        }
+        filter { includeModule('net.createmod.ponder', 'ponder-neoforge') }
+    }
+    exclusiveContent {
+        forRepository {
+            maven { url = providers.gradleProperty('storageCompatRepository').orElse('https://www.cursemaven.com').get() }
+        }
+        filter { includeModule('curse.maven', 'iron-chests-228756') }
+    }
 }
 
 dependencies {
@@ -39,6 +62,13 @@ dependencies {
         runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
     }
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    compileOnly('org.apiguardian:apiguardian-api:1.1.2')
+    compileOnly('net.createmod.ponder:ponder-neoforge:1.0.82+mc1.21.1') { transitive = false }
+    compileOnly('maven.modrinth:create:UjX6dr61') { transitive = false }
+    compileOnly('maven.modrinth:refined-storage:lHHiI26k') { transitive = false }
+    compileOnly('maven.modrinth:sophisticated-backpacks:8YikAvYD') { transitive = false }
+    compileOnly('maven.modrinth:sophisticated-core:URsV4WGl') { transitive = false }
+    compileOnly('curse.maven:iron-chests-228756:5491156') { transitive = false }
 }
 
 runs {

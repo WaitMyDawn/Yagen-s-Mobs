@@ -3,14 +3,16 @@ package yagen.waitmydawn.yagens_mobs.weasel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import net.minecraft.core.BlockPos;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Set;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -38,6 +40,7 @@ final class WeaselRecipeJob {
     private long crafted;
     private boolean started;
     private boolean shortage;
+    private boolean craftingStarted;
 
     WeaselRecipeJob(BlueprintPlan plan) {
         this.plan = plan;
@@ -47,50 +50,73 @@ final class WeaselRecipeJob {
     WeaselStock stock() { return stock; }
     ItemStack display() { return stock.display(); }
 
-    void prepare(ServerLevel level, List<WeaselChests.Site> sites, Function<BlockPos, WeaselChests.Mode> mode) {
+    void prepare(ServerLevel level, List<WeaselChests.Site> sites, SnowcacheWeasel mob) {
         if (started) return;
         started = true;
+        planMaterials(level, sites, mob);
+    }
+
+    void refreshMaterials(ServerLevel level, List<WeaselChests.Site> sites, SnowcacheWeasel mob) {
+        // Replanning is only used before any workbench batches have run.
+        if (!craftingStarted) planMaterials(level, sites, mob);
+    }
+
+    private void planMaterials(ServerLevel level, List<WeaselChests.Site> sites, SnowcacheWeasel mob) {
         var recipes = BlueprintRecipes.get(level);
         if (!recipes.valid(plan)) {
             shortage = true;
             return;
         }
-        WeaselStock available = new WeaselStock();
+        var found = new WeaselStock();
+        // Existing job stock is already physically carried and must not be pulled a second time.
+        for (ItemStack key : stock.keys()) found.add(key, stock.count(key));
+        Set<Item> relevant = new HashSet<>();
+        if (sites.stream().anyMatch(WeaselChests.Site::routed)) collectRelevantItems(recipes, relevant);
+        var groups = new LinkedHashMap<Object, WeaselStock>();
         for (var site : sites) {
-            if (!mode.apply(site.pos()).take()) continue;
-            for (int slot = 0; slot < site.items().getContainerSize(); slot++) {
-                available.add(site.items().getItem(slot));
+            if (!site.mode(mob).take()) continue;
+            var endpoint = site.endpoint();
+            if (!site.routed() && endpoint.group().equals(site.pos())) {
+                site.items().addStock(found, relevant);
+                continue;
             }
+            var key = endpoint.buffer() == null ? endpoint.group() : endpoint.buffer();
+            var aggregate = groups.computeIfAbsent(key, ignored -> new WeaselStock());
+            var snapshot = new WeaselStock();
+            site.items().addStock(snapshot, relevant);
+            // Multiple ports can expose different filters over the same stock. Count each visible variant once.
+            for (var stack : snapshot.keys()) aggregate.add(stack, snapshot.count(stack) - aggregate.count(stack));
         }
-        var prepared = new BlueprintPlanner(plan, recipes, available).prepare();
+        groups.values().forEach(stock -> stock.moveTo(found));
+        var prepared = new BlueprintPlanner(plan, recipes, found).prepare();
         pulls = prepared.pulls();
+        for (ItemStack key : stock.keys()) pulls.remove(key, stock.count(key));
+        batches.clear();
         batches.addAll(prepared.batches());
         shortage = prepared.shortage();
     }
 
-    boolean canCollect(WeaselChests.Site site) {
-        if (pulls.isEmpty()) return false;
-        for (int slot = 0; slot < site.items().getContainerSize(); slot++) {
-            if (pulls.count(site.items().getItem(slot)) > 0) return true;
+    private void collectRelevantItems(BlueprintRecipes recipes, Set<Item> items) {
+        var choices = new HashSet<>(plan.choices().values());
+        choices.add(plan.root());
+        for (var choice : choices) {
+            var entries = choice.mode() == BlueprintPlan.Mode.ANY ? recipes.forOutput(choice.item())
+                    : java.util.stream.Stream.ofNullable(recipes.select(choice)).toList();
+            for (var entry : entries) {
+                for (var ingredient : entry.ingredients()) items.addAll(BlueprintPlanner.items(ingredient));
+            }
         }
-        return false;
+    }
+
+    boolean canCollect(WeaselChests.Site site) {
+        return !pulls.isEmpty() && site.items().hasMaterial(pulls);
     }
 
     boolean collect(WeaselChests.Site site) {
-        boolean moved = false;
-        for (int slot = 0; slot < site.items().getContainerSize(); slot++) {
-            var stack = site.items().getItem(slot);
-            int amount = (int) Math.min(stack.getCount(), pulls.count(stack));
-            if (amount <= 0) continue;
-            ItemStack taken = site.items().removeItem(slot, amount);
-            if (!taken.isEmpty()) {
-                pulls.remove(taken, taken.getCount());
-                stock.add(taken);
-                moved = true;
-            }
-        }
-        return moved;
+        return site.items().collect(pulls, stock);
     }
+
+    boolean needsMaterials() { return !craftingStarted && (shortage || !pulls.isEmpty()); }
 
     private @Nullable CraftingContainer input(BlueprintRecipes.Entry entry, ServerLevel level) {
         var inputs = entry.ingredients();
@@ -145,6 +171,7 @@ final class WeaselRecipeJob {
     }
 
     void craft(ServerLevel level) {
+        craftingStarted = true;
         // Reactivate the workbench animation for another bounded batch if the job has more work.
         int steps = 0;
         while (steps++ < 32 && canCraft(level)) {
@@ -199,6 +226,7 @@ final class WeaselRecipeJob {
         tag.putBoolean("Started", started);
         tag.putBoolean("Short", shortage);
         tag.putLong("Crafted", crafted);
+        tag.putBoolean("CraftingStarted", craftingStarted);
         var tasks = new ListTag();
         for (var batch : batches) {
             var entry = new CompoundTag();
@@ -218,6 +246,7 @@ final class WeaselRecipeJob {
         job.started = tag.getBoolean("Started");
         job.shortage = tag.getBoolean("Short");
         job.crafted = tag.getLong("Crafted");
+        job.craftingStarted = job.crafted > 0 || tag.getBoolean("CraftingStarted");
         job.stock.read(lookup, tag.getList("Bag", Tag.TAG_COMPOUND));
         job.pulls.read(lookup, tag.getList("Pulls", Tag.TAG_COMPOUND));
         for (Tag value : tag.getList("Batches", Tag.TAG_COMPOUND)) {

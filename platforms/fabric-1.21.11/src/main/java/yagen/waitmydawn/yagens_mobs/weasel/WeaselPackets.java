@@ -25,8 +25,9 @@ public final class WeaselPackets {
         WeaselPlatform.registerPayloads();
         ServerPlayNetworking.registerGlobalReceiver(Request.TYPE, (payload, context) -> {
             var owner = context.player();
-            if (!owner.isSpectator() && owner.isAlive() && SnowcacheWeasels.blueprintsEnabled()) {
-                handle(owner, payload.tag());
+            if (!owner.isSpectator() && owner.isAlive()) {
+                if (payload.tag().getBooleanOr("Storage", false)) WeaselPortPackets.update(owner, payload.tag());
+                else if (SnowcacheWeasels.blueprintsEnabled()) handle(owner, payload.tag());
             }
         });
     }

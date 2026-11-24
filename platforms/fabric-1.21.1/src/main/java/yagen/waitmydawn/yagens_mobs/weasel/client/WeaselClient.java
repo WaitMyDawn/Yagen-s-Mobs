@@ -16,11 +16,16 @@ public final class WeaselClient {
     }
 
     public static void register() {
+        WeaselPortScreen.register();
         EntityRendererRegistry.register(SnowcacheWeasels.TYPE.get(), WeaselRenderer::new);
         ClientPlayNetworking.registerGlobalReceiver(WeaselPackets.Opening.TYPE, (payload, context) -> open(payload.tag()));
     }
 
     private static void open(CompoundTag payload) {
+        if (payload != null && payload.getBoolean("Storage")) {
+            WeaselPortScreen.open(payload);
+            return;
+        }
         if (FabricLoader.getInstance().isModLoaded("jei") && WeaselJei.runtime() != null && payload.hasUUID("Session")) {
             Minecraft client = Minecraft.getInstance();
             client.setScreen(new BlueprintScreen(payload.getUUID("Session"),

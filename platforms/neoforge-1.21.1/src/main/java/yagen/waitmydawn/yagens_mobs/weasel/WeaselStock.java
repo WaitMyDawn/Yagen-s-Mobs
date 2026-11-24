@@ -28,6 +28,10 @@ final class WeaselStock {
 
     boolean isEmpty() { return items.isEmpty(); }
 
+    List<ItemStack> keys() {
+        return items.values().stream().flatMap(List::stream).map(entry -> entry.key).toList();
+    }
+
     ItemStack display() {
         return isEmpty() ? ItemStack.EMPTY : items.values().iterator().next().getFirst().key.copy();
     }

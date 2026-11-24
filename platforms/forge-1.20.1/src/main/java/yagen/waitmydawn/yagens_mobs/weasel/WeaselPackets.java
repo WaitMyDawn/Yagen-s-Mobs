@@ -18,9 +18,9 @@ public final class WeaselPackets {
     private WeaselPackets() {}
 
     public static void handle(Request request, ServerPlayer owner) {
-        if (owner != null && request.tag() != null && !owner.isSpectator() && owner.isAlive()
-                && SnowcacheWeasels.blueprintsEnabled()) {
-            handle(owner, request.tag());
+        if (owner != null && request.tag() != null && !owner.isSpectator() && owner.isAlive()) {
+            if (request.tag().getBoolean("Storage")) WeaselPortPackets.update(owner, request.tag());
+            else if (SnowcacheWeasels.blueprintsEnabled()) handle(owner, request.tag());
         }
     }
 

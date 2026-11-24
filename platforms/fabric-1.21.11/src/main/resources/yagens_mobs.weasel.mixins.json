@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "package": "yagen.waitmydawn.yagens_mobs.weasel.mixin",
   "mixins": [
+    "WeaselCreateFunnelOutput",
     "WeaselShoulder",
     "WeaselChestChanges"
   ],

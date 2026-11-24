@@ -27,8 +27,9 @@ public final class WeaselPackets {
         PayloadTypeRegistry.playS2C().register(Opening.TYPE, Opening.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(Request.TYPE, (payload, context) -> {
             var owner = context.player();
-            if (!owner.isSpectator() && owner.isAlive() && SnowcacheWeasels.blueprintsEnabled()) {
-                handle(owner, payload.tag());
+            if (!owner.isSpectator() && owner.isAlive()) {
+                if (payload.tag().getBoolean("Storage")) WeaselPortPackets.update(owner, payload.tag());
+                else if (SnowcacheWeasels.blueprintsEnabled()) handle(owner, payload.tag());
             }
         });
     }

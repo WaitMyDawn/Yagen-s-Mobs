@@ -85,9 +85,29 @@ def modernWeaselJava = file('../fabric-1.21.11/src/main/java')
 def stagedWeasel = tasks.register('stageModernWeaselSources', Sync) {
     from(modernWeaselJava) {
         include 'yagen/waitmydawn/yagens_mobs/weasel/**/*.java'
-        exclude '**/SnowcacheWeasel.java', '**/WeaselPlatform.java', '**/weasel/client/**'
+        exclude '**/SnowcacheWeasel.java', '**/WeaselPlatform.java', '**/WeaselPorts.java', '**/FabricPhysicalStorage.java', '**/weasel/client/**'
     }
     into layout.buildDirectory.dir('generated/sources/modern-weasel')
 }
 sourceSets.main.java.srcDir(stagedWeasel)
 idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/sources/modern-weasel').get().asFile
+
+
+repositories {
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://api.modrinth.com/maven').get()
+        content { includeGroup('maven.modrinth') }
+    }
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://www.cursemaven.com').get()
+        content { includeGroup('curse.maven') }
+    }
+}
+
+dependencies {
+    compileOnly('curse.maven:ironchest-498534:9148154') { transitive = false }
+    compileOnly('maven.modrinth:create-fly:Y5Ryytu0') { transitive = false }
+    compileOnly('curse.maven:sophisticated-backpacks-unofficial-fabric-1749520:9727619') { transitive = false }
+    compileOnly('curse.maven:sophisticated-core-unofficial-fabric-continuation-1749510:9727610') { transitive = false }
+    compileOnly('curse.maven:iron-core-utilities-1721007:9134588') { transitive = false }
+}

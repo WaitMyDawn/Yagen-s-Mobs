@@ -77,6 +77,9 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
     private final AnimatableInstanceCache animations = GeckoLibUtil.createInstanceCache(this);
     private final WeaselWork work = new WeaselWork(this);
     private final Map<ChestKey, WeaselChests.Mode> modes = new HashMap<>();
+    private final Map<ChestKey, Integer> storagePriorities = new HashMap<>();
+    private final Map<java.util.UUID, WeaselChests.Mode> backpackModes = new HashMap<>();
+    private boolean routedPickup;
     private final List<ItemStack> cargo = new ArrayList<>(9);
     private final WeaselStock unload = new WeaselStock();
     private final WeaselStock delivery = new WeaselStock();
@@ -156,12 +159,47 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
     WeaselStock pendingUnload() { return unload; }
     @Nullable WeaselRecipeJob recipeJob() { return recipeJob; }
     @Nullable BlockPos lastPickup() { return lastPickup; }
-    void setLastPickup(@Nullable BlockPos pos) { lastPickup = pos; }
+    boolean routedPickup() { return routedPickup; }
+    void setLastPickup(@Nullable BlockPos pos, boolean routed) {
+        lastPickup = pos;
+        routedPickup = routed;
+    }
 
     BlockPos workCenter() { return center == null ? blockPosition() : center; }
 
     WeaselChests.Mode chestMode(BlockPos pos) {
         return modes.getOrDefault(new ChestKey(level().dimension().location(), pos), WeaselChests.Mode.BOTH);
+    }
+
+    WeaselChests.Mode storageMode(WeaselChests.Site site, WeaselChests.Mode fallback) {
+        var bag = site.endpoint().bag();
+        if (bag != null) return backpackModes.getOrDefault(bag, fallback);
+        return modes.getOrDefault(new ChestKey(level().dimension().location(), site.pos()), fallback);
+    }
+
+    void cycleStorage(WeaselChests.Site site) {
+        var bag = site.endpoint().bag();
+        var next = site.mode(this).next();
+        if (bag != null) {
+            if (next == WeaselChests.Mode.BOTH) backpackModes.remove(bag);
+            else backpackModes.put(bag, next);
+        } else {
+            var key = new ChestKey(level().dimension().location(), site.pos());
+            var fallback = site.routed() ? WeaselChests.Mode.TAKE : WeaselChests.Mode.BOTH;
+            if (next == fallback) modes.remove(key);
+            else modes.put(key, next);
+        }
+        tell("mode." + next.name().toLowerCase(java.util.Locale.ROOT));
+    }
+
+    int storagePriority(BlockPos pos, int fallback) {
+        return storagePriorities.getOrDefault(new ChestKey(level().dimension().location(), pos), fallback);
+    }
+
+    void setStoragePriority(BlockPos pos, int priority, int fallback) {
+        var key = new ChestKey(level().dimension().location(), pos.immutable());
+        if (priority == fallback) storagePriorities.remove(key);
+        else storagePriorities.put(key, priority);
     }
 
     void cycleChest(BlockPos pos) {
@@ -307,7 +345,7 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
         cargo.forEach(unload::add);
         cargo.clear();
         delivery.moveTo(unload);
-        lastPickup = null;
+        setLastPickup(null, false);
         recipeJob = new WeaselRecipeJob(plan);
         work.cancel(owner.serverLevel());
         refreshCarried();
@@ -333,7 +371,7 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
             return;
         }
         work.cancel(player.serverLevel());
-        lastPickup = null;
+        setLastPickup(null, false);
         int transferred = delivery.give(player);
         transferred += unload.give(player);
         transferred += giveList(player, cargo);
@@ -407,6 +445,24 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
             chestModes.add(value);
         }
         tag.put("ChestModes", chestModes);
+        tag.putBoolean("RoutedPickup", routedPickup);
+        var priorities = new ListTag();
+        storagePriorities.forEach((key, priority) -> {
+            var value = new CompoundTag();
+            value.putString("Dimension", key.dimension().toString());
+            value.putLong("Pos", key.pos().asLong());
+            value.putInt("Priority", priority);
+            priorities.add(value);
+        });
+        tag.put("StoragePriorities", priorities);
+        var bags = new ListTag();
+        backpackModes.forEach((bag, mode) -> {
+            var value = new CompoundTag();
+            value.putUUID("Bag", bag);
+            value.putInt("Mode", mode.ordinal());
+            bags.add(value);
+        });
+        tag.put("BackpackModes", bags);
         writeStacks(tag, "WeaselCargo", cargo);
         tag.put("WeaselUnloadStock", unload.save(level().registryAccess()));
         tag.put("WeaselDelivery", delivery.save(level().registryAccess()));
@@ -426,8 +482,26 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
             var value = (CompoundTag) row;
             int mode = value.getInt("Mode");
             ResourceLocation dimension = ResourceLocation.tryParse(value.getString("Dimension"));
-            if (dimension != null && mode > 0 && mode < WeaselChests.Mode.values().length) {
+            if (dimension != null && mode >= 0 && mode < WeaselChests.Mode.values().length) {
                 modes.put(new ChestKey(dimension, BlockPos.of(value.getLong("Pos"))), WeaselChests.Mode.values()[mode]);
+            }
+        }
+        routedPickup = tag.getBoolean("RoutedPickup");
+        storagePriorities.clear();
+        for (Tag row : tag.getList("StoragePriorities", Tag.TAG_COMPOUND)) {
+            var value = (CompoundTag) row;
+            var dimension = ResourceLocation.tryParse(value.getString("Dimension"));
+            int priority = value.getInt("Priority");
+            if (dimension != null && priority >= 0 && priority <= 999) {
+                storagePriorities.put(new ChestKey(dimension, BlockPos.of(value.getLong("Pos"))), priority);
+            }
+        }
+        backpackModes.clear();
+        for (Tag row : tag.getList("BackpackModes", Tag.TAG_COMPOUND)) {
+            var value = (CompoundTag) row;
+            int mode = value.getInt("Mode");
+            if (value.hasUUID("Bag") && mode > 0 && mode < WeaselChests.Mode.values().length) {
+                backpackModes.put(value.getUUID("Bag"), WeaselChests.Mode.values()[mode]);
             }
         }
         readStacks(tag, "WeaselCargo", cargo);

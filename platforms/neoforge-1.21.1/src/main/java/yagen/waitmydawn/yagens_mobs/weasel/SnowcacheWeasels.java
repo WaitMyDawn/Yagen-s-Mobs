@@ -59,6 +59,8 @@ public final class SnowcacheWeasels {
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SnowcacheWeasel::checkSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE));
         bus.addListener(SnowcacheWeasels::creative);
         bus.addListener(WeaselPackets::register);
+        bus.addListener(WeaselPortPackets::register);
+        NeoForge.EVENT_BUS.addListener(WeaselPortPackets::onOpen);
         NeoForge.EVENT_BUS.addListener(SnowcacheWeasels::configureChest);
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             for (var passenger : event.getEntity().getPassengers()) {
@@ -88,33 +90,35 @@ public final class SnowcacheWeasels {
 
     private static void configureChest(PlayerInteractEvent.RightClickBlock event) {
         var player = event.getEntity();
-        if (event.getHand() != InteractionHand.MAIN_HAND || !player.isShiftKeyDown() || player.isSpectator()) {
-            return;
-        }
+        if (event.getHand() != InteractionHand.MAIN_HAND || player.isSpectator()) return;
+        var pos = event.getPos();
+        var level = event.getLevel();
+        var device = level.getBlockEntity(pos);
         for (var passenger : player.getPassengers()) {
-            if (!(passenger instanceof SnowcacheWeasel weasel) || !weasel.isOwnedBy(player)) {
-                continue;
+            if (!(passenger instanceof SnowcacheWeasel weasel) || !weasel.isOwnedBy(player)) continue;
+            if (WeaselPorts.isRefined(device)) {
+                if (player instanceof ServerPlayer server) WeaselPortPackets.nativeInteraction(server, weasel, device);
+                return;
             }
-            if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof net.minecraft.world.level.block.ChestBlock) {
+            if (!player.isShiftKeyDown()) return;
+            if (WeaselPorts.isCreate(device)) {
+                if (!event.getItemStack().isEmpty() || !WeaselPorts.isVaultPort(level, device)) return;
+                if (player instanceof ServerPlayer server) WeaselPortPackets.createInteraction(server, weasel, device);
+            } else if (level.getBlockState(pos).getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+                    || WeaselPorts.physical(device)) {
                 if (player instanceof ServerPlayer server) {
-                    var chest = WeaselChests.at(server.serverLevel(), event.getPos(), server);
-                    if (chest != null) {
-                        weasel.cycleChest(chest.pos());
-                    } else {
-                        weasel.tell("unavailable");
-                    }
+                    var chest = WeaselChests.at(server.serverLevel(), pos, server);
+                    if (chest != null) weasel.cycleStorage(chest);
+                    else weasel.tell("unavailable");
                 }
             } else if (event.getItemStack().isEmpty()) {
-                if (!event.getLevel().isClientSide) {
-                    weasel.leaveShoulder(player, true);
-                }
+                if (!level.isClientSide) weasel.leaveShoulder(player, true);
             } else {
                 return;
             }
-            event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
+            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
             event.setCanceled(true);
             return;
         }
     }
 }
-

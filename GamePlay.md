@@ -252,6 +252,30 @@ Regular creature entries use `enabled`, `weight`, `minGroupSize`, and `maxGroupS
 - Use a saved blueprint on your tamed adult weasel to assign the job. It unloads existing cargo first. At each recipe level it takes available direct ingredients from chests and uses subrecipes for the shortfall. A separate job inventory can hold more than nine stacks. It crafts at a reachable crafting table and continues subsequent batches while it stays within interaction range. If the weasel cannot reach a chest with required stock or a workbench, it retains progress and retries for about 30 seconds. A pickup notice appears only when items are available. After it finishes, sneak-right-click with an empty hand to retrieve the output, surplus materials, and remaining containers.
 - Farmer's Delight cooking pot recipes include both the ingredients and the serving container. The player cooks the meal in the pot.
 
+### 存储模组兼容 / Storage mod compatibility
+
+下表列出 0.3.1 已验证的模组版本。存储模组均为可选依赖。 / The table lists the versions verified for 0.3.1. All storage mods are optional.
+
+| 平台 / Platform | 更多箱子 / Iron Chests | 精妙背包 / Sophisticated Backpacks | Refined Storage | 机械动力 / Create |
+| --- | --- | --- | --- | --- |
+| NeoForge 1.21.1 | 16.0.7 | 3.26.23.2263 | 2.0.9 | 6.0.10 |
+| Forge 1.20.1 | 14.4.4 | 3.26.22.2264 | 1.12.4 | 6.0.8 |
+| Fabric 1.21.1 | Fabric 2.0.4 | Fabric Port 3.23.4.3.106 | 2.0.9 | — |
+| Fabric 1.21.11 | Fabric 2.0.5 | — | — | Create Fly 6.0.9-5 |
+| Fabric 26.3 | Fabric 3.0.0 | Fabric Continuation 3.24.1.3 | — | Create Fly 6.0.9-2 |
+
+Fabric 26.3 同时安装精妙背包移植版和 JEI 时，背包前置要求 JEI 31.16.0.87 或更新版本。 / On Fabric 26.3, the backpack port’s dependency requires JEI 31.16.0.87 or newer when both are installed.
+
+- **更多箱子与精妙背包**按第一个非空格分类，优先级固定为 100。把背包放在地上后才能让雪藏鼬访问。携带自己的雪藏鼬潜行右键，可以为这只鼬独立设置该箱子或背包的存取模式。背包移动后保留设置。
+- **RS 终端与合成终端**默认只取，作为配方图任务的材料来源。携带自己的雪藏鼬打开终端可以切换其存取模式。**输入器**只存、**输出器**只取，通过端口面向的箱子、木桶或支持的背包交接。在它们原有的界面里可以编辑优先级，默认 98。
+- **机械动力**通过装在固定物品库上的安山或黄铜漏斗存取，方向随漏斗模式。黄铜漏斗遵守自身筛选条件，红石停机时暂停搬运。携带自己的雪藏鼬空手潜行右键漏斗，可编辑优先级，默认 99。
+- 数字越小越优先。容器满了、筛选不匹配或端口暂时不可用时，会尝试其他可用的容器。取自输出口的物品会去同分类或空的箱子，也能交给另一个优先级更高且库存独立的端口。已被 RS 端口用作交接箱的箱子会通过端口操作。
+
+- **Iron Chests and placed Sophisticated Backpacks** use the first occupied slot for sorting and have a fixed priority of 100. While carrying your own weasel, sneak-right-click to assign a mode for that weasel. Its backpack setting follows the backpack when moved.
+- **Refined Storage Grid and Crafting Grid** default to take-only and supply materials for Blueprint jobs. Open their menus while carrying your own weasel to change the mode. **Importers** are deposit-only and **Exporters** are take-only. They use the chest, barrel, or supported backpack they face as a handoff. Edit their priority in the native menu. The default is 98.
+- **Create** uses an Andesite or Brass Funnel attached to a fixed Item Vault. Its mode follows the funnel direction. Brass filters and redstone pauses apply. Carry your own weasel and sneak-right-click the funnel with an empty hand to edit the priority. The default is 99.
+- Lower numbers are considered first. Full, filtered, or inactive endpoints can be skipped. Items taken from an outlet go to a matching or empty box, or to a higher-priority inlet with independent storage. The weasel accesses RS handoff containers through their ports.
+
 <a id="xaero-entity-icons"></a>
 ## Xaero 生物头像 / Xaero entity icons
 

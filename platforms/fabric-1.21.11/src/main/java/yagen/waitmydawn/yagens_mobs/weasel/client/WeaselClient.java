@@ -22,6 +22,10 @@ public final class WeaselClient {
     }
 
     private static void open(CompoundTag payload) {
+        if (payload != null && payload.getBooleanOr("Storage", false)) {
+            WeaselPortScreen.open(payload);
+            return;
+        }
         if (FabricLoader.getInstance().isModLoaded("jei") && WeaselJei.runtime() != null) {
             var session = yagen.waitmydawn.yagens_mobs.compat.SaveTag.id(payload, "Session").orElse(null);
             if (session == null) return;

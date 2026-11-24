@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import java.util.UUID;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,33 +28,48 @@ final class WeaselChests {
         Mode next() { return values()[(ordinal() + 1) % values().length]; }
     }
 
-    record Site(BlockPos pos, Container items) {
+    enum Kind { BOX, INLET, OUTLET, GRID }
+
+    record Endpoint(Kind kind, int priority, Object group, Object token, @Nullable BlockPos buffer,
+                    @Nullable Direction face, @Nullable UUID bag) {
+        boolean routed() { return kind != Kind.BOX; }
+    }
+
+    record Site(BlockPos pos, WeaselInventory items, Endpoint endpoint) {
+        boolean routed() { return endpoint.routed(); }
+
+        Mode mode(SnowcacheWeasel mob) {
+            return switch (endpoint.kind()) {
+                case INLET -> Mode.DEPOSIT;
+                case OUTLET -> Mode.TAKE;
+                case GRID -> mob.storageMode(this, Mode.TAKE);
+                case BOX -> mob.storageMode(this, Mode.BOTH);
+            };
+        }
+
+        int priority(SnowcacheWeasel mob) {
+            return endpoint.priority() == 100 ? 100 : mob.storagePriority(pos, endpoint.priority());
+        }
+
         int first() {
-            for (int slot = 0; slot < items.getContainerSize(); slot++) {
-                if (!items.getItem(slot).isEmpty()) {
-                    return slot;
-                }
+            for (int slot = 0; slot < items.size(); slot++) {
+                if (!items.peek(slot).isEmpty()) return slot;
             }
             return -1;
         }
 
         @Nullable Identifier category() {
             int first = first();
-            return first < 0 ? null : WeaselTabs.of(items.getItem(first));
+            return first < 0 ? null : WeaselTabs.of(items.peek(first));
         }
 
         int room(ItemStack stack, boolean fallback) {
+            if (routed()) return items.insert(stack, true);
             int room = 0;
             int first = first();
-            boolean allowBeforeAnchor = fallback && first >= 0 && WeaselTabs.of(stack).equals(category());
-            for (int slot = 0; slot < items.getContainerSize(); slot++) {
-                ItemStack existing = items.getItem(slot);
-                if (items.canPlaceItem(slot, stack)) {
-                    if (existing.isEmpty() && (slot > first || allowBeforeAnchor)) {
-                        room += Math.min(stack.getMaxStackSize(), items.getMaxStackSize());
-                    } else if (ItemStack.isSameItemSameComponents(existing, stack)) {
-                        room += Math.max(0, Math.min(stack.getMaxStackSize(), items.getMaxStackSize()) - existing.getCount());
-                    }
+            for (int slot = 0; slot < items.size() && room < stack.getCount(); slot++) {
+                if (canUseSlot(slot, first, stack, fallback)) {
+                    room += items.insert(slot, stack, stack.getCount() - room, true);
                 }
             }
             return room;
@@ -60,70 +77,94 @@ final class WeaselChests {
 
         int deposit(ItemStack stack, boolean fallback) {
             int before = stack.getCount();
-            int first = first();
-            int last = items.getContainerSize() - 1;
-            while (last >= 0 && items.getItem(last).isEmpty()) {
-                last--;
+            if (routed()) {
+                int accepted = items.insert(stack, false);
+                stack.shrink(accepted);
+                return accepted;
             }
+            int first = first();
+            int last = items.size() - 1;
+            while (last >= 0 && items.peek(last).isEmpty()) last--;
             if (!fallback) {
                 for (int slot = Math.max(first, 0); slot <= last && !stack.isEmpty(); slot++) {
-                    ItemStack existing = items.getItem(slot);
-                    if (items.canPlaceItem(slot, stack) && ItemStack.isSameItemSameComponents(existing, stack)) {
-                        existing.grow(stack.split(Math.max(0, Math.min(stack.getMaxStackSize(), items.getMaxStackSize()) - existing.getCount())).getCount());
-                    }
+                    if (!items.peek(slot).isEmpty()) insert(slot, stack);
                 }
-                for (int slot = first + 1; slot < items.getContainerSize() && !stack.isEmpty(); slot++) {
-                    insertEmpty(slot, stack);
+                for (int slot = first + 1; slot < items.size() && !stack.isEmpty(); slot++) {
+                    if (items.peek(slot).isEmpty()) insert(slot, stack);
                 }
             } else {
-                // Preserve the classification item and append to the occupied part before reusing holes.
-                for (int slot = last + 1; slot < items.getContainerSize() && !stack.isEmpty(); slot++) {
-                    insertEmpty(slot, stack);
+                // Keep the classification stack at the front when using an overflow container.
+                for (int slot = last + 1; slot < items.size() && !stack.isEmpty(); slot++) {
+                    if (items.peek(slot).isEmpty()) insert(slot, stack);
                 }
                 for (int slot = last; slot > first && !stack.isEmpty(); slot--) {
-                    insertEmpty(slot, stack);
+                    if (items.peek(slot).isEmpty()) insert(slot, stack);
                 }
                 for (int slot = last; slot >= Math.max(first, 0) && !stack.isEmpty(); slot--) {
-                    ItemStack existing = items.getItem(slot);
-                    if (items.canPlaceItem(slot, stack) && ItemStack.isSameItemSameComponents(existing, stack)) {
-                        existing.grow(stack.split(Math.max(0, Math.min(stack.getMaxStackSize(), items.getMaxStackSize()) - existing.getCount())).getCount());
-                    }
+                    if (!items.peek(slot).isEmpty()) insert(slot, stack);
                 }
-                // Empty slots in front of the anchor can be used by a matching stack without changing the tab.
                 for (int slot = first - 1; slot >= 0 && !stack.isEmpty() && WeaselTabs.of(stack).equals(category()); slot--) {
-                    insertEmpty(slot, stack);
+                    if (items.peek(slot).isEmpty()) insert(slot, stack);
                 }
-            }
-            if (stack.getCount() != before) {
-                items.setChanged();
             }
             return before - stack.getCount();
         }
 
-        private void insertEmpty(int slot, ItemStack stack) {
-            if (items.getItem(slot).isEmpty() && items.canPlaceItem(slot, stack)) {
-                items.setItem(slot, stack.split(Math.min(stack.getMaxStackSize(), items.getMaxStackSize())));
-            }
+        private void insert(int slot, ItemStack stack) {
+            stack.shrink(items.insert(slot, stack, stack.getCount(), false));
+        }
+
+        private boolean canUseSlot(int slot, int first, ItemStack stack, boolean fallback) {
+            ItemStack existing = items.peek(slot);
+            if (!existing.isEmpty()) return ItemStack.isSameItemSameComponents(existing, stack);
+            return slot > first || fallback && first >= 0 && WeaselTabs.of(stack).equals(category());
         }
 
         boolean fitsAtEnd(List<ItemStack> cargo) {
+            if (routed()) return false;
+            if (items instanceof WeaselInventory.Vanilla vanilla) return fitsVanilla(cargo, vanilla.container());
+            int first = first();
+            var counts = new int[items.size()];
+            var stacks = new ItemStack[items.size()];
+            for (int slot = 0; slot < stacks.length; slot++) {
+                stacks[slot] = items.peek(slot);
+            }
+            for (ItemStack stack : cargo) {
+                int remaining = stack.getCount();
+                for (int slot = 0; slot < stacks.length && remaining > 0; slot++) {
+                    if ((!stacks[slot].isEmpty() && !ItemStack.isSameItemSameComponents(stacks[slot], stack))
+                            || !canUseSlot(slot, first, stack, true)) continue;
+                    int available = items.insert(slot, stack, stack.getMaxStackSize(), true) - counts[slot];
+                    int moved = Math.min(remaining, Math.max(0, available));
+                    if (moved > 0) {
+                        counts[slot] += moved;
+                        stacks[slot] = stack;
+                        remaining -= moved;
+                    }
+                }
+                if (remaining > 0) return false;
+            }
+            return true;
+        }
+
+        private boolean fitsVanilla(List<ItemStack> cargo, Container vanilla) {
             int first = first();
             Identifier tab = category();
-            var counts = new int[items.getContainerSize()];
+            var counts = new int[vanilla.getContainerSize()];
             var stacks = new ItemStack[counts.length];
             int last = -1;
             for (int i = 0; i < counts.length; i++) {
-                stacks[i] = items.getItem(i);
+                stacks[i] = vanilla.getItem(i);
                 counts[i] = stacks[i].getCount();
                 if (counts[i] > 0) last = i;
             }
             for (ItemStack stack : cargo) {
                 int remaining = stack.getCount();
-                int limit = Math.min(stack.getMaxStackSize(), items.getMaxStackSize());
+                int limit = Math.min(stack.getMaxStackSize(), vanilla.getMaxStackSize());
                 int tail = last;
                 // Match the insertion order so accepting a full batch does not depend on a different slot layout.
                 for (int i = tail + 1; i < counts.length && remaining > 0; i++) {
-                    if (counts[i] == 0 && items.canPlaceItem(i, stack)) {
+                    if (counts[i] == 0 && vanilla.canPlaceItem(i, stack)) {
                         int moved = Math.min(remaining, limit);
                         stacks[i] = stack;
                         counts[i] = moved;
@@ -132,7 +173,7 @@ final class WeaselChests {
                     }
                 }
                 for (int i = tail; i > first && remaining > 0; i--) {
-                    if (counts[i] == 0 && items.canPlaceItem(i, stack)) {
+                    if (counts[i] == 0 && vanilla.canPlaceItem(i, stack)) {
                         int moved = Math.min(remaining, limit);
                         stacks[i] = stack;
                         counts[i] = moved;
@@ -140,14 +181,14 @@ final class WeaselChests {
                     }
                 }
                 for (int i = tail; i >= Math.max(first, 0) && remaining > 0; i--) {
-                    if (counts[i] < limit && ItemStack.isSameItemSameComponents(stacks[i], stack) && items.canPlaceItem(i, stack)) {
+                    if (counts[i] < limit && ItemStack.isSameItemSameComponents(stacks[i], stack) && vanilla.canPlaceItem(i, stack)) {
                         int moved = Math.min(remaining, limit - counts[i]);
                         counts[i] += moved;
                         remaining -= moved;
                     }
                 }
                 for (int i = first - 1; i >= 0 && remaining > 0; i--) {
-                    if (counts[i] == 0 && WeaselTabs.of(stack).equals(tab) && items.canPlaceItem(i, stack)) {
+                    if (counts[i] == 0 && WeaselTabs.of(stack).equals(tab) && vanilla.canPlaceItem(i, stack)) {
                         int moved = Math.min(remaining, limit);
                         stacks[i] = stack;
                         counts[i] = moved;
@@ -171,10 +212,11 @@ final class WeaselChests {
         if (!level.hasChunkAt(pos) || !level.mayInteract(owner, pos)) {
             return null;
         }
+        if (WeaselPorts.physical(level.getBlockEntity(pos))) return WeaselPorts.at(level, pos, owner);
         var state = level.getBlockState(pos);
         if (!(state.getBlock() instanceof ChestBlock chest) || !(level.getBlockEntity(pos) instanceof ChestBlockEntity block)
                 || block.getLootTable() != null || !unlocked(block, owner)) {
-            return null;
+            return WeaselPorts.at(level, pos, owner);
         }
         BlockPos canonical = pos.immutable();
         if (state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
@@ -189,7 +231,8 @@ final class WeaselChests {
             }
         }
         Container inventory = ChestBlock.getContainer(chest, state, level, pos, false);
-        return inventory == null ? null : new Site(canonical, inventory);
+        return inventory == null ? null : new Site(canonical, new WeaselInventory.Vanilla(inventory),
+                new Endpoint(Kind.BOX, 100, canonical, level.getBlockEntity(canonical), null, null, null));
     }
 
     private static boolean unlocked(ChestBlockEntity chest, ServerPlayer owner) {
@@ -210,7 +253,7 @@ final class WeaselChests {
                 }
                 for (var entry : chunk.getBlockEntities().entrySet()) {
                     BlockPos pos = entry.getKey();
-                    if (pos.distSqr(center) <= RANGE * RANGE && entry.getValue() instanceof ChestBlockEntity) {
+                    if (pos.distSqr(center) <= RANGE * RANGE && (entry.getValue() instanceof ChestBlockEntity || WeaselPorts.handles(entry.getValue()))) {
                         var site = at(level, pos, player);
                         if (site != null) {
                             found.add(site.pos());
@@ -230,6 +273,16 @@ final class WeaselChests {
                 sites.add(site);
             }
         }
+        if (!WeaselPorts.enabled()) return sites;
+        var buffers = new java.util.HashSet<BlockPos>();
+        for (var site : sites) {
+            if (site.endpoint().buffer() != null) buffers.add(site.endpoint().buffer());
+        }
+        sites.removeIf(site -> !site.routed() && (buffers.contains(site.pos())
+                || WeaselPorts.externalGroup(level, site.pos()) != null
+                || level.getBlockState(site.pos()).getBlock() instanceof ChestBlock
+                && level.getBlockState(site.pos()).getValue(ChestBlock.TYPE) != ChestType.SINGLE
+                && WeaselPorts.externalGroup(level, site.pos().relative(ChestBlock.getConnectedDirection(level.getBlockState(site.pos())))) != null));
         return sites;
     }
 }

@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "package": "yagen.waitmydawn.yagens_mobs.weasel.mixin",
   "mixins": [
+    "WeaselNativeMenu",
     "WeaselShoulder",
     "WeaselChestChanges",
     "WeaselChestLock"
@@ -12,6 +13,7 @@
     "defaultRequire": 1
   },
   "client": [
+    "WeaselScreenBounds",
     "WeaselInventoryPosition"
   ]
 }

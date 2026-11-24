@@ -58,16 +58,26 @@ public final class SnowcacheWeasels {
                 SnowcacheWeasel::checkSpawn);
         WeaselPackets.register();
         UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
-            if (hand != InteractionHand.MAIN_HAND || !player.isShiftKeyDown() || player.isSpectator()) {
+            if (hand != InteractionHand.MAIN_HAND || player.isSpectator()) {
                 return InteractionResult.PASS;
             }
             for (var passenger : player.getPassengers()) {
                 if (!(passenger instanceof SnowcacheWeasel weasel) || !weasel.isOwnedBy(player)) continue;
-                if (level.getBlockState(hit.getBlockPos()).getBlock() instanceof ChestBlock) {
+                var pos = hit.getBlockPos();
+                var device = level.getBlockEntity(pos);
+                if (WeaselPorts.isRefined(device)) {
+                    if (player instanceof ServerPlayer server) WeaselPortPackets.nativeInteraction(server, weasel, device);
+                    return InteractionResult.PASS;
+                }
+                if (!player.isShiftKeyDown()) return InteractionResult.PASS;
+                if (WeaselPorts.isCreate(device)) {
+                    if (!player.getMainHandItem().isEmpty() || !WeaselPorts.isVaultPort(level, device)) return InteractionResult.PASS;
+                    if (player instanceof ServerPlayer server) WeaselPortPackets.createInteraction(server, weasel, device);
+                } else if (level.getBlockState(pos).getBlock() instanceof ChestBlock || WeaselPorts.physical(device)) {
                     if (player instanceof ServerPlayer server) {
-                        var chest = WeaselChests.at(server.serverLevel(), hit.getBlockPos(), server);
+                        var chest = WeaselChests.at(server.serverLevel(), pos, server);
                         if (chest == null) weasel.tell("unavailable");
-                        else weasel.cycleChest(chest.pos());
+                        else weasel.cycleStorage(chest);
                     }
                 } else if (player.getMainHandItem().isEmpty()) {
                     if (!level.isClientSide) weasel.leaveShoulder(player, true);

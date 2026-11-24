@@ -70,3 +70,20 @@ dependencies {
         modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
     }
 }
+
+
+repositories {
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://api.modrinth.com/maven').get()
+        content { includeGroup('maven.modrinth') }
+    }
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://www.cursemaven.com').get()
+        content { includeGroup('curse.maven') }
+    }
+}
+
+dependencies {
+    modCompileOnly('curse.maven:ironchest-498534:7536130') { transitive = false }
+    modCompileOnly('maven.modrinth:create-fly:fn0H9rSj') { transitive = false }
+}

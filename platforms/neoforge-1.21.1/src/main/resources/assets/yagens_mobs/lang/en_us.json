@@ -175,5 +175,14 @@
   "screen.yagens_mobs.recipe_blueprint.exact": "This recipe",
   "screen.yagens_mobs.recipe_blueprint.loose": "Parts only",
   "screen.yagens_mobs.recipe_blueprint.cooking": "Gather only",
-  "screen.yagens_mobs.recipe_blueprint.fit": "Fit canvas"
+  "screen.yagens_mobs.recipe_blueprint.fit": "Fit canvas",
+  "screen.yagens_mobs.weasel_storage.title": "Snowcache Weasel",
+  "screen.yagens_mobs.weasel_storage.priority": "Priority: %s",
+  "screen.yagens_mobs.weasel_storage.priority_label": "Priority",
+  "screen.yagens_mobs.weasel_storage.priority_hint": "%s. Lower numbers are used first.",
+  "screen.yagens_mobs.weasel_storage.apply": "Apply",
+  "screen.yagens_mobs.weasel_storage.grid_hint": "Click to change how this weasel uses the grid",
+  "screen.yagens_mobs.weasel_storage.mode.both": "Store and take",
+  "screen.yagens_mobs.weasel_storage.mode.deposit": "Store only",
+  "screen.yagens_mobs.weasel_storage.mode.take": "Take only"
 }

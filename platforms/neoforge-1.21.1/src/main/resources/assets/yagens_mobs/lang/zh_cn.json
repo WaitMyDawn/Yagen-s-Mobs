@@ -175,5 +175,14 @@
   "screen.yagens_mobs.recipe_blueprint.exact": "仅此合成",
   "screen.yagens_mobs.recipe_blueprint.loose": "散件",
   "screen.yagens_mobs.recipe_blueprint.cooking": "烹饪材料",
-  "screen.yagens_mobs.recipe_blueprint.fit": "适应画布"
+  "screen.yagens_mobs.recipe_blueprint.fit": "适应画布",
+  "screen.yagens_mobs.weasel_storage.title": "雪藏鼬设置",
+  "screen.yagens_mobs.weasel_storage.priority": "优先级 %s",
+  "screen.yagens_mobs.weasel_storage.priority_label": "优先级",
+  "screen.yagens_mobs.weasel_storage.priority_hint": "%s。数字越小越先使用。",
+  "screen.yagens_mobs.weasel_storage.apply": "应用",
+  "screen.yagens_mobs.weasel_storage.grid_hint": "点击切换这只雪藏鼬对终端的使用模式",
+  "screen.yagens_mobs.weasel_storage.mode.both": "存取",
+  "screen.yagens_mobs.weasel_storage.mode.deposit": "只存",
+  "screen.yagens_mobs.weasel_storage.mode.take": "只取"
 }

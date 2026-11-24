@@ -52,8 +52,12 @@ def replacedSources = fileTree(overlays).matching { include '**/*.java' }.files.
     overlays.toPath().relativize(it.toPath()).toString().replace('\\', '/')
 }
 def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
+    from('../fabric-1.21.11/src/main/java') { include '**/weasel/FabricSlotInventory.java' }
     from new File(reference, 'java')
     exclude replacedSources
+    exclude '**/weasel/NeoPhysicalStorage.java', '**/weasel/NeoRefinedStorage.java', '**/weasel/NeoCreateStorage.java'
+    exclude '**/weasel/mixin/WeaselCreateFunnelOutput.java'
+    exclude '**/weasel/WeaselPortPackets.java', '**/weasel/client/WeaselPortScreen.java'
     into layout.buildDirectory.dir('generated/reference/java')
 }
 sourceSets.main.java.srcDir(stageReferenceSources)
@@ -83,4 +87,23 @@ dependencies {
     if (providers.gradleProperty('withJei').isPresent()) {
         modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
     }
+}
+
+
+repositories {
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://api.modrinth.com/maven').get()
+        content { includeGroup('maven.modrinth') }
+    }
+    maven {
+        url = providers.gradleProperty('storagePortRepository').orElse('https://www.cursemaven.com').get()
+        content { includeGroup('curse.maven') }
+    }
+}
+
+dependencies {
+    modCompileOnly('curse.maven:ironchest-498534:5782222') { transitive = false }
+    modCompileOnly('maven.modrinth:refined-storage:PMoDGaFz') { transitive = false }
+    modCompileOnly('maven.modrinth:sophisticated-backpacks-unoffical-fabric-port:nHhuPdda') { transitive = false }
+    modCompileOnly('maven.modrinth:sophisticated-core-unofficial-fabric-port:ZLVrtF0Q') { transitive = false }
 }

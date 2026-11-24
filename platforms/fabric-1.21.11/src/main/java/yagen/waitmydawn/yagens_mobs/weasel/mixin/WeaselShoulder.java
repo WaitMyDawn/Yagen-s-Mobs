@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.weasel.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +13,15 @@ import yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasel;
 
 @Mixin(Entity.class)
 abstract class WeaselShoulder {
+    @ModifyExpressionValue(method = "startRiding(Lnet/minecraft/world/entity/Entity;ZZ)Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;canSerialize()Z"))
+    private boolean yagensMobs$allowOwnedPerch(boolean serializable, @Local(argsOnly = true) Entity vehicle) {
+        // Modern vanilla rejects non-serializable vehicles, including players, before checking forced mounts.
+        return serializable || (Object) this instanceof SnowcacheWeasel weasel
+                && vehicle instanceof Player player && weasel.isTame() && weasel.isOwnedBy(player);
+    }
+
+
     @Inject(method = "positionRider(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$MoveFunction;)V",
             at = @At("HEAD"), cancellable = true)
     private void yagensMobs$placeWeaselOnShoulder(Entity passenger, Entity.MoveFunction move, CallbackInfo callback) {
