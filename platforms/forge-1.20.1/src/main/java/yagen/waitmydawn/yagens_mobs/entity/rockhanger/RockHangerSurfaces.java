@@ -55,6 +55,14 @@ final class RockHangerSurfaces {
     private record Visit(Step step, double cost) {
     }
 
+    static boolean nearCeiling(LevelReader level, BlockPos pos) {
+        for (int offset = 1; offset <= 4; offset++) {
+            BlockPos above = pos.above(offset);
+            if (!level.isEmptyBlock(above)) return sturdy(level, above, Direction.UP);
+        }
+        return false;
+    }
+
     private RockHangerSurfaces() {
     }
 

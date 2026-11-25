@@ -55,8 +55,6 @@ def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
     from('../fabric-1.21.11/src/main/java') { include '**/weasel/FabricSlotInventory.java' }
     from new File(reference, 'java')
     exclude replacedSources
-    // Kavat registration and gameplay hooks currently target NeoForge only.
-    exclude '**/entity/kavat/**'
     exclude '**/weasel/NeoPhysicalStorage.java', '**/weasel/NeoRefinedStorage.java', '**/weasel/NeoCreateStorage.java'
     exclude '**/weasel/mixin/WeaselCreateFunnelOutput.java'
     exclude '**/weasel/WeaselPortPackets.java', '**/weasel/client/WeaselPortScreen.java'
@@ -67,8 +65,6 @@ idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/referenc
 
 tasks.named('processResources') {
     from new File(reference, 'resources'), {
-        // These radar definitions invoke the NeoForge-only Kavat renderer by class name.
-        exclude 'assets/xaerominimap/entity/icon/definition/yagens_mobs/kavat*.json'
         include 'assets/**', 'data/**'
         exclude 'data/yagens_mobs/recipe/recipe_blueprint.json'
         exclude '**/neoforge/**'

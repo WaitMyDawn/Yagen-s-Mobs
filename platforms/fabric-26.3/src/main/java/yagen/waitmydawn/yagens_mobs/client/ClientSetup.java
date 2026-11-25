@@ -52,6 +52,11 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        yagen.waitmydawn.yagens_mobs.entity.kavat.KavatClient.register();
+        EntityRendererRegistry.register(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
+        EntityRendererRegistry.register(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
+        BlockEntityRendererRegistry.register(ModBlocks.INCUBATOR_ENTITY.get(),yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorRenderer::new);
+        MenuScreens.register(ModBlocks.INCUBATOR_MENU.get(),yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorScreen::new);
         LumenRenderer.register();
         yagen.waitmydawn.yagens_mobs.entity.weasel.client.WeaselClient.register();
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageClient.register();
@@ -71,6 +76,18 @@ public final class ClientSetup implements ClientModInitializer {
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, models) -> {
             if (renderer instanceof AvatarRenderer<?> player) {
                 helper.register(new BubbleSalamanderRenderer.WornLayer(player, models));
+            }
+        });
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
+            @Override
+            public Identifier getFabricId() {
+                return Identifier.fromNamespaceAndPath(ModIdentity.ID, "kavat_animations");
+            }
+
+            @Override
+            public CompletableFuture<Void> reload(PreparableReloadListener.SharedState state, Executor background,
+                    PreparableReloadListener.PreparationBarrier barrier, Executor game) {
+                return yagen.waitmydawn.yagens_mobs.entity.kavat.KavatAnimations.INSTANCE.reload(state, background, barrier, game);
             }
         });
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {

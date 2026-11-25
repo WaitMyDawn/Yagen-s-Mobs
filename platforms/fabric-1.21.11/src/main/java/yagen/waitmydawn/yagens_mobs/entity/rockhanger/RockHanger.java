@@ -127,6 +127,9 @@ public final class RockHanger extends Monster implements GeoEntity {
                                               EntitySpawnReason reason, BlockPos pos, RandomSource random) {
         return ServerConfigs.ROCK_HANGER.canSpawn()
                 && level.getDifficulty() != Difficulty.PEACEFUL
+                && level.isEmptyBlock(pos) && !level.canSeeSky(pos)
+                && (level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
+                        || RockHangerSurfaces.nearCeiling(level, pos))
                 && Monster.isDarkEnoughToSpawn(level, pos, random)
                 && RockHangerSurfaces.findSpawnAnchor(level, pos, type) != null;
     }
@@ -134,6 +137,11 @@ public final class RockHanger extends Monster implements GeoEntity {
     @Override
     public float getWalkTargetValue(BlockPos pos, LevelReader level) {
         return 0;
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double distance) {
+        return false;
     }
 
     @Override

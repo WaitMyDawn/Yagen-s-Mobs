@@ -45,8 +45,10 @@ public final class ModBlocks {
                     MailParcelEntity::new, MAIL_PARCEL.get()).build(null));
 
     public static final DeferredHolder<Block, IncubatorBlock> INCUBATOR = BLOCKS.register("kavat_incubator",
-            () -> new IncubatorBlock(BlockBehaviour.Properties.of().strength(3).sound(SoundType.METAL)
+            () -> new IncubatorBlock.Core(BlockBehaviour.Properties.of().dynamicShape().strength(3).sound(SoundType.METAL)
                     .noOcclusion().pushReaction(PushReaction.BLOCK)));
+    public static final DeferredHolder<Block, IncubatorBlock.Part> INCUBATOR_PART = BLOCKS.register("kavat_incubator_part",
+            () -> new IncubatorBlock.Part(BlockBehaviour.Properties.ofFullCopy(INCUBATOR.get()).dropsLike(INCUBATOR.get())));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<Incubator>> INCUBATOR_ENTITY =
             ENTITIES.register("kavat_incubator", () -> BlockEntityType.Builder.of(Incubator::new, INCUBATOR.get()).build(null));
     private static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ModIdentity.ID);

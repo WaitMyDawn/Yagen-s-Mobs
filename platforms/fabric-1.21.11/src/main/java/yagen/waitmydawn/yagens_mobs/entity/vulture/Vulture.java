@@ -130,11 +130,14 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
 
     public static boolean checkSpawnPlacement(EntityType<Vulture> type, ServerLevelAccessor level,
                                               EntitySpawnReason reason, BlockPos pos, RandomSource random) {
-        if (!ServerConfigs.VULTURE.canSpawn() || !level.canSeeSky(pos)
-                || !level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
-                || !level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) {
-            return false;
-        }
+        if (!ServerConfigs.VULTURE.canSpawn() || !level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())
+                || !level.canSeeSky(pos)) return false;
+        int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ());
+        if (pos.getY() < surfaceY || pos.getY() > surfaceY + 3) return false;
+        BlockPos floor = pos.atY(surfaceY - 1);
+        BlockState support = level.getBlockState(floor);
+        if (!support.getFluidState().isEmpty() || !(support.isFaceSturdy(level, floor, Direction.UP)
+                || support.is(net.minecraft.tags.BlockTags.LEAVES))) return false;
         if (level.getBiome(pos).is(ModTags.VULTURE_HABITAT)) {
             return true;
         }
@@ -149,6 +152,11 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
                 return true;
             }
         }
+        return false;
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double distance) {
         return false;
     }
 

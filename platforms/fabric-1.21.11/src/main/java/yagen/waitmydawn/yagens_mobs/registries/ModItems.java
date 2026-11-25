@@ -3,6 +3,7 @@ package yagen.waitmydawn.yagens_mobs.registries;
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import java.util.function.Supplier;
 import java.util.function.Function;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -58,6 +59,17 @@ public final class ModItems {
     public static final Supplier<SpawnEggItem> LUMEN_BUTTERFLY_SPAWN_EGG = item("lumen_butterfly_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(LumenButterflies.TYPE.get())));
 
+    public static final Supplier<net.minecraft.world.item.BlockItem> KAVAT_INCUBATOR = item("kavat_incubator", properties -> new net.minecraft.world.item.BlockItem(ModBlocks.INCUBATOR.get(), properties.useBlockDescriptionPrefix()));
+    public static final Supplier<Item> KAVAT_CODE = item("kavat_genetic_code", Item::new);
+    public static final Supplier<Item> KAVAT_TEMPLATE = item("kavat_imprint", properties -> new Item(properties) {
+        @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
+            return stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)
+                    ? super.getName(stack) : net.minecraft.network.chat.Component.translatable("kavat.blank_imprint");
+        }
+    });
+    public static final Supplier<Item> KAVAT_EXTRACTOR = item("kavat_extractor", Item::new);
+    public static final Supplier<SpawnEggItem> KAVAT_EGG = item("kavat_spawn_egg",
+            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.KAVAT.get())));
     private ModItems() {
     }
 

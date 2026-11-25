@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.bubblesalamander;
 
+import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
 import java.util.EnumSet;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
@@ -61,6 +62,19 @@ import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
 public final class BubbleSalamander extends TamableAnimal implements Bucketable, GeoEntity {
+    @Override
+    public void move(MoverType kind, Vec3 motion) {
+        if (kind == MoverType.SELF && level() instanceof ServerLevel
+                && isTame() && !isPassenger() && !isVehicle() && !isWorn()) {
+            Vec3 safeMotion = PetHazards.steer(this, motion, false, false);
+            if (safeMotion != motion) {
+                motion = safeMotion;
+                setDeltaMovement(safeMotion);
+            }
+        }
+        super.move(kind, motion);
+    }
+
     private static final EntityDataAccessor<Integer> WEARER =
             SynchedEntityData.defineId(BubbleSalamander.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> SWIM_STROKE =

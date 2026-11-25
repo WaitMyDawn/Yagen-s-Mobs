@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:glass_pane"
+  ],
+  "result": {
+    "id": "yagens_mobs:kavat_imprint"
+  }
+}

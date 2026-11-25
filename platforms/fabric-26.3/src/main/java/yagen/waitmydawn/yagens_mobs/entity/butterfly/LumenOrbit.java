@@ -57,6 +57,7 @@ final class LumenOrbit {
         BlockPos pos = BlockPos.containing(target);
         var box = butterfly.getDimensions(butterfly.getPose()).makeBoundingBox(target);
         return !level.isOutsideBuildHeight(pos) && level.getWorldBorder().isWithinBounds(pos) && level.hasChunkAt(pos)
+                && yagen.waitmydawn.yagens_mobs.entity.PetHazards.safe(level, box, true)
                 && level.noCollision(butterfly.level() == level ? butterfly : null, box)
                 && (level.getFluidState(pos).isEmpty() || water && level.getFluidState(pos).is(FluidTags.WATER));
     }

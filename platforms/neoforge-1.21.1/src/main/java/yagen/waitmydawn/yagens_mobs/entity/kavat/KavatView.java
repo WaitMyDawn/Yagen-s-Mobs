@@ -1,16 +1,23 @@
 package yagen.waitmydawn.yagens_mobs.entity.kavat;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.Map;
+import software.bernie.geckolib.cache.object.GeoBone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.Animation;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 
 public final class KavatView extends GeoEntityRenderer<Kavat> {
+    private final KavatTurn.Frame turnFrame = new KavatTurn.Frame();
+    private Map<String, KavatTurn.Joint> turnRig = KavatTurn.LONG;
+
     public KavatView(EntityRendererProvider.Context context) {
         super(context, new Model());
         shadowRadius = .36F;
@@ -23,12 +30,42 @@ public final class KavatView extends GeoEntityRenderer<Kavat> {
     public void render(Kavat cat, float yaw, float t, PoseStack poses, MultiBufferSource buffers, int light) {
         if (cat.hidden() && !localOwner(cat))
             return;
+        turnFrame.sample(cat.turnMotion, t);
+        turnRig = KavatGenes.TAILS.get(cat.genes().tail()).equals("leaf") ? KavatTurn.SHORT : KavatTurn.LONG;
         super.render(cat, yaw, t, poses, buffers, light);
     }
     @Override
     public RenderType getRenderType(Kavat cat, ResourceLocation tex, MultiBufferSource buffers, float t) {
         return cat.hidden() ? RenderType.outline(tex) : RenderType.entityCutoutNoCull(tex);
     }
+    @Override
+    protected void applyRotations(Kavat cat, PoseStack poses, float age, float yaw, float partial, float scale) {
+        super.applyRotations(cat, poses, age, cat.turnMotion.heading(partial, yaw), partial, scale);
+    }
+
+    @Override
+    public void renderRecursively(PoseStack poses, Kavat cat, GeoBone bone, RenderType type,
+                                  MultiBufferSource buffers, VertexConsumer vertices, boolean reRender,
+                                  float partial, int light, int overlay, int color) {
+        var joint = turnRig.get(bone.getName());
+        if (joint == null) {
+            super.renderRecursively(poses, cat, bone, type, buffers, vertices, reRender, partial, light, overlay, color);
+            return;
+        }
+        float x = bone.getRotX(), y = bone.getRotY(), height = bone.getPosY();
+        // Baked bones are shared. Restore the keyframed pose before another pass or entity can reuse it.
+        try {
+            bone.setRotX(x + joint.pitch(turnFrame));
+            bone.setRotY(y + joint.yaw(turnFrame));
+            bone.setPosY(height + joint.height(turnFrame));
+            super.renderRecursively(poses, cat, bone, type, buffers, vertices, reRender, partial, light, overlay, color);
+        } finally {
+            bone.setRotX(x);
+            bone.setRotY(y);
+            bone.setPosY(height);
+        }
+    }
+
     private static final class Model extends GeoModel<Kavat> {
         private static final String[][] FAN_SECTIONS=new String[2][12];
         static {
@@ -61,7 +98,11 @@ public final class KavatView extends GeoEntityRenderer<Kavat> {
             return id("geo/entity/kavat/" + k.genes().model() + ".geo.json");
         }
         public ResourceLocation getAnimationResource(Kavat k) {
-            return id("animations/entity/kavat/" + k.genes().model() + ".animation.json");
+            return KavatAnimations.LIBRARY;
+        }
+        @Override
+        public Animation getAnimation(Kavat cat, String name) {
+            return KavatAnimations.INSTANCE.resolve(cat.genes().model(), name);
         }
         public ResourceLocation getTextureResource(Kavat k) {
             return id("textures/entity/kavat/" + KavatGenes.COATS.get(k.genes().coat()) + ".png");

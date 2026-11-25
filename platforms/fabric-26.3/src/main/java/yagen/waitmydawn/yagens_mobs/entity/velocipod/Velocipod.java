@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.velocipod;
 
+import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
 import yagen.waitmydawn.yagens_mobs.compat.SaveTag;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
@@ -75,6 +76,19 @@ import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 
 public final class Velocipod extends PathfinderMob implements GeoEntity, HasCustomInventoryScreen {
+    @Override
+    public void move(MoverType kind, Vec3 motion) {
+        if (kind == MoverType.SELF && level() instanceof ServerLevel
+                && isTamed() && !isPassenger() && !isVehicle()) {
+            Vec3 safeMotion = PetHazards.steer(this, motion, true, false);
+            if (safeMotion != motion) {
+                motion = safeMotion;
+                setDeltaMovement(safeMotion);
+            }
+        }
+        super.move(kind, motion);
+    }
+
     public static final float MODEL_SCALE = 1.5F;
     public static final float JUVENILE_DIMENSIONS = .59F;
     public static final float SEAT_HEIGHT = 19.4F;
@@ -179,6 +193,8 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, HasCust
 
     @Override
     protected void registerGoals() {
+        targetSelector.addGoal(0, new VelocipodGoals.Assist(this));
+        goalSelector.addGoal(0, new VelocipodGoals.Land(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Slime.class, 10, true, false,
                 (target, level) -> target instanceof Slime slime && hunts(slime) && !isBrooding()));
@@ -313,7 +329,7 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, HasCust
 
     @Override
     public boolean removeWhenFarAway(double distance) {
-        return !isTamed() && !isBaby() && !isBrooding() && super.removeWhenFarAway(distance);
+        return false;
     }
 
     void biteIfClose(LivingEntity target) {
@@ -333,7 +349,13 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, HasCust
         return entityData.get(OWNER).isPresent();
     }
 
-    private boolean isOwnedBy(Entity entity) {
+    Player companionOwner() {
+        return entityData.get(OWNER).map(net.minecraft.world.entity.EntityReference::getUUID).map(level()::getPlayerByUUID).orElse(null);
+    }
+
+    boolean choosingLanding;
+
+    public boolean isOwnedBy(Entity entity) {
         return entityData.get(OWNER).map(net.minecraft.world.entity.EntityReference::getUUID).filter(entity.getUUID()::equals).isPresent();
     }
 
@@ -346,6 +368,7 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, HasCust
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
+        choosingLanding = passenger instanceof Player && isTamed() && !onGround();
         sprintRequested = false;
         if (!level().isClientSide()) {
             entityData.set(RIDE_MOTION, new Vector3f());

@@ -44,6 +44,12 @@ Regular creature entries use `enabled`, `weight`, `minGroupSize`, and `maxGroupS
 
 NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会保留。沙漠鳐鱼的实际权重为配置值的 1.5 倍。秃鹫可在露天陆地或树冠上方 0–3 格入场；吊岩兽也会从距洞顶 1–4 格的空气中寻找天然锚点，仍须满足黑暗与 16 格净空。 / On NeoForge 1.21.1, all nine species survive distance-based despawning and save with their chunks. Desert Skates use 1.5 times their configured spawn weight. Condrocs can spawn up to three blocks above exposed ground or foliage. Rock Hangers can also find an anchor from air within four blocks of a cave ceiling; darkness and 16 blocks of clearance still apply.
 
+### 宠物停火与避险 / Pet commands and hazards
+
+在按键设置中绑定「让视野内的宠物停火」（默认未绑定）。按下时，画面内、视线无遮挡的自家宠物放弃当前攻击。它们保留跟随或待命状态，之后仍可响应新的攻击。 / Bind **Disengage visible pets** in Controls (unbound by default). It clears combat targets for your own pets visible on screen with a clear line of sight. Their follow or stay mode is preserved, and they can respond to a fresh attack.
+
+驯服的库娃、迅敏节虫、泡囊鲵、蓄辉蝶和雪藏鼬在自主移动时避开岩浆、岩浆块、火、燃烧的营火及有刺植物。蓄辉蝶仍可接触仙人掌和凋零玫瑰。 / Tamed Kavats, Velocipods, Bubble Salamanders, Lumen Butterflies and Snowcache Weasels steer away from lava, magma blocks, fire, lit campfires and harmful plants during autonomous movement. Lumen Butterflies can still approach cacti and wither roses.
+
 <a id="desert-skate"></a>
 ## 沙漠鳐鱼 / Desert Skate
 
@@ -126,6 +132,8 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 <a id="bubble-salamander"></a>
 ## 泡囊鲵 / Bubble Salamander
 
+在 NeoForge 1.21.1，主人传送到水中时，处于水中跟随模式的泡囊鲵会尝试在附近水域与主人会合。等待中的个体留在等待点。 / On NeoForge 1.21.1, a following Bubble Salamander rejoins its owner in nearby water when the owner teleports into water. Waiting salamanders stay at their waiting point.
+
 **中文**
 
 - **栖息与生长。** 生命值 16，护甲和韧性为 0，捕食伤害 3。自然生成列需要从生成方块起连续 3–9 格水，水面上方是见天的空气。幼体会游动，通常 20 分钟长大，有与成体相同的体色系统，不能被佩戴。该生物没有专属物品掉落。
@@ -148,6 +156,9 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 
 <a id="velocipod"></a>
 ## 迅敏节虫 / Velocipod
+
+空中离座后，驯服的迅敏节虫会滑降并寻找安全落点。无人骑乘时，它会协助 32 格内的主人攻击新目标。骑乘者上下坐骑时会调整重心，在背上仍可拉弓、用弩、投掷三叉戟和进食。 / After an airborne dismount, a tamed Velocipod glides toward a safe landing. While unridden, it assists an owner within 32 blocks against newly attacked targets. Riders shift their weight when mounting and dismounting, and can use bows, crossbows, tridents and food from the board stance.
+
 
 **中文**
 
@@ -173,6 +184,8 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 ## 蓄辉蝶 / Lumen Butterfly
 
 ### 捕获、跟随与经验 / Taming, following and experience
+
+主人使用传送命令时，跟随的蓄辉蝶会返回主人身边。若原区块已经卸载，服务器会按跟随记录短暂加载它并找回原来的个体。 / Following butterflies rejoin their owner after teleport commands. If the old chunk has unloaded, the server briefly loads the recorded chunk to recover the original butterfly.
 
 - **中文。** 自然群是成年蝶，生命值 8，九种基础色等概率。幼体是繁殖产生的毛毛虫，通常在地面爬行，20 分钟后长大并参与蝶群经验分配和基础色能力。用对应植物右键一次即可驯服。主人潜行右键切换跟随和等待，最多 **7 只**跟随，满员后的新宠先等待。跟随中的蝶免疫主人伤害，所有蝶免疫仙人掌和凋零玫瑰。成蝶沿各自倾斜的椭圆轨道慢速围绕主人，面朝实际飞行方向。离开主人 32 格或穿越维度时，登记跟随的个体会尝试返回主人附近的安全位置。
 - **English.** Natural groups consist of adults with 8 health and equally likely base colors. Caterpillars are born through breeding, normally crawl, and mature after 20 minutes. Experience sharing and base-color powers start at adulthood. One use of the matching plant tames a butterfly. Owners can sneak-right-click to switch between following and waiting. Up to **seven** butterflies can follow at a time, and newly tamed pets wait when the slots are full. Followers are immune to damage caused by their owner. All butterflies are immune to cactus and wither roses. Flying adults trace individual tilted elliptical orbits and face their actual direction of flight. Registered followers can rejoin their owner at a safe point from more than 32 blocks away or from another dimension.
@@ -304,7 +317,7 @@ With Xaero’s Minimap installed, all eight creatures have face icons in its Ent
 <a id="kavat"></a>
 ## 库娃与孵化器 / Kavat and incubator
 
-**NeoForge 1.21.1**。库娃成年体采用 1.5× 模型体型，基础生命 40、攻击 8。野生库娃可供采样。孵化器产出的库娃属于启动任务的玩家，空手右键可切换跟随和原地休息。 / Adult Kavats use a 1.5× species scale, have 40 health and deal 8 base damage. Wild Kavats supply genetic samples. Incubated Kavats belong to the player who starts the job. Interact empty-handed to switch between following and resting.
+库娃成年体采用 1.5× 模型体型，基础生命 40、攻击 8。野生库娃可供采样。孵化器产出的库娃属于启动任务的玩家，主人主手空手时潜行右键可切换跟随和原地待命，快捷栏上方会显示切换后的模式。 / Adult Kavats use a 1.5× species scale, have 40 health and deal 8 base damage. Wild Kavats supply genetic samples. Incubated Kavats belong to the player who starts the job. Sneak-right-click with an empty main hand to switch between following and staying. The new mode appears above the hotbar.
 
 | 野生体色 / Wild coat | 来源 / Habitat | 复活材料 / Revival item |
 | --- | --- | --- |
@@ -319,7 +332,13 @@ With Xaero’s Minimap installed, all eight creatures have face icons in its Ent
 | 樱花粉 / Cherry pink | 樱花树林地表 / Cherry grove surface | 樱花原木 / Cherry log |
 | 沙漠黄 / Desert yellow | 沙漠地表 / Desert surface | 沙子 / Sand |
 
+库娃闲逛时以对角步慢行，转身时头肩先行、尾尖随后跟上。地面水平速度达到约 5.25 格/秒时切换为奔跑，降到 4.35 格/秒以下时恢复走姿。普通越坎会轻轻收爪，战斗中快速向前跃起时会伸展前肢。 / Kavats walk with alternating diagonal steps. The head and shoulders lead turns and the tail tip follows. They break into a gallop at about 5.25 blocks per second on the ground and return to a walk below 4.35. They tuck their paws for small hops and reach forward during fast combat leaps.
+
 库娃会走到点燃的熔炉、高炉、烟熏炉或营火旁盘卧，也会偶尔侧躺。在主人四格内会偶尔打滚，附近至多还有一位旁观玩家且头上有空间时，有很小概率后空翻。着火的库娃可以在地面翻滚扑火。 / Kavats curl up beside lit furnaces, blast furnaces, smokers and campfires, and sometimes lie on their side. Within four blocks of their owner they sometimes roll and very rarely backflip with sufficient headroom and at most one other player nearby. A burning Kavat rolls on the ground to put itself out.
+
+对已成为战斗目标的怪物，库娃会在水平距离 6–10 格、高差不超过 1.5 格且上方有净空时飞扑。每次飞扑后冷却 3 秒，进入近战范围后才造成普通近战伤害。 / Kavats pounce at hostile combat targets 6–10 horizontal blocks away when the height difference is at most 1.5 blocks and the arc is clear. Pounces have a three-second cooldown and deal normal melee damage on reaching attack range.
+
+跟随中的库娃与主人相距超过 64 格时，会返回主人附近的安全位置。主人传送或跨维度时也会带上跟随的库娃。坐下等待、拴住或正在乘坐其他实体的库娃会留在原处。 / Following Kavats return to a safe spot near their owner beyond 64 blocks and accompany player teleports, including dimension changes. Sitting, leashed and riding Kavats stay behind.
 
 入水后库娃划水浮在水面。跟随中的库娃会随潜水的主人下潜，换气或主人上浮时返回水面。 / Kavats paddle on the surface and dive after a submerged owner while following. They surface for air or when the owner resurfaces.
 
@@ -330,9 +349,9 @@ Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬�
 **采样和孵化 / Sampling and incubation**
 
 - 基因提取器配方为 `G·G / G·G / ·I·`，G 为玻璃板，I 为铁锭。右键库娃消耗一个提取器，每只终生可提取一次，产出 1–3 个记录四项性状的遗传密码。 / Craft an extractor with four glass panes and one iron ingot. Use one on a Kavat to obtain 1–3 codes encoding its four traits, once per animal.
-- 孵化器配方为 `IGI / G·G / IRI`，I 为铁锭，G 为玻璃，R 为红石粉。在孵化器里点击背包中的样本来选入，Shift 点击批量选择，点击上方样本撤回。放入十个密码或两份模板后点击时钟。孵化和复活均需 6000 游戏刻。中途拆除退回投入材料，复活记录回到主人名下。 / Craft an incubator from four iron ingots, three glass blocks and redstone dust. Click inventory samples to select them, Shift-click to select several, and click a selected sample to undo. Click the clock with ten codes or two imprints selected. Incubation and revival each take 6,000 game ticks. Breaking a working incubator refunds its inputs and returns any revival record.
+- 孵化器配方为 `IGI / G·G / IRI`，I 为铁锭，G 为玻璃，R 为红石粉。直接放入十个遗传密码或两份已记录的模板，每格一件。样本可取回，关闭界面或重进世界仍会保留。点击「开始培育」启动五分钟倒计时。打开「已故库娃」可翻阅个体模型、性状、代数和剩余切片次数，使用显示的材料复活或确认删除。孵化器一次放置，占 2×2×2 格，放置点是底层西北角。右键任一部件可打开同一界面。舱内有生物时无法启动。孵化或复活时，八面的上下舱瓣分层伸出，在中央闭合。倒计时归零时，库娃先蜷在托盘中央，银白色舱瓣同时开始打开。它保持蜷缩约 1.2 秒，待舱瓣完全收起后起身、伸懒腰，再恢复行动。孵化与复活共用这段动作。旧孵化器会在周围腾空后扩建，并保留任务和样本。中途拆除退还材料和暂存样本，复活记录回到主人名下。 / Craft the incubator with four iron ingots, three glass blocks and redstone dust. Place ten codes or two recorded imprints, one per slot. Stored samples survive closing the menu and reloading the world. Press Incubate to start the five-minute timer. Browse deceased Kavats to inspect their model, traits, generation and remaining imprints, pay the displayed revival cost, or confirm deletion. One incubator occupies a 2×2×2 volume extending east, south and up from the placed block. Use any part to open the same inventory. The chamber must be vacant to start. Upper and lower shutters extend in stages around the eight-sided chamber. When the timer expires, the Kavat appears curled on the central tray as the silver-white shutters start opening. It holds that pose for 1.2 seconds until the shutters retract, then stands, stretches and resumes normal movement. Hatching and revival use the same sequence. Legacy machines expand when the space is clear and retain their jobs and samples. Breaking the incubator returns staged samples and committed materials and restores pending revival records.
 - 十个密码有一半概率全随机，另一半对每项性状独立从十个密码中抽一个来源，每个实际投入的密码占一票。 / Ten codes give a 50% chance of an entirely random phenotype. Otherwise each trait independently samples one of the ten codes, counting duplicate inputs.
-- 空闲孵化器可为附近 8 格的自有库娃切片，终生限两份。模板记录原主人和代数。玩家可以搭配自己与他人的模板，或使用两份他人的模板。两份都属于操作者时拒绝培育。 / An idle incubator can imprint an owned Kavat within eight blocks, twice in its lifetime. Imprints retain the source owner and generation. An operator may use one personal and one traded imprint, or two traded imprints.
+- 一张纸加一块玻璃板无序合成一份空白库娃基因模板。手持空白模板右键自己驯服的库娃，记录其四项性状、原主人和代数。每只库娃终生可切片两次，复活保留已用次数。培育时，两份模板中至多一份来自操作者自己的库娃。 / Craft a blank genetic imprint from one paper and one glass pane in any arrangement. Use it directly on your own tamed Kavat to record its four traits, source owner and generation. Each Kavat provides two imprints in its lifetime, including after revival. At most one imprint in a breeding pair may come from the operator’s own Kavats.
 - 四项相同的模板按较高代数独立判定每一项的变异概率。第 0 代完整复制；第 10 代每项有 10% 概率变成其他值。全同的子代加一代；发生任何变异或使用不同性状的模板，代数归零。 / Matching phenotypes use the higher generation as an independent mutation percentage for each trait. Generation zero clones exactly. At generation ten each trait has a 10% chance to change. A complete match advances one generation; mutation or crossing different phenotypes resets it to zero.
 - 不同模板按各性状的固定环序继承。相同值保留，不同值等概率取最短闭区间，两边等长则全环随机。品种有特例：不同品种可产生三种中的任意一种。环序如下。 / Different imprints retain matching traits. Other traits sample the inclusive shortest arc uniformly, using the whole ring when the arcs tie. Different breeds can produce any of the three breeds.
   - 笑面 → 镜像 → 噬血 / Smeeta → Adarza → Vasca

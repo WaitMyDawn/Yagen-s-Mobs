@@ -89,7 +89,7 @@ final class KavatHabits {
         public void start() { cat.getNavigation().stop(); }
         public void tick() {
             var owner = cat.isOrderedToSit() ? null : cat.getOwner();
-            boolean follow = owner != null && !owner.isSpectator() && owner.distanceToSqr(cat) < 32*32;
+            boolean follow = owner != null && !owner.isSpectator();
             boolean dive = follow && owner.isUnderWater() && cat.getAirSupply() > 60;
             var velocity = cat.getDeltaMovement();
             double dx = 0, dz = 0;

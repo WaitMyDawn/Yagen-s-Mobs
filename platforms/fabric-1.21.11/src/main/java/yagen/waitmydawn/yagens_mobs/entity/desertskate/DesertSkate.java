@@ -151,6 +151,11 @@ public final class DesertSkate extends Monster implements GeoEntity {
     }
 
     @Override
+    public boolean removeWhenFarAway(double distance) {
+        return false;
+    }
+
+    @Override
     public int getMaxSpawnClusterSize() {
         return ServerConfigs.DESERT_SKATE.maxGroupCount();
     }

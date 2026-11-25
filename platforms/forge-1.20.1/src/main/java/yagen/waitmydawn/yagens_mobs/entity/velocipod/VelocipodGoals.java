@@ -66,6 +66,103 @@ final class VelocipodGoals {
         }
     }
 
+    static final class Assist extends Goal {
+        private final Velocipod pod;
+        private int handled;
+        private net.minecraft.world.entity.LivingEntity target;
+
+        Assist(Velocipod pod) {
+            this.pod = pod;
+            setFlags(EnumSet.of(Flag.TARGET));
+        }
+
+        @Override public boolean canUse() {
+            if (!pod.isTamed() || pod.isBrooding() || pod.hasRider()) return false;
+            var owner = pod.companionOwner();
+            if (owner == null || !owner.isAlive() || pod.distanceToSqr(owner) > 32 * 32) return false;
+            var victim = owner.getLastHurtMob();
+            int stamp = owner.getLastHurtMobTimestamp();
+            if (stamp == handled || owner.tickCount - stamp > 40) return false;
+            handled = stamp;
+            if (victim == null || victim == pod || !pod.canAttack(victim) || owner.isAlliedTo(victim)
+                    || victim instanceof net.minecraft.world.entity.TamableAnimal pet && pet.isOwnedBy(owner)
+                    || victim instanceof Velocipod companion && companion.isOwnedBy(owner)
+                    || victim instanceof net.minecraft.world.entity.player.Player player && !owner.canHarmPlayer(player))
+                return false;
+            target = victim;
+            return true;
+        }
+
+        @Override public void start() { pod.setTarget(target); }
+        @Override public boolean canContinueToUse() {
+            return pod.getTarget() == target && target.isAlive() && !pod.hasRider() && pod.distanceToSqr(target) < 48 * 48;
+        }
+        @Override public void stop() {
+            if (pod.getTarget() == target) pod.setTarget(null);
+            target = null;
+        }
+    }
+
+    static final class Land extends FlightGoal {
+        private Vec3 landing;
+        private int searchAt;
+
+        Land(Velocipod pod) { super(pod); }
+
+        @Override public boolean canUse() {
+            if (pod.onGround() || pod.hasRider()) pod.choosingLanding = false;
+            return pod.choosingLanding && free();
+        }
+
+        @Override public void stop() {
+            super.stop();
+            landing = null;
+            searchAt = 0;
+        }
+
+        @Override public void tick() {
+            if (pod.tickCount >= searchAt) {
+                searchAt = pod.tickCount + 12;
+                landing = findLanding();
+            }
+            if (landing != null) {
+                // A point below the air cell ensures contact rather than hovering over its center.
+                flyTo(landing.add(0, -.04, 0), .68);
+                return;
+            }
+            // Far above terrain, glide forward. Over a dangerous surface, hold altitude and seek shore.
+            var heading = Vec3.directionFromRotation(0, pod.getYRot());
+            var ahead = pod.position().add(heading.scale(2.4));
+            var clear = pod.level().clip(new ClipContext(pod.position(), pod.position().add(0,-6,0),
+                    ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, pod)).getType() == HitResult.Type.MISS;
+            flyTo(ahead.add(0, clear ? -1.4 : 0, 0), .62);
+        }
+
+        private Vec3 findLanding() {
+            var level = pod.level();
+            var start = pod.blockPosition();
+            // Scan concentric rings only near terrain; cap work independently of flight altitude.
+            for (int radius = 0; radius <= 6; radius += 2) {
+                int step = Math.max(1, radius);
+                for (int dx = -radius; dx <= radius; dx += step) for (int dz = -radius; dz <= radius; dz += step) {
+                    if (radius != 0 && dx == 0 && dz == 0) continue;
+                    var sample = Vec3.atBottomCenterOf(start.offset(dx, 0, dz)).add(0, .3, 0);
+                    if (!level.hasChunkAt(BlockPos.containing(sample))) continue;
+                    var hit = level.clip(new ClipContext(sample, sample.add(0,-9,0), ClipContext.Block.COLLIDER,
+                            ClipContext.Fluid.ANY, pod));
+                    if (hit.getType() == HitResult.Type.MISS || hit.getDirection() != net.minecraft.core.Direction.UP) continue;
+                    var floor = hit.getBlockPos();
+                    if (!level.getBlockState(floor).isFaceSturdy(level, floor, net.minecraft.core.Direction.UP)) continue;
+                    var foot = Vec3.atBottomCenterOf(floor.above());
+                    var box = pod.getDimensions(pod.getPose()).makeBoundingBox(foot);
+                    if (level.noCollision(pod, box) && yagen.waitmydawn.yagens_mobs.entity.PetHazards.safe(level,box,false)
+                            && visible(foot.add(0,.25,0))) return foot;
+                }
+            }
+            return null;
+        }
+    }
+
     static final class Hunt extends FlightGoal {
         Hunt(Velocipod pod) {
             super(pod);

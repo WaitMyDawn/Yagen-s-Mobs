@@ -1,7 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.player.Player;
@@ -11,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yagen.waitmydawn.yagens_mobs.entity.velocipod.Velocipod;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.RiderMountMotion;
 
 @Mixin(AvatarRenderer.class)
 abstract class PlayerVelocipodOrientation {
@@ -21,13 +20,13 @@ abstract class PlayerVelocipodOrientation {
         var game = Minecraft.getInstance();
         if (game.level == null || !(game.level.getEntity(state.id) instanceof Player player)) return;
         float partialTick = game.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-        if (player.getVehicle() instanceof Velocipod pod && player.isAlive()) {
-            float facing = Mth.rotLerp(partialTick, pod.yRotO, pod.getYRot());
-            poses.mulPose(Axis.YP.rotationDegrees(180 - facing));
-            poses.mulPose(pod.riderTilt(partialTick));
-            poses.mulPose(Axis.YP.rotationDegrees(-52));
-            callback.cancel();
-        }
+        var motion = RiderMountMotion.sample(player, partialTick);
+        if (motion == null) return;
+        float weight = motion.weight(player.tickCount + (double) partialTick);
+        if (weight <= 0) return;
+        // The brief lift clears the leading foot while the hips turn across the back.
+        poses.translate(0, .11F * Mth.sin(Mth.PI * weight), 0);
+        poses.mulPose(motion.rotation(yaw, weight));
+        callback.cancel();
     }
 }
-

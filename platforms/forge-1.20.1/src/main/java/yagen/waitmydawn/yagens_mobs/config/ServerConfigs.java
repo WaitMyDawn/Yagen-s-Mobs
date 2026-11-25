@@ -18,6 +18,8 @@ public final class ServerConfigs {
     public static final Spawns BUBBLE_SALAMANDER = spawns(SpawnDefaults.BUBBLE_SALAMANDER);
     public static final Spawns VELOCIPOD = spawns(SpawnDefaults.VELOCIPOD);
     public static final Spawns LUMEN_BUTTERFLY = spawns(SpawnDefaults.LUMEN_BUTTERFLY);
+    public static final Spawns KAVAT = spawns(SpawnDefaults.KAVAT);
+    public static final ForgeConfigSpec.IntValue KAVAT_MAIN_ISLAND_SPACING = BUILDER.defineInRange("spawns.kavat.mainIslandSpacing",64,0,128);
     public static final Spawns SNOWCACHE_WEASEL = spawns(SpawnDefaults.SNOWCACHE_WEASEL);
     public static final ForgeConfigSpec.IntValue ROCK_HANGER_CEILING_CLEARANCE = BUILDER
             .comment("Minimum uninterrupted clearance measured from the ceiling for natural spawns, spawn eggs, and reattachment.")

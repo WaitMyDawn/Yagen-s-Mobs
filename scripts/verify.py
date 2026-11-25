@@ -61,6 +61,36 @@ def verify_jar(project, target, jar):
         gecko_major = int(gecko_version.split(".", 1)[0])
         model_folder = "geckolib/models" if gecko_major >= 5 else "geo"
         animation_folder = "geckolib/animations" if gecko_major >= 5 else "animations"
+        index_path = f"{assets}/kavat/animation_index.json"
+        reference = project / "platforms/neoforge-1.21.1/src/main/resources"
+        bank = "entity/kavat_library.animation.json"
+        for source, packaged in ((index_path, index_path),
+                                 (f"{assets}/animations/{bank}", f"{assets}/{animation_folder}/{bank}")):
+            require(archive.read(packaged) == (reference / source).read_bytes(),
+                    f"Packaged Kavat animation resource differs: {packaged}")
+        # Legacy overrides are valid in external packs but would shadow the shared bank in the mod JAR.
+        rigs = json.loads(archive.read(index_path))["rigs"]
+        for rig in rigs:
+            legacy = f"{assets}/{animation_folder}/entity/kavat/{rig}.animation.json"
+            require(legacy not in entries, f"Stale full animation set in JAR: {legacy}")
+            model = f"{assets}/{model_folder}/entity/kavat/{rig}.geo.json"
+            require(model in entries, f"Missing Kavat rig: {model}")
+        recipe_folder = "recipes" if minecraft == "1.20.1" else "recipe"
+        data = f"data/{shared['mod_id']}"
+        for path in (reference / data / "recipe").glob("kavat_*.json"):
+            require(f"{data}/{recipe_folder}/{path.name}" in entries, f"Missing Kavat recipe: {path.name}")
+        require(f"{data}/tags/worldgen/biome/kavat_habitat.json" in entries, "Missing Kavat habitat tag")
+        require(f"{assets}/{animation_folder}/block/kavat_incubator.animation.json" in entries,
+                "Missing incubator shutter animation")
+        for coat in (reference / assets / "textures/entity/kavat").glob("*.png"):
+            path = coat.relative_to(reference).as_posix()
+            require(archive.read(path) == coat.read_bytes(), f"Packaged Kavat coat differs: {path}")
+        require(f"{assets}/{model_folder}/block/kavat_incubator.geo.json" in entries, "Missing incubator model")
+        require("assets/xaerominimap/entity/icon/definition/yagens_mobs/kavat.json" in entries,
+                "Missing Kavat radar definition")
+        if gecko_major >= 5:
+            require(f"{assets}/items/kavat_spawn_egg.json" in entries and
+                    f"{assets}/textures/item/kavat_spawn_egg.png" in entries, "Missing modern Kavat egg resources")
         for model in models:
             require(f"{assets}/{model_folder}/entity/{model}.geo.json" in entries, f"Missing model {model}")
             require(f"{assets}/{animation_folder}/entity/{model}.animation.json" in entries, f"Missing animation {model}")
@@ -101,6 +131,8 @@ def verify_jar(project, target, jar):
             require("yagens_mobs.mixins.json" in metadata.get("mixins", []), "Missing Fabric mixin registration")
             require(not any(path.startswith(f"data/{shared['mod_id']}/neoforge/") for path in entries),
                     "NeoForge biome modifiers are not Fabric runtime resources")
+            declared = json.loads((root / "resources/fabric.mod.json").read_bytes())
+            require(metadata["entrypoints"] == declared["entrypoints"], "Packaged entrypoints differ from source")
             for kind, entrypoints in metadata["entrypoints"].items():
                 for entrypoint in entrypoints:
                     class_name = entrypoint if isinstance(entrypoint, str) else entrypoint["value"]

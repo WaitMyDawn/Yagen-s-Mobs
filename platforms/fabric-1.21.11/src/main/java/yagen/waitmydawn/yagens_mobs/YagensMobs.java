@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.minecraft.world.item.context.UseOnContext;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.CargoTongs;
@@ -46,6 +47,12 @@ public final class YagensMobs implements ModInitializer {
         yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register();
         ModItems.register();
         LumenButterflies.register();
+        yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories.register();
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
+                yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescue.TYPE, yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescue.CODEC);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
+                yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorPage.TYPE, yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorPage.CODEC);
+        yagen.waitmydawn.yagens_mobs.entity.CompanionTravel.register();
         ModSounds.register();
         MailBagMenu.register();
         LauncherMenu.register();
@@ -54,6 +61,7 @@ public final class YagensMobs implements ModInitializer {
         StationPackets.register();
         RockSilkPackets.register();
         VelocipodSprintInput.register();
+        PetRecall.register();
         BubbleSalamanderWear.register();
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerConfigs.reload(null));
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((entity, world) -> {

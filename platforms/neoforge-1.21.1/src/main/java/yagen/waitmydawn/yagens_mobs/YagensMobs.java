@@ -1,6 +1,8 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.neoforged.bus.api.IEventBus;
+import yagen.waitmydawn.yagens_mobs.entity.CompanionTravel;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatCombat;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories;
 import net.neoforged.fml.ModContainer;
@@ -47,12 +49,19 @@ public final class YagensMobs {
         LauncherMenu.register(modBus);
         AttackerEnchantmentLevel.register(modBus);
         ConfiguredMobSpawns.register(modBus);
+        modBus.addListener(yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorPage::register);
         modBus.addListener(StationPackets::register);
         modBus.addListener(RockSilkPackets::register);
         modBus.addListener(VelocipodSprintInput::register);
+        modBus.addListener(PetRecall::register);
         modBus.addListener(BubbleSalamanderWear::registerPayloads);
         modBus.addListener(StationData::registerTickets);
         NeoForge.EVENT_BUS.addListener(YagensMobs::tickTransport);
+        NeoForge.EVENT_BUS.addListener(CompanionTravel::sectionChanged);
+        NeoForge.EVENT_BUS.addListener(CompanionTravel::joined);
+        NeoForge.EVENT_BUS.addListener(CompanionTravel::left);
+        NeoForge.EVENT_BUS.addListener(CompanionTravel::moved);
+        NeoForge.EVENT_BUS.addListener(CompanionTravel::playerTick);
         NeoForge.EVENT_BUS.addListener(KavatCombat::damage);
         NeoForge.EVENT_BUS.addListener(KavatCombat::redirect);
         NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, KavatCombat::rescue);

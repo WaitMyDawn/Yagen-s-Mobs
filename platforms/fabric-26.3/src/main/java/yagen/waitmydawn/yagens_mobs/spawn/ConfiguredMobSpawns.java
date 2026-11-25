@@ -23,8 +23,10 @@ public final class ConfiguredMobSpawns {
     }
 
     public static void register() {
-        add("desert_skate", tagged("has_desert_skate"), ModEntities.DESERT_SKATE.get(), ServerConfigs.DESERT_SKATE, 1);
-        add("condroc_savanna", tagged("condroc_savannas"), ModEntities.VULTURE.get(), ServerConfigs.VULTURE, 1);
+        add("kavat", tagged("kavat_habitat").and(c -> !c.hasTag(BiomeTags.IS_NETHER)), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, 1);
+        add("kavat_nether", c -> c.hasTag(BiomeTags.IS_NETHER), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, 2);
+        add("desert_skate", tagged("has_desert_skate"), ModEntities.DESERT_SKATE.get(), ServerConfigs.DESERT_SKATE, 1.5);
+        add("condroc_savanna", tagged("condroc_savannas"), ModEntities.VULTURE.get(), ServerConfigs.VULTURE, 2);
         add("condroc_arid", tagged("condroc_arid"), ModEntities.VULTURE.get(), ServerConfigs.VULTURE, .4);
         add("condroc_ravines", overworld().and(tagged("condroc_habitat").negate()),
                 ModEntities.VULTURE.get(), ServerConfigs.VULTURE, .13);

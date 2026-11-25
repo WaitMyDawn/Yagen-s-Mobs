@@ -24,7 +24,7 @@ import net.minecraftforge.common.util.ITeleporter;
 
 public final class LumenSwarm {
     private static final double RANGE_SQUARED = 32 * 32;
-    private static final TicketType<UUID> RECALL_TICKET = TicketType.create("lumen_butterfly_recall", UUID::compareTo, 60);
+    private static final TicketType<UUID> RECALL_TICKET = TicketType.create("lumen_butterfly_recall", UUID::compareTo, 100);
     private static final int HALF_MINUTE = 600;
 
     private LumenSwarm() {
@@ -78,6 +78,11 @@ public final class LumenSwarm {
         }
     }
 
+    public static void rememberLocation(ServerLevel level, LumenButterfly butterfly) {
+        if (butterfly.getOwnerUUID() != null && !butterfly.isOrderedToSit())
+            LumenLedger.get(level).remember(butterfly.getOwnerUUID(), butterfly);
+    }
+
     static void playerTick(ServerPlayer owner) {
         if (!owner.isAlive() || owner.isSpectator()) {
             return;
@@ -85,6 +90,7 @@ public final class LumenSwarm {
         if (owner.tickCount % 20 == 0) {
             LumenLedger.get(owner.serverLevel()).pay(owner);
         }
+        LumenLedger.get(owner.serverLevel()).observeTravel(owner);
         recall(owner);
         List<LumenButterfly> swarm = followers(owner);
         if (swarm.isEmpty()) {
@@ -152,7 +158,7 @@ public final class LumenSwarm {
         LumenLedger ledger = LumenLedger.get(destination);
         for (UUID pet : ledger.followers(owner.getUUID())) {
             if (destination.getEntity(pet) instanceof LumenButterfly butterfly) {
-                if (butterfly.distanceToSqr(owner) > RANGE_SQUARED) {
+                if (butterfly.distanceToSqr(owner) > RANGE_SQUARED || ledger.travelRequested(owner.getUUID(), pet)) {
                     bringToOwner(owner, ledger, butterfly);
                 }
                 continue;
@@ -178,6 +184,12 @@ public final class LumenSwarm {
             if (source.getEntity(pet) instanceof LumenButterfly butterfly) {
                 bringToOwner(owner, ledger, butterfly);
             } else if (ledger.startRecall(owner.getUUID(), pet, destination.getGameTime())) {
+                // A loaded, ticking chunk with no matching UUID may be a stale location from an old save.
+                // Back off so a missing follower cannot keep that chunk ticking continuously.
+                if (source.areEntitiesLoaded(last.chunk()) && source.isPositionEntityTicking(new ChunkPos(last.chunk()).getWorldPosition())) {
+                    ledger.deferMissing(owner.getUUID(), pet, destination.getGameTime());
+                    continue;
+                }
                 // A short entity-ticking ticket lets the real saved mob load before transfer.
                 source.getChunkSource().addRegionTicket(RECALL_TICKET, new ChunkPos(last.chunk()), 2, pet);
             }
@@ -215,6 +227,7 @@ public final class LumenSwarm {
                 }
             }) instanceof LumenButterfly arrived) {
                 ledger.remember(owner.getUUID(), arrived);
+                ledger.arrived(owner.getUUID(), arrived.getUUID());
             }
             return;
         }
@@ -222,6 +235,7 @@ public final class LumenSwarm {
         butterfly.setDeltaMovement(Vec3.ZERO);
         butterfly.teleportTo(target.x, target.y, target.z);
         ledger.remember(owner.getUUID(), butterfly);
+        ledger.arrived(owner.getUUID(), butterfly.getUUID());
     }
 
     public static float shield(LivingEntity target, DamageSource source, float damage) {

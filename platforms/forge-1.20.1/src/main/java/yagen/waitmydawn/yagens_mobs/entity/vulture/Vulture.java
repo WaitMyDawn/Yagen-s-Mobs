@@ -151,6 +151,9 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
     }
 
     @Override
+    public boolean removeWhenFarAway(double distance) { return false; }
+
+    @Override
     public int getMaxSpawnClusterSize() {
         return ServerConfigs.VULTURE.maxGroupCount();
     }

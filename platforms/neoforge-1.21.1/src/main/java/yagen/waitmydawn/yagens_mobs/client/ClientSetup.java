@@ -2,6 +2,7 @@ package yagen.waitmydawn.yagens_mobs.client;
 
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatAnimations;
 import yagen.waitmydawn.yagens_mobs.entity.desertskate.client.DesertSkateRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.LauncherScreen;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.client.MailBagScreen;
@@ -37,6 +38,7 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(BubbleSalamanderTextures.INSTANCE);
+        event.registerReloadListener(KavatAnimations.INSTANCE);
     }
 
     @SubscribeEvent
@@ -71,6 +73,7 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.ROCK_SILK_LINE.get(), RockSilkLineRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_GRIP.get(), NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.VULTURE_POST_ENTITY.get(), VulturePostRenderer::new);
+        event.registerBlockEntityRenderer(ModBlocks.INCUBATOR_ENTITY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorRenderer::new);
     }
 
     @SubscribeEvent

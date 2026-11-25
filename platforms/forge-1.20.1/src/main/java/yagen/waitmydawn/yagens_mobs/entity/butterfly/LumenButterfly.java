@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.entity.butterfly;
 
+import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
+import net.minecraft.world.entity.MoverType;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Locale;
@@ -56,6 +58,19 @@ import yagen.waitmydawn.yagens_mobs.entity.butterfly.mixin.LumenOrbAccess;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 
 public final class LumenButterfly extends TamableAnimal implements GeoEntity {
+    @Override
+    public void move(MoverType kind, Vec3 motion) {
+        if (kind == MoverType.SELF && level() instanceof ServerLevel
+                && isTame() && !isPassenger() && !isVehicle()) {
+            Vec3 safeMotion = PetHazards.steer(this, motion, !isBaby(), true);
+            if (safeMotion != motion) {
+                motion = safeMotion;
+                setDeltaMovement(safeMotion);
+            }
+        }
+        super.move(kind, motion);
+    }
+
     private static final EntityDataAccessor<String> COLOR =
             SynchedEntityData.defineId(LumenButterfly.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> LINEAGE =
@@ -67,7 +82,8 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
     private static final EntityDataAccessor<Boolean> WAITING =
             SynchedEntityData.defineId(LumenButterfly.class, EntityDataSerializers.BOOLEAN);
     private static final RawAnimation FLIGHT = RawAnimation.begin().thenLoop("animation.lumen_butterfly_adult.flight");
-    private static final RawAnimation FOLD = RawAnimation.begin().thenPlayAndHold("animation.lumen_butterfly_adult.fold_wings");
+    private static final RawAnimation PERCHED = RawAnimation.begin().thenLoop("animation.lumen_butterfly_adult.perched");
+    private static final RawAnimation LARVA_REST = RawAnimation.begin().thenLoop("animation.lumen_butterfly_juvenile.rest");
     private static final RawAnimation CRAWL = RawAnimation.begin().thenLoop("animation.lumen_butterfly_juvenile.crawl");
     private static final int BREED_RADIUS = 8;
     private static final int BREED_WINDOW = 1200;
@@ -286,6 +302,13 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
         return true;
     }
 
+    @Override
+    public void remove(RemovalReason reason) {
+        if (reason == RemovalReason.UNLOADED_TO_CHUNK && level() instanceof ServerLevel level && getOwnerUUID() != null)
+            LumenLedger.get(level).remember(getOwnerUUID(), this);
+        super.remove(reason);
+    }
+
     int followSlot(ServerLevel level) {
         UUID owner = getOwnerUUID();
         return owner == null || isOrderedToSit() ? -1 : LumenLedger.get(level).slot(owner, getUUID());
@@ -298,6 +321,11 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
         if (following) {
             ledger.remember(owner, this);
         }
+    }
+
+    boolean feetSupported() {
+        return onGround() || level().getBlockCollisions(this,
+                getBoundingBox().deflate(.01, 0, .01).move(0, -.025, 0)).iterator().hasNext();
     }
 
     private void waitHere(boolean waiting) {
@@ -573,9 +601,9 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "movement", 3, state -> {
             if (isBaby()) {
-                return state.isMoving() ? state.setAndContinue(CRAWL) : software.bernie.geckolib.core.object.PlayState.STOP;
+                return state.setAndContinue(state.isMoving() ? CRAWL : LARVA_REST);
             }
-            return state.setAndContinue(entityData.get(WAITING) && !state.isMoving() ? FOLD : FLIGHT);
+            return state.setAndContinue(entityData.get(WAITING) && feetSupported() ? PERCHED : FLIGHT);
         }));
     }
 

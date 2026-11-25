@@ -1,0 +1,6 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#yagens_mobs:kavat_habitat",
+  "excluded_biomes": "#minecraft:is_nether",
+  "entity": "yagens_mobs:kavat"
+}

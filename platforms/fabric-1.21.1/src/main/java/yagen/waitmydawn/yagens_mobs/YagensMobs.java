@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.minecraft.world.item.context.UseOnContext;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.CargoTongs;
@@ -33,6 +34,13 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationData;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationPackets;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import yagen.waitmydawn.yagens_mobs.entity.CompanionTravel;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescue;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorPage;
+
 public final class YagensMobs implements ModInitializer {
     public static final String MODID = ModIdentity.ID;
 
@@ -45,6 +53,14 @@ public final class YagensMobs implements ModInitializer {
         yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register();
         ModItems.register();
         LumenButterflies.register();
+        KavatMemories.register();
+        PayloadTypeRegistry.playS2C().register(
+                KavatRescue.TYPE, KavatRescue.CODEC);
+        PayloadTypeRegistry.playS2C().register(
+                IncubatorPage.TYPE, IncubatorPage.CODEC);
+        ServerEntityEvents.ENTITY_LOAD.register(CompanionTravel::joined);
+        ServerEntityEvents.ENTITY_UNLOAD.register(CompanionTravel::left);
+        ServerTickEvents.END_WORLD_TICK.register(level -> level.players().forEach(CompanionTravel::playerTick));
         ModSounds.register();
         MailBagMenu.register();
         LauncherMenu.register();
@@ -53,6 +69,7 @@ public final class YagensMobs implements ModInitializer {
         StationPackets.register();
         RockSilkPackets.register();
         VelocipodSprintInput.register();
+        PetRecall.register();
         BubbleSalamanderWear.register();
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerConfigs.reload(null));
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((entity, world) -> {

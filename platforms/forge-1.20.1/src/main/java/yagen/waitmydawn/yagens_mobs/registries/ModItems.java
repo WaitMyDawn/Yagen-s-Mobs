@@ -65,6 +65,17 @@ public final class ModItems {
                             .forEach(output::accept))
                     .build());
 
+    public static final RegistryObject<BlockItem> KAVAT_INCUBATOR = ITEMS.register("kavat_incubator", () -> new BlockItem(ModBlocks.INCUBATOR.get(),new Item.Properties()));
+    public static final RegistryObject<Item> KAVAT_CODE = ITEMS.register("kavat_genetic_code", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> KAVAT_TEMPLATE = ITEMS.register("kavat_imprint", () -> new Item(new Item.Properties()) {
+        @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
+            return stack.getTag() != null && stack.getTag().contains("Traits")
+                    ? super.getName(stack) : net.minecraft.network.chat.Component.translatable("kavat.blank_imprint");
+        }
+    });
+    public static final RegistryObject<Item> KAVAT_EXTRACTOR = ITEMS.register("kavat_extractor", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<ForgeSpawnEggItem> KAVAT_EGG = ITEMS.register("kavat_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
     private ModItems() {
     }
 

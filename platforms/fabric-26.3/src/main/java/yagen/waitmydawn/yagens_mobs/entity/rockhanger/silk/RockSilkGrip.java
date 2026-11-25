@@ -76,14 +76,12 @@ public final class RockSilkGrip extends Entity {
             lateral = lateral.scale(-1);
         }
 
-        Vec3 feet = feetAt(player, point, lateral, span.normalize().y);
-        if (!roomFor(player, player.position(), feet)) {
-            lateral = lateral.scale(-1);
-            feet = feetAt(player, point, lateral, span.normalize().y);
-            if (!roomFor(player, player.position(), feet)) {
-                return;
-            }
-        }
+        Vec3 axis = span.normalize();
+        GripSeat seat = findSeat(player, from, axis, span.length(), distance, lateral);
+        if (seat == null) return;
+        distance = seat.distance();
+        lateral = seat.side();
+        Vec3 feet = seat.feet();
 
         var grip = ModEntities.ROCK_SILK_GRIP.get().create(level, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
         if (grip == null) {
@@ -180,6 +178,37 @@ public final class RockSilkGrip extends Entity {
 
     private int pressed(int key) {
         return (input & key) == 0 ? 0 : 1;
+    }
+
+    private record GripSeat(double distance, Vec3 side, Vec3 feet) {}
+
+    private static GripSeat findSeat(Player player, Vec3 start, Vec3 axis, double length, double hit, Vec3 lateral) {
+        // The contact point can be under the lip while the player's standing box is still above it.
+        // Try the hit first, then nearby handholds within the same arm's reach.
+        Vec3 eye = player.getEyePosition();
+        for (double adjustment : new double[]{0, .32, -.32, .64, -.64}) {
+            double distance = Mth.clamp(hit + adjustment, END_MARGIN, length - END_MARGIN);
+            Vec3 point = start.add(axis.scale(distance));
+            if (adjustment != 0 && (eye.distanceTo(point) > player.entityInteractionRange() + .19
+                    || RockSilkPath.visibleReach(player, eye, point) + .01 < eye.distanceTo(point))) continue;
+            for (int i = 0; i < (axis.horizontalDistanceSqr() < .06 ? 4 : 2); i++) {
+                Vec3 side = switch (i) {
+                    case 0 -> lateral;
+                    case 1 -> lateral.scale(-1);
+                    case 2 -> new Vec3(lateral.z, 0, -lateral.x);
+                    default -> new Vec3(-lateral.z, 0, lateral.x);
+                };
+                Vec3 feet = feetAt(player, point, side, axis.y);
+                Vec3 initial = player.position();
+                if (roomFor(player, initial, feet)) return new GripSeat(distance, side, feet);
+                if (feet.y < initial.y) {
+                    Vec3 edge = new Vec3(feet.x, initial.y, feet.z);
+                    if (roomFor(player, initial, edge) && roomFor(player, edge, feet))
+                        return new GripSeat(distance, side, feet);
+                }
+            }
+        }
+        return null;
     }
 
     private static Vec3 feetAt(Player player, Vec3 point, Vec3 side, double vertical) {

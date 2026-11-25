@@ -36,7 +36,7 @@ abstract class LumenLivingEntity {
 
     @Inject(method = "checkTotemDeathProtection", at = @At("RETURN"), cancellable = true)
     private void lumen$totem(DamageSource source, CallbackInfoReturnable<Boolean> callback) {
-        if (!callback.getReturnValue() && LumenSwarm.protectFromDeath((LivingEntity) (Object) this, source)) {
+        if (!callback.getReturnValue() && (LumenSwarm.protectFromDeath((LivingEntity) (Object) this, source) || yagen.waitmydawn.yagens_mobs.entity.kavat.KavatCombat.rescue((LivingEntity)(Object)this, source))) {
             callback.setReturnValue(true);
         }
     }

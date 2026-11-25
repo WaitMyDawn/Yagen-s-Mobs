@@ -54,6 +54,17 @@ public final class ModItems {
     public static final Supplier<SpawnEggItem> LUMEN_BUTTERFLY_SPAWN_EGG = item("lumen_butterfly_spawn_egg",
             () -> new SpawnEggItem(LumenButterflies.TYPE.get(), 0x80542F, 0xEBDD76, new Item.Properties()));
 
+    public static final Supplier<net.minecraft.world.item.BlockItem> KAVAT_INCUBATOR = item("kavat_incubator", () -> new net.minecraft.world.item.BlockItem(ModBlocks.INCUBATOR.get(), new Item.Properties()));
+    public static final Supplier<Item> KAVAT_CODE = item("kavat_genetic_code", () -> new Item(new Item.Properties()));
+    public static final Supplier<Item> KAVAT_TEMPLATE = item("kavat_imprint", () -> new Item(new Item.Properties()) {
+        @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
+            return stack.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)
+                    ? super.getName(stack) : net.minecraft.network.chat.Component.translatable("kavat.blank_imprint");
+        }
+    });
+    public static final Supplier<Item> KAVAT_EXTRACTOR = item("kavat_extractor", () -> new Item(new Item.Properties()));
+    public static final Supplier<SpawnEggItem> KAVAT_EGG = item("kavat_spawn_egg",
+            () -> new SpawnEggItem(ModEntities.KAVAT.get(), 0x435563, 0xa6d7da, new Item.Properties()));
     private ModItems() {
     }
 

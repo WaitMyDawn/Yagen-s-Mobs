@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.entity.weasel;
 
+import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
+import net.minecraft.world.entity.MoverType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +54,19 @@ import com.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 
 public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
+    @Override
+    public void move(MoverType kind, Vec3 motion) {
+        if (kind == MoverType.SELF && level() instanceof ServerLevel
+                && isTame() && !isPassenger() && !isVehicle()) {
+            Vec3 safeMotion = PetHazards.steer(this, motion, false, false);
+            if (safeMotion != motion) {
+                motion = safeMotion;
+                setDeltaMovement(safeMotion);
+            }
+        }
+        super.move(kind, motion);
+    }
+
     private static final EntityDataAccessor<Integer> COLOR =
             SynchedEntityData.defineId(SnowcacheWeasel.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> POSE =

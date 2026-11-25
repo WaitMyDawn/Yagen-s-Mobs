@@ -44,7 +44,7 @@ public final class LumenButterflies {
 
     static final TicketType RECALL_TICKET = Registry.register(BuiltInRegistries.TICKET_TYPE,
             Identifier.fromNamespaceAndPath(ModIdentity.ID, "lumen_butterfly_recall"),
-            new TicketType(60, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE));
+            new TicketType(100, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE));
 
     private LumenButterflies() {
     }

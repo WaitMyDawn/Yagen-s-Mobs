@@ -108,6 +108,14 @@ public final class RockSilkInteractions {
         return nearest;
     }
 
+    public static double interactionLimit(Player player, RockSilkLine line, double reach) {
+        Vec3 eye = player.getEyePosition();
+        Vec3 end = eye.add(player.getViewVector(1).scale(reach));
+        double pin = hitDistance(eye, end, line.first().tip());
+        if (line.second() != null) pin = Math.min(pin, hitDistance(eye, end, line.second().tip()));
+        return Math.min(reach, pin);
+    }
+
     private static double hitDistance(Vec3 from, Vec3 to, Vec3 center) {
         return AABB.ofSize(center, PIN_RADIUS * 2, PIN_RADIUS * 2, PIN_RADIUS * 2).clip(from, to)
                 .map(from::distanceTo).orElse(Double.POSITIVE_INFINITY);

@@ -151,16 +151,20 @@ final class LumenFlightGoal extends Goal {
     }
 
     private void settle(ServerLevel level) {
-        if (butterfly.onGround()) {
+        if (butterfly.feetSupported()) {
+            butterfly.getNavigation().stop();
             return;
         }
-        BlockPos floor = butterfly.blockPosition();
-        for (int depth = 0; depth <= 6 && level.getBlockState(floor).getCollisionShape(level, floor).isEmpty(); depth++) {
-            floor = floor.below();
-        }
-        Vec3 target = Vec3.atBottomCenterOf(floor.above());
-        if (target.y < butterfly.getY() && LumenOrbit.safe(level, butterfly, target, false)) {
-            steer(level, target, .62);
+        Vec3 next = butterfly.position().add(0, -.12, 0);
+        BlockPos below = BlockPos.containing(next);
+        if (!level.isOutsideBuildHeight(below) && level.getWorldBorder().isWithinBounds(below)
+                && level.hasChunkAt(below) && level.getFluidState(below).isEmpty()) {
+            // Let collision resolution settle the feet on the actual shape, including slabs.
+            butterfly.getNavigation().stop();
+            Vec3 velocity = butterfly.getDeltaMovement();
+            butterfly.setDeltaMovement(velocity.x * .7, -.12, velocity.z * .7);
+        } else {
+            butterfly.setDeltaMovement(Vec3.ZERO);
         }
     }
 

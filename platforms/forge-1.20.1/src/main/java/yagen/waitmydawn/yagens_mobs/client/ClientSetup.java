@@ -1,4 +1,5 @@
 package yagen.waitmydawn.yagens_mobs.client;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
@@ -43,11 +44,13 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(KavatAnimations.INSTANCE);
         event.registerReloadListener(BubbleSalamanderTextures.INSTANCE);
     }
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("vasca_rescue", (gui, graphics, partial, width, height) -> KavatRescueView.draw(graphics, partial));
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "velocipod_stamina",
                 (gui, graphics, partialTick, width, height) -> VelocipodControls.renderStamina(graphics));
     }
@@ -55,6 +58,7 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void registerMenus(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            MenuScreens.register(ModBlocks.INCUBATOR_MENU.get(), IncubatorScreen::new);
             MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
             MenuScreens.register(LauncherMenu.TYPE.get(), LauncherScreen::new);
         });
@@ -67,6 +71,9 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.KAVAT.get(), KavatView::new);
+        event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), KavatView::new);
+        event.registerBlockEntityRenderer(ModBlocks.INCUBATOR_ENTITY.get(), IncubatorRenderer::new);
         event.registerEntityRenderer(ModEntities.DESERT_SKATE.get(), DesertSkateRenderer::new);
         event.registerEntityRenderer(ModEntities.SKATE_SPIKE.get(), SkateSpikeRenderer::new);
         event.registerEntityRenderer(ModEntities.VULTURE.get(), VultureRenderer::new);

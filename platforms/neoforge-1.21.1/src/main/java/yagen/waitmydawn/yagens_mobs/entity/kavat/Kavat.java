@@ -1,5 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.entity.kavat;
 
+import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.MoverType;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +32,41 @@ import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 
 public class Kavat extends TamableAnimal implements GeoEntity {
+    @Override
+    public void move(MoverType kind, Vec3 motion) {
+        if (kind == MoverType.SELF && level() instanceof ServerLevel
+                && isTame() && !isPassenger() && !isVehicle()) {
+            Vec3 safeMotion = PetHazards.steer(this, motion, false, false);
+            if (safeMotion != motion) {
+                motion = safeMotion;
+                setDeltaMovement(safeMotion);
+            }
+        }
+        super.move(kind, motion);
+    }
+
+    private static final EntityDataAccessor<Long> CHAMBER_START =
+            SynchedEntityData.defineId(Kavat.class, EntityDataSerializers.LONG);
+    static final int CHAMBER_EXIT_TICKS = 154;
+
+    void beginChamberExit(long time) {
+        entityData.set(CHAMBER_START, time);
+        setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        setTarget(null);
+        getNavigation().stop();
+        setYBodyRot(getYRot());
+        setYHeadRot(getYRot());
+    }
+
+    float chamberAge(float partial) {
+        long start = entityData.get(CHAMBER_START);
+        return start < 0 ? CHAMBER_EXIT_TICKS : Mth.clamp(level().getGameTime() - start + partial, 0, CHAMBER_EXIT_TICKS);
+    }
+
+    public boolean emerging() { return chamberAge(0) < CHAMBER_EXIT_TICKS; }
+
+    @Override public boolean isEffectiveAi() { return super.isEffectiveAi() && !emerging(); }
+    @Override public boolean isPushable() { return super.isPushable() && !emerging(); }
     private static final EntityDataAccessor<Integer> TRAITS =
             SynchedEntityData.defineId(Kavat.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> HIDDEN =
@@ -45,7 +83,19 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     private boolean extracted;
     private boolean pendingFortressCoat;
     private UUID image, origin;
-    private float fanRise, oldFanRise, fanSweep, oldFanSweep, fanHeading;
+    final KavatTurn turnMotion;
+    private float horizontalSpeed;
+    private static final EntityDataAccessor<Boolean> POUNCING =
+            SynchedEntityData.defineId(Kavat.class, EntityDataSerializers.BOOLEAN);
+    private boolean runningGait;
+    boolean pouncing() { return entityData.get(POUNCING); }
+    void setPouncing(boolean value) { entityData.set(POUNCING, value); }
+    @Override
+    public boolean shouldTryTeleportToOwner() {
+        var owner = getOwner();
+        return owner != null && distanceToSqr(owner) > 64 * 64;
+    }
+    private float fanRise, oldFanRise, fanSweep, oldFanSweep;
     boolean hasFanTail() {
         return KavatGenes.TAILS.get(genes().tail()).equals("fan");
     }
@@ -62,23 +112,45 @@ public class Kavat extends TamableAnimal implements GeoEntity {
             }
         }
         super.tick();
-        if (!level().isClientSide || !hasFanTail()) return;
+        if (!level().isClientSide) return;
         double dx=getX()-xo, dy=getY()-yo, dz=getZ()-zo;
-        float turn=Mth.wrapDegrees(yBodyRot-fanHeading);
-        fanHeading=yBodyRot;
+        boolean reset = tickCount < 2 || dx*dx + dy*dy + dz*dz > 4;
+        boolean pivot = onGround() && dx*dx + dz*dz < .0036 && !isInSittingPose()
+                && activity() == KavatHabits.Pose.NONE && tickCount >= riseUntil && isAlive();
+        turnMotion.tick(yBodyRot, pivot, reset);
+        updateGait(dx, dz, reset);
+        if (!hasFanTail()) return;
+        float visualYaw = turnMotion.heading(1, yBodyRot);
+        float turn = visualYaw - turnMotion.heading(0, yBodyRot);
         oldFanRise=fanRise;
         oldFanSweep=fanSweep;
-        if (tickCount<2 || dx*dx+dy*dy+dz*dz>4) {
+        if (reset) {
             oldFanRise=fanRise=oldFanSweep=fanSweep=0;
             return;
         }
-        double heading=Math.toRadians(yBodyRot);
+        double heading=Math.toRadians(visualYaw);
         double lateral=dx*Math.cos(heading)+dz*Math.sin(heading);
         fanRise=Mth.lerp(.31F,fanRise,Mth.clamp((float)dy*3,-.45F,1F));
         fanSweep=Mth.lerp(.26F,fanSweep,Mth.clamp((float)lateral*4+turn/23F,-1F,1F));
     }
+    private void updateGait(double dx, double dz, boolean reset) {
+        boolean grounded = onGround();
+        if (reset || isPassenger()) {
+            horizontalSpeed = 0;
+            runningGait = false;
+        } else {
+            // walkAnimation.speed is a capped limb-swing amplitude. Gait thresholds use blocks per second.
+            float measured = (float) Math.hypot(dx, dz) * 20;
+            horizontalSpeed = Mth.lerp(.36F, horizontalSpeed, measured);
+            if (grounded) {
+                runningGait = horizontalSpeed >= (runningGait ? 4.35F : 5.25F);
+            }
+        }
+    }
+
     public Kavat(EntityType<? extends Kavat> type, Level level) {
         super(type, level);
+        turnMotion = level.isClientSide ? new KavatTurn() : null;
     }
     @Override
     protected SoundEvent getAmbientSound() {
@@ -158,8 +230,10 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder b) {
         super.defineSynchedData(b);
+        b.define(CHAMBER_START, -1L);
         b.define(TRAITS, 0);
         b.define(HIDDEN, false);
+        b.define(POUNCING, false);
         b.define(ACTIVITY, (byte) 0);
     }
     @Override
@@ -169,17 +243,18 @@ public class Kavat extends TamableAnimal implements GeoEntity {
         } else {
             goalSelector.addGoal(0, new KavatHabits.FireRoll(this));
             goalSelector.addGoal(0, new KavatHabits.Water(this));
+            goalSelector.addGoal(1, new IncubatorExitGoal(this));
             goalSelector.addGoal(4, new KavatHabits.Leisure(this));
         }
         goalSelector.addGoal(1, new SitWhenOrderedToGoal(this));
         if (!decoy()) {
-            goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.25, true));
+            goalSelector.addGoal(2, new KavatMeleeGoal(this));
             goalSelector.addGoal(3, new FollowOwnerGoal(this, 1.15, 6, 2));
             targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
             targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
             targetSelector.addGoal(3, new HurtByTargetGoal(this));
         }
-        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, .85));
+        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, .55));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8));
     }
     @Override
@@ -208,6 +283,20 @@ public class Kavat extends TamableAnimal implements GeoEntity {
         if (decoy())
             return InteractionResult.PASS;
         var held = player.getItemInHand(hand);
+        if (held.is(ModItems.KAVAT_TEMPLATE.get()) && !held.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
+            if (!isOwnedBy(player)) return InteractionResult.PASS;
+            if (!level().isClientSide) {
+                ItemStack imprint = slice();
+                if (imprint.isEmpty()) {
+                    player.displayClientMessage(Component.translatable("kavat.no_slices"), true);
+                } else {
+                    held.consume(1, player);
+                    if (held.isEmpty()) player.setItemInHand(hand, imprint);
+                    else give(player, imprint);
+                }
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
         if (held.is(ModItems.KAVAT_EXTRACTOR.get())) {
             if (!level().isClientSide) {
                 if (extracted)
@@ -223,11 +312,13 @@ public class Kavat extends TamableAnimal implements GeoEntity {
             }
             return InteractionResult.sidedSuccess(level().isClientSide);
         }
-        if (held.isEmpty() && isOwnedBy(player)) {
+        if (hand == InteractionHand.MAIN_HAND && held.isEmpty() && player.isShiftKeyDown() && isOwnedBy(player)) {
             if (!level().isClientSide) {
                 setOrderedToSit(!isOrderedToSit());
                 setTarget(null);
                 getNavigation().stop();
+                player.displayClientMessage(Component.translatable(
+                        isOrderedToSit() ? "kavat.mode.stay" : "kavat.mode.follow", getDisplayName()), true);
             }
             return InteractionResult.sidedSuccess(level().isClientSide);
         }
@@ -240,7 +331,7 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (!(level() instanceof ServerLevel server))
+        if (!(level() instanceof ServerLevel server) || emerging())
             return;
         if (decoy()) {
             if (origin == null || !(server.getEntity(origin) instanceof Kavat cat) || !cat.isAlive()
@@ -332,6 +423,7 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag n) {
         super.addAdditionalSaveData(n);
+        if (emerging()) n.putLong("ChamberStart", entityData.get(CHAMBER_START));
         n.putInt("KavatTraits", genes().packed());
         n.putInt("Generation", generation);
         n.putInt("TemplatesMade", slices);
@@ -342,6 +434,7 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag n) {
         super.readAdditionalSaveData(n);
+        entityData.set(CHAMBER_START, n.contains("ChamberStart") ? n.getLong("ChamberStart") : -1L);
         phenotype(KavatGenes.unpack(n.getInt("KavatTraits")), Math.clamp(n.getInt("Generation"), 0, 100));
         slices = Math.clamp(n.getInt("TemplatesMade"), 0, 2);
         extracted = n.getBoolean("Extracted");
@@ -358,12 +451,15 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     private static RawAnimation once(String clip) {
         return RawAnimation.begin().thenPlay("animation.kavat." + clip);
     }
+    private static final RawAnimation HOP = RawAnimation.begin().thenPlayAndHold("animation.kavat.hop");
+    private static final RawAnimation CHAMBER_EXIT = RawAnimation.begin().thenPlayAndHold("animation.kavat.chamber_exit");
+    private float chamberFrame;
     private static final RawAnimation IDLE = loop("idle"), RUN = loop("run"), WALK = loop("stalk"), JUMP = once("jump"),
                                       LISTEN = once("listen"), TAIL = once("tail_lift"), STRETCH = once("stretch"),
-                                      FLAT = once("flat_down").thenLoop("animation.kavat.flat_rest"),
-                                      CURLED = once("curled_down").thenLoop("animation.kavat.curled_rest"),
+                                      FLAT = RawAnimation.begin().thenPlayAndHold("animation.kavat.flat_down"), FLAT_REST = loop("flat_rest"),
+                                      CURLED = RawAnimation.begin().thenPlayAndHold("animation.kavat.curled_down"), CURLED_REST = loop("curled_rest"),
                                       FLAT_UP = once("flat_up"), CURLED_UP = once("curled_up");
-    private static final RawAnimation SIDE = once("side_down").thenLoop("animation.kavat.side_rest"),
+    private static final RawAnimation SIDE = RawAnimation.begin().thenPlayAndHold("animation.kavat.side_down"), SIDE_REST = loop("side_rest"),
             SIDE_UP = once("side_up"), ROLL = once("social_roll"),
             FIRE = RawAnimation.begin().thenPlayAndHold("animation.kavat.fire_roll"),
             FLIP = RawAnimation.begin().thenPlayAndHold("animation.kavat.backflip"), PADDLE = loop("paddle"), SWIM = loop("swim");
@@ -371,7 +467,28 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     private RawAnimation rise;
     private boolean resting;
     private int riseUntil;
-    private RawAnimation motion(boolean moving) {
+    private RawAnimation restEntry;
+    private int restBegan;
+
+    private RawAnimation motion() {
+        RawAnimation next = requestedMotion();
+        if (next != CURLED && next != FLAT && next != SIDE) {
+            restEntry = null;
+            return next;
+        }
+        if (restEntry != next) {
+            restEntry = next;
+            restBegan = tickCount;
+        }
+        // Hold the authored end pose through the four blend ticks before handing off to breathing.
+        int elapsed = tickCount - restBegan;
+        if (next == CURLED && elapsed >= 48) return CURLED_REST;
+        if (next == FLAT && elapsed >= 34) return FLAT_REST;
+        if (next == SIDE && elapsed >= 31) return SIDE_REST;
+        return next;
+    }
+
+    private RawAnimation requestedMotion() {
         boolean curl = (getUUID().getLeastSignificantBits() & 1) == 0;
         var active = activity();
         if (active != previous) {
@@ -402,9 +519,9 @@ public class Kavat extends TamableAnimal implements GeoEntity {
             riseUntil = tickCount + (curl ? 39 : 26);
         }
         if (!onGround() && !isInWater() && level().noCollision(this, getBoundingBox().move(0, -.08, 0)))
-            return JUMP;
-        if (moving)
-            return walkAnimation.speed() > .40F ? RUN : WALK;
+            return pouncing() ? JUMP : HOP;
+        if (horizontalSpeed > .20F)
+            return runningGait ? RUN : WALK;
         if (tickCount < riseUntil)
             return rise;
         int phase = Math.floorMod(tickCount + getId() * 41, 1000);
@@ -416,18 +533,40 @@ public class Kavat extends TamableAnimal implements GeoEntity {
             return LISTEN;
         return IDLE;
     }
+    // At unit scale the planted paws travel 7.8 model pixels during 29% of the 0.64-second gallop.
+    double gallopRate() {
+        return horizontalSpeed * (.29 * .64 * 16 / 7.8) / getScale();
+    }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {
-        c.add(new AnimationController<>(this, "body", 4, state -> {
-            RawAnimation next = motion(state.isMoving());
+        c.add(new AnimationController<Kavat>(this, "body", 4, state -> {
+            chamberFrame = chamberAge(state.getPartialTick());
+            RawAnimation next = chamberFrame < CHAMBER_EXIT_TICKS ? CHAMBER_EXIT : motion();
             var controller = state.getController();
             RawAnimation current = controller.getCurrentRawAnimation();
             if (current != next) {
+                controller.setAnimationSpeed(next == WALK ? 1.45 : 1.0);
                 // Blending a completed 360-degree Euler track back to zero unwinds the entire turn.
                 boolean fullTurn = current == FIRE || current == FLIP || next == FIRE || next == FLIP;
-                controller.transitionLength(fullTurn || next == ROLL ? 0 : 4);
+                controller.transitionLength(fullTurn || next == ROLL || next == CHAMBER_EXIT || next == CURLED_REST || next == FLAT_REST || next == SIDE_REST ? 0 : 4);
             }
             return state.setAndContinue(next);
-        }));
+        }) {
+            private double previousTick = Double.NaN, clipClock;
+
+            @Override
+            protected double adjustTick(double tick) {
+                // GeckoLib may poll several times per frame. Integrate elapsed time once so changing
+                // speed preserves the current footfall phase, including through clip transitions.
+                if (!Double.isNaN(previousTick) && tick >= previousTick)
+                    clipClock += (tick - previousTick) * (getCurrentRawAnimation() == RUN ? gallopRate() : 1);
+                previousTick = tick;
+                double elapsed = super.adjustTick(clipClock);
+                if (getCurrentRawAnimation() == CHAMBER_EXIT && getAnimationState() != State.TRANSITIONING)
+                    return Math.min(chamberFrame, CHAMBER_EXIT_TICKS - .001);
+                return elapsed;
+            }
+        });
     }
 }

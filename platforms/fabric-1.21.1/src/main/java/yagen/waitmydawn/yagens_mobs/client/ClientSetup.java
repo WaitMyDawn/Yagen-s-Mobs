@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
@@ -55,7 +56,12 @@ public final class ClientSetup implements ClientModInitializer {
         LumenRenderer.register();
         yagen.waitmydawn.yagens_mobs.entity.weasel.client.WeaselClient.register();
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageClient.register();
+        KavatClient.register();
         ClientConfigs.reload();
+        MenuScreens.register(ModBlocks.INCUBATOR_MENU.get(), IncubatorScreen::new);
+        EntityRendererRegistry.register(ModEntities.KAVAT.get(), KavatView::new);
+        EntityRendererRegistry.register(ModEntities.KAVAT_DECOY.get(), KavatView::new);
+        BlockEntityRendererRegistry.register(ModBlocks.INCUBATOR_ENTITY.get(), IncubatorRenderer::new);
         MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
         MenuScreens.register(LauncherMenu.TYPE.get(), LauncherScreen::new);
         EntityModelLayerRegistry.registerModelLayer(SkateSpikeRenderer.LAYER, SkateSpikeRenderer::createLayer);
@@ -84,6 +90,19 @@ public final class ClientSetup implements ClientModInitializer {
                     ResourceManager manager, ProfilerFiller preparation, ProfilerFiller runtime,
                     Executor background, Executor game) {
                 return BubbleSalamanderTextures.INSTANCE.reload(barrier, manager, preparation, runtime, background, game);
+            }
+        });
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
+            @Override
+            public ResourceLocation getFabricId() {
+                return ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, "kavat_animations");
+            }
+
+            @Override
+            public CompletableFuture<Void> reload(PreparableReloadListener.PreparationBarrier barrier,
+                    ResourceManager manager, ProfilerFiller preparation, ProfilerFiller runtime,
+                    Executor background, Executor game) {
+                return KavatAnimations.INSTANCE.reload(barrier, manager, preparation, runtime, background, game);
             }
         });
         BubbleSalamanderClient.registerKeys();

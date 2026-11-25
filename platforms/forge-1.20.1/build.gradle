@@ -44,12 +44,25 @@ repositories {
         filter { includeVersion('maven.modrinth', 'geckolib', geckolib_artifact) }
     }
 }
-dependencies { implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artifact}") }
+configurations { geckoDistribution { canBeConsumed = false; transitive = false } }
+dependencies {
+    implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artifact}")
+    geckoDistribution "maven.modrinth:geckolib:${geckolib_artifact}"
+}
+// Forge loads GeckoLib's nested math library at runtime; javac needs its keyframe value type as well.
+def geckoMath = tasks.register('extractGeckoMath', Sync) {
+    from({ zipTree(configurations.geckoDistribution.singleFile) }) {
+        include 'META-INF/jarjar/mclib-*.jar'
+        eachFile { path = name }
+        includeEmptyDirs = false
+    }
+    into layout.buildDirectory.dir('gecko-math')
+}
+dependencies { compileOnly files(fileTree(layout.buildDirectory.dir('gecko-math')) { include '*.jar' }).builtBy(geckoMath) }
+
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
-        // These radar definitions invoke the NeoForge-only Kavat renderer by class name.
-        exclude 'assets/xaerominimap/entity/icon/definition/yagens_mobs/kavat*.json'
         include 'assets/**', 'data/yagens_mobs/worldgen/**/salvage_ray*.json', 'data/yagens_mobs/tags/worldgen/biome/salvage_ray_nests.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
     }

@@ -1,4 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.network;
+import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
+import yagen.waitmydawn.yagens_mobs.entity.command.PetOrders;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -31,6 +34,18 @@ public final class LegacyNetwork {
     private LegacyNetwork() {}
 
     public static void register() {
+        CHANNEL.messageBuilder(IncubatorPage.class, 11, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((msg,buf) -> {buf.writeVarInt(msg.menu());buf.writeNbt(msg.view());})
+                .decoder(buf -> new IncubatorPage(buf.readVarInt(),buf.readNbt()))
+                .consumerMainThread((msg,ctx) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        () -> () -> LegacyClientPackets.incubatorPage(msg))).add();
+        CHANNEL.messageBuilder(KavatRescue.class, 12, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((msg,buf) -> {}).decoder(buf -> new KavatRescue())
+                .consumerMainThread((msg,ctx) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        () -> () -> KavatRescueView.flash())).add();
+        toServer(13, PetRecall.class, (message, buffer) -> buffer.writeVarIntArray(message.entities()),
+                buffer -> new PetRecall(buffer.readVarIntArray(PetOrders.BATCH)),
+                (message, player) -> PetOrders.recall(player, message.entities()));
         toServer(9, WeaselPackets.Request.class, (msg, buf) -> buf.writeNbt(msg.tag()),
                 buf -> new WeaselPackets.Request(buf.readNbt()), WeaselPackets::handle);
         CHANNEL.messageBuilder(WeaselPackets.Opening.class, 10, NetworkDirection.PLAY_TO_CLIENT)

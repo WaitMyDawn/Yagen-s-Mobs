@@ -4,7 +4,11 @@
   "package": "yagen.waitmydawn.yagens_mobs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "PetCombatOrder",
+    "KavatDamage",
+    "KavatMob",
     "PlayerBubbleSalamanderMining",
+    "CompanionTeleportSequence",
     "LivingEntityJumpInput",
     "SlimeFlightAvoidance",
     "BubbleSalamanderFatigue",
@@ -12,6 +16,7 @@
     "ActiveTransportServerTick"
   ],
   "client": [
+    "client.PetViewport",
     "client.BubbleSalamanderNightVision",
     "client.HumanoidRockSilkPose",
     "client.PlayerRockSilkOrientation",

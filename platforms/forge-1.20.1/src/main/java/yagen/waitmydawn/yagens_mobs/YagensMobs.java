@@ -1,4 +1,6 @@
 package yagen.waitmydawn.yagens_mobs;
+import yagen.waitmydawn.yagens_mobs.entity.CompanionTravel;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +44,15 @@ public final class YagensMobs {
         LauncherMenu.register(modBus);
         AttackerEnchantmentLevel.register(modBus);
         ConfiguredMobSpawns.register(modBus);
+        MinecraftForge.EVENT_BUS.addListener(CompanionTravel::moved);
+        MinecraftForge.EVENT_BUS.addListener(CompanionTravel::sectionChanged);
+        MinecraftForge.EVENT_BUS.addListener(CompanionTravel::joined);
+        MinecraftForge.EVENT_BUS.addListener(CompanionTravel::left);
+        MinecraftForge.EVENT_BUS.addListener(CompanionTravel::playerTick);
+        MinecraftForge.EVENT_BUS.addListener(KavatCombat::damage);
+        MinecraftForge.EVENT_BUS.addListener(KavatCombat::redirect);
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.LOWEST, KavatCombat::rescue);
+        MinecraftForge.EVENT_BUS.addListener(KavatMemories::login);
         LegacyNetwork.register();
         StationData.registerTickets();
         MinecraftForge.EVENT_BUS.addListener(YagensMobs::tickTransport);

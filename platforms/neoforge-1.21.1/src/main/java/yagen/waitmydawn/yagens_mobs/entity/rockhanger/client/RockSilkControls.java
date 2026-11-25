@@ -1,6 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.entity.rockhanger.client;
 
 import net.minecraft.client.KeyMapping;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkLine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.EntityHitResult;
@@ -34,7 +35,9 @@ public final class RockSilkControls {
         }
         double range = player.entityInteractionRange();
         if (game.hitResult instanceof EntityHitResult hit) {
-            range = Math.min(range, player.getEyePosition().distanceTo(hit.getLocation()));
+            range = hit.getEntity() instanceof RockSilkLine line
+                    ? RockSilkInteractions.interactionLimit(player, line, range)
+                    : Math.min(range, player.getEyePosition().distanceTo(hit.getLocation()));
         }
         var aimed = RockSilkInteractions.aimedLine(player, player.getViewVector(1), range);
         if (aimed != null) {

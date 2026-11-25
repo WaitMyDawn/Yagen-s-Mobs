@@ -36,6 +36,7 @@ final class LumenLedger extends SavedData {
         private final Map<UUID, Long> nextRecall = new HashMap<>();
         private double pending;
         private UUID lastTotem;
+        private final java.util.Set<UUID> requestedTravel = new java.util.HashSet<>();
 
         private boolean empty() {
             return pending == 0 && followers.isEmpty();
@@ -61,13 +62,42 @@ final class LumenLedger extends SavedData {
         return account == null ? null : account.locations.get(pet);
     }
 
+    private final Map<ServerPlayer, Integer> lastTeleport = new java.util.WeakHashMap<>();
+
+    void observeTravel(ServerPlayer player) {
+        if (player.connection == null || !accounts.containsKey(player.getUUID())) return;
+        int sequence = ((yagen.waitmydawn.yagens_mobs.mixin.CompanionTeleportSequence) player.connection).yagens$teleportSequence();
+        Integer previous = lastTeleport.put(player, sequence);
+        if (previous == null || previous != sequence) requestTravel(player.getUUID());
+    }
+
+    private void requestTravel(UUID owner) {
+        Account account = accounts.get(owner);
+        if (account != null) account.requestedTravel.addAll(account.followers);
+    }
+
+    boolean travelRequested(UUID owner, UUID pet) {
+        Account account = accounts.get(owner);
+        return account != null && account.requestedTravel.contains(pet);
+    }
+
+    void arrived(UUID owner, UUID pet) {
+        Account account = accounts.get(owner);
+        if (account != null) account.requestedTravel.remove(pet);
+    }
+
     boolean startRecall(UUID owner, UUID pet, long time) {
         Account account = accounts.get(owner);
         if (account == null || time < account.nextRecall.getOrDefault(pet, 0L)) {
             return false;
         }
-        account.nextRecall.put(pet, time + 100);
+        account.nextRecall.put(pet, time + 40);
         return true;
+    }
+
+    void deferMissing(UUID owner, UUID pet, long time) {
+        Account account = accounts.get(owner);
+        if (account != null) account.nextRecall.put(pet, time + 1200);
     }
 
     List<UUID> followers(UUID owner) {
@@ -121,6 +151,7 @@ final class LumenLedger extends SavedData {
         if (account != null && account.followers.remove(pet)) {
             account.locations.remove(pet);
             account.nextRecall.remove(pet);
+            account.requestedTravel.remove(pet);
             if (account.empty()) {
                 accounts.remove(owner);
             }

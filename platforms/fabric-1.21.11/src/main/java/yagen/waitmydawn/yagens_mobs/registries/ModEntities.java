@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import java.util.function.Supplier;
 import java.util.function.Function;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -55,6 +56,11 @@ public final class ModEntities {
             id -> EntityType.Builder.of(Velocipod::new, MobCategory.CREATURE)
                     .sized(1.24F, 1.73F).eyeHeight(1.40F).clientTrackingRange(10).updateInterval(1).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
 
+    public static final Supplier<EntityType<Kavat>> KAVAT = entity("kavat", id ->
+            EntityType.Builder.of(Kavat::new, MobCategory.CREATURE).sized(.62F,.95F).eyeHeight(.69F).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+    public static final Supplier<EntityType<Kavat>> KAVAT_DECOY = entity("kavat_decoy", id ->
+            EntityType.Builder.of(Kavat::new, MobCategory.MISC).sized(.62F,.95F).noSave().noSummon().clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, id)));
+
     private ModEntities() {
     }
 
@@ -66,6 +72,9 @@ public final class ModEntities {
     }
 
     public static void register() {
+        FabricDefaultAttributeRegistry.register(KAVAT.get(), Kavat.attributes());
+        FabricDefaultAttributeRegistry.register(KAVAT_DECOY.get(), Kavat.attributes());
+        SpawnPlacements.register(KAVAT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, KavatSpawns::placement);
         FabricDefaultAttributeRegistry.register(BUBBLE_SALAMANDER.get(), BubbleSalamander.createAttributes());
         FabricDefaultAttributeRegistry.register(DESERT_SKATE.get(), DesertSkate.createAttributes());
         FabricDefaultAttributeRegistry.register(VULTURE.get(), Vulture.createAttributes());
@@ -77,9 +86,9 @@ public final class ModEntities {
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BubbleSalamander::checkSpawnPlacement);
         SpawnPlacements.register(DESERT_SKATE.get(), SpawnPlacementTypes.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, DesertSkate::checkSpawnPlacement);
-        SpawnPlacements.register(VULTURE.get(), SpawnPlacementTypes.ON_GROUND,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Vulture::checkSpawnPlacement);
-        SpawnPlacements.register(ROCK_HANGER.get(), SpawnPlacementTypes.ON_GROUND,
+        SpawnPlacements.register(VULTURE.get(), SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING, Vulture::checkSpawnPlacement);
+        SpawnPlacements.register(ROCK_HANGER.get(), SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, RockHanger::checkSpawnPlacement);
     }
 }
