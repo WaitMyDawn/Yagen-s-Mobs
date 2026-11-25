@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamander;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamander;
 
 @Mixin(LivingEntity.class)
 abstract class BubbleSalamanderFatigue {

@@ -7,7 +7,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
@@ -17,10 +17,10 @@ import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
-import yagen.waitmydawn.yagens_mobs.silk.LauncherMenu;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.LauncherMenu;
 import yagen.waitmydawn.yagens_mobs.spawn.ConfiguredMobSpawns;
-import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
-import yagen.waitmydawn.yagens_mobs.transport.StationData;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationData;
 
 @Mod(YagensMobs.MODID)
 public final class YagensMobs {
@@ -33,8 +33,8 @@ public final class YagensMobs {
         container.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC, ModIdentity.SERVER_CONFIG);
         ModEntities.register(modBus);
         LumenButterflies.register(modBus);
-        yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels.register(modBus);
-        yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.register(modBus);
+        yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register(modBus);
+        yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModSounds.register(modBus);

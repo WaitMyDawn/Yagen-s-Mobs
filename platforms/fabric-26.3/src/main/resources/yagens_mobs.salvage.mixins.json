@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_25",
-  "package": "yagen.waitmydawn.yagens_mobs.salvage.client.mixin",
+  "package": "yagen.waitmydawn.yagens_mobs.entity.salvage.client.mixin",
   "client": [
     "SalvageRiderPose",
     "SalvageRiderOrientation"

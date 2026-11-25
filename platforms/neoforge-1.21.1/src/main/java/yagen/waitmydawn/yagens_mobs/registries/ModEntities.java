@@ -1,8 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
 import net.minecraft.core.registries.Registries;
-import yagen.waitmydawn.yagens_mobs.kavat.Kavat;
-import yagen.waitmydawn.yagens_mobs.kavat.KavatSpawns;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.Kavat;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatSpawns;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -13,14 +13,14 @@ import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamander;
-import yagen.waitmydawn.yagens_mobs.entity.DesertSkate;
-import yagen.waitmydawn.yagens_mobs.entity.RockHanger;
-import yagen.waitmydawn.yagens_mobs.entity.SkateSpike;
-import yagen.waitmydawn.yagens_mobs.entity.Vulture;
-import yagen.waitmydawn.yagens_mobs.entity.Velocipod;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkGrip;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkLine;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamander;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.DesertSkate;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHanger;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.SkateSpike;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.Vulture;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.Velocipod;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkGrip;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkLine;
 
 public final class ModEntities {
     private static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, ModIdentity.ID);
@@ -56,7 +56,7 @@ public final class ModEntities {
                     .sized(1.24F, 1.73F).eyeHeight(1.40F).clientTrackingRange(10).updateInterval(1).build(id.toString()));
 
     public static final DeferredHolder<EntityType<?>, EntityType<Kavat>> KAVAT = TYPES.register("kavat",
-            id -> EntityType.Builder.of(Kavat::new, MobCategory.MONSTER).sized(.62F,.95F).eyeHeight(.69F).clientTrackingRange(10).build(id.toString()));
+            id -> EntityType.Builder.of(Kavat::new, MobCategory.CREATURE).sized(.62F,.95F).eyeHeight(.69F).clientTrackingRange(10).build(id.toString()));
     public static final DeferredHolder<EntityType<?>, EntityType<Kavat>> KAVAT_DECOY = TYPES.register("kavat_decoy",
             id -> EntityType.Builder.of(Kavat::new, MobCategory.MISC).sized(.62F,.95F).noSave().noSummon().clientTrackingRange(10).build(id.toString()));
     private ModEntities() {
@@ -86,9 +86,9 @@ public final class ModEntities {
                 BubbleSalamander::checkSpawnPlacement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(DESERT_SKATE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 DesertSkate::checkSpawnPlacement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(VULTURE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+        event.register(VULTURE.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING,
                 Vulture::checkSpawnPlacement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(ROCK_HANGER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+        event.register(ROCK_HANGER.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 RockHanger::checkSpawnPlacement, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

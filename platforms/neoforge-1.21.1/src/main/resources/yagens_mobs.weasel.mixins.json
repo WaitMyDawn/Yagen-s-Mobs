@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_21",
-  "package": "yagen.waitmydawn.yagens_mobs.weasel.mixin",
+  "package": "yagen.waitmydawn.yagens_mobs.entity.weasel.mixin",
   "mixins": [
     "WeaselCreateFunnelOutput",
     "WeaselShoulder",

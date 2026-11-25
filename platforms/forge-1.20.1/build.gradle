@@ -48,6 +48,8 @@ dependencies { implementation fg.deobf("maven.modrinth:geckolib:${geckolib_artif
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
+        // These radar definitions invoke the NeoForge-only Kavat renderer by class name.
+        exclude 'assets/xaerominimap/entity/icon/definition/yagens_mobs/kavat*.json'
         include 'assets/**', 'data/yagens_mobs/worldgen/**/salvage_ray*.json', 'data/yagens_mobs/tags/worldgen/biome/salvage_ray_nests.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
     }

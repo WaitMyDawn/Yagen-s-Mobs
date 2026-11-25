@@ -200,6 +200,7 @@
   "kavat.generation": "第 %s 代",
   "kavat.owner": "来源主人 · %s",
   "kavat.extracted": "这只库娃已经提取过遗传密码。",
+  "kavat.sample_received": "库娃信息：%1$s x%2$s",
   "kavat.own_templates": "两份模板均属于你。可用其中一份搭配其他主人的模板。",
   "kavat.choose_samples": "点击背包中的样本，Shift 点击可批量选择；点击上方样本可撤回",
   "kavat.start": "开始培育 · 10 个密码或 2 份模板 · 5 分钟",

@@ -18,13 +18,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
-import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderBucket;
-import yagen.waitmydawn.yagens_mobs.entity.RockHangerSpawnEgg;
-import yagen.waitmydawn.yagens_mobs.silk.SilkLauncher;
-import yagen.waitmydawn.yagens_mobs.transport.CargoTongs;
-import yagen.waitmydawn.yagens_mobs.transport.MailBag;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderBucket;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHangerSpawnEgg;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.SilkLauncher;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.CargoTongs;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBag;
 
 public final class ModItems {
     private static final List<Item> ENTRIES = new ArrayList<>();

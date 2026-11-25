@@ -4,7 +4,7 @@ import net.minecraft.client.Camera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import yagen.waitmydawn.yagens_mobs.client.VelocipodCamera;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodCamera;
 
 @Mixin(Camera.class)
 abstract class FabricVelocipodCameraDistance {

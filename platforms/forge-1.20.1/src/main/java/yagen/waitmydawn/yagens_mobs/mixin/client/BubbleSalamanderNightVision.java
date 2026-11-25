@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamander;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamander;
 
 @Mixin(LightTexture.class)
 abstract class BubbleSalamanderNightVision {

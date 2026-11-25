@@ -13,14 +13,14 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamander;
-import yagen.waitmydawn.yagens_mobs.entity.DesertSkate;
-import yagen.waitmydawn.yagens_mobs.entity.RockHanger;
-import yagen.waitmydawn.yagens_mobs.entity.SkateSpike;
-import yagen.waitmydawn.yagens_mobs.entity.Vulture;
-import yagen.waitmydawn.yagens_mobs.entity.Velocipod;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkGrip;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkLine;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamander;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.DesertSkate;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHanger;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.SkateSpike;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.Vulture;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.Velocipod;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkGrip;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkLine;
 
 public final class ModEntities {
     public static final Supplier<EntityType<BubbleSalamander>> BUBBLE_SALAMANDER = entity(

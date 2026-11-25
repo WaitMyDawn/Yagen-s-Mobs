@@ -11,12 +11,12 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.transport.MailParcelBlock;
-import yagen.waitmydawn.yagens_mobs.transport.MailParcelEntity;
-import yagen.waitmydawn.yagens_mobs.transport.VultureNestBlock;
-import yagen.waitmydawn.yagens_mobs.transport.VultureNestEntity;
-import yagen.waitmydawn.yagens_mobs.transport.VulturePostBlock;
-import yagen.waitmydawn.yagens_mobs.transport.VulturePostEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailParcelBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailParcelEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VultureNestBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VultureNestEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostEntity;
 
 public final class ModBlocks {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ModIdentity.ID);

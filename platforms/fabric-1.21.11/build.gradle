@@ -45,6 +45,8 @@ dependencies { modImplementation "maven.modrinth:geckolib:${geckolib_artifact}" 
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
+        // These radar definitions invoke the NeoForge-only Kavat renderer by class name.
+        exclude 'assets/xaerominimap/entity/icon/definition/yagens_mobs/kavat*.json'
         include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'

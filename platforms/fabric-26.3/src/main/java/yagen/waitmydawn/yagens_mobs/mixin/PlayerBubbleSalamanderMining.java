@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamander;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamander;
 
 @Mixin(Player.class)
 abstract class PlayerBubbleSalamanderMining {

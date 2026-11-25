@@ -11,7 +11,7 @@ public final class RenderPose {
         stack.mulPose(new Matrix4f().rotation(rotation));
     }
 
-    static int minimumBlockLight(int light, int minimum) {
+    public static int minimumBlockLight(int light, int minimum) {
         int block = (light >> 4) & 15;
         return (light & ~(15 << 4)) | (Math.max(block, minimum) << 4);
     }

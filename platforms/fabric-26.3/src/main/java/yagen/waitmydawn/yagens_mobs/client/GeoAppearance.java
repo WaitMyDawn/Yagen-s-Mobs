@@ -6,7 +6,7 @@ import com.geckolib.constant.dataticket.DataTicket;
 import com.geckolib.model.GeoModel;
 import com.geckolib.renderer.base.GeoRenderState;
 
-abstract class GeoAppearance<T extends GeoAnimatable> extends GeoModel<T> {
+public abstract class GeoAppearance<T extends GeoAnimatable> extends GeoModel<T> {
     private static final DataTicket<Identifier> MODEL = DataTicket.create("yagen.waitmydawn.yagens_mobs:model", Identifier.class);
     private static final DataTicket<Identifier> TEXTURE = DataTicket.create("yagen.waitmydawn.yagens_mobs:texture", Identifier.class);
 

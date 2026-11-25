@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import yagen.waitmydawn.yagens_mobs.client.VelocipodCamera;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodCamera;
 
 @Pseudo
 @Mixin(targets = "yagen.waitmydawn.ninjas_free_play.camera.core.CameraRig", remap = false)

@@ -1,8 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
 import net.minecraft.core.registries.Registries;
-import yagen.waitmydawn.yagens_mobs.kavat.Incubator;
-import yagen.waitmydawn.yagens_mobs.kavat.IncubatorBlock;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.Incubator;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -12,12 +12,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.transport.MailParcelBlock;
-import yagen.waitmydawn.yagens_mobs.transport.MailParcelEntity;
-import yagen.waitmydawn.yagens_mobs.transport.VultureNestBlock;
-import yagen.waitmydawn.yagens_mobs.transport.VultureNestEntity;
-import yagen.waitmydawn.yagens_mobs.transport.VulturePostBlock;
-import yagen.waitmydawn.yagens_mobs.transport.VulturePostEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailParcelBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailParcelEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VultureNestBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VultureNestEntity;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostEntity;
 
 public final class ModBlocks {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModIdentity.ID);
@@ -50,8 +50,8 @@ public final class ModBlocks {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<Incubator>> INCUBATOR_ENTITY =
             ENTITIES.register("kavat_incubator", () -> BlockEntityType.Builder.of(Incubator::new, INCUBATOR.get()).build(null));
     private static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ModIdentity.ID);
-    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>, net.minecraft.world.inventory.MenuType<yagen.waitmydawn.yagens_mobs.kavat.IncubatorMenu>> INCUBATOR_MENU =
-            MENUS.register("kavat_incubator", () -> new net.minecraft.world.inventory.MenuType<>(yagen.waitmydawn.yagens_mobs.kavat.IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>, net.minecraft.world.inventory.MenuType<yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu>> INCUBATOR_MENU =
+            MENUS.register("kavat_incubator", () -> new net.minecraft.world.inventory.MenuType<>(yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
     private ModBlocks() {}
 
     public static void register(IEventBus bus) {

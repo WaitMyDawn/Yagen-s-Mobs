@@ -14,14 +14,14 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import yagen.waitmydawn.yagens_mobs.client.LegacyClientPackets;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderWear;
-import yagen.waitmydawn.yagens_mobs.entity.VelocipodSprintInput;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkPackets;
-import yagen.waitmydawn.yagens_mobs.salvage.SalvageRoutes;
-import yagen.waitmydawn.yagens_mobs.salvage.SalvageClient;
-import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
-import yagen.waitmydawn.yagens_mobs.weasel.WeaselPackets;
-import yagen.waitmydawn.yagens_mobs.weasel.client.WeaselClient;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderWear;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.VelocipodSprintInput;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkPackets;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRoutes;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageClient;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationPackets;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.WeaselPackets;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.client.WeaselClient;
 
 public final class LegacyNetwork {
     private static final String VERSION = "1";

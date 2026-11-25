@@ -71,6 +71,9 @@ repo/
 /docs/*
 !/docs/assets-for-readme/
 !/docs/changelog/
+!/docs/performance/
+/docs/performance/*
+!/docs/performance/spawn-survey-neoforge-1.21.1/
 !/docs/player-guide.md
 !/docs/player-guide.zh-CN.md
 /artwork/

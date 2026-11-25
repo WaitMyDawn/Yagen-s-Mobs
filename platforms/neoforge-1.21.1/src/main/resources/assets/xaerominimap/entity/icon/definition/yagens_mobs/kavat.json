@@ -1,5 +1,5 @@
 {
-  "variantMethod": "yagen.waitmydawn.yagens_mobs.kavat.KavatRescueView.radarVariant",
+  "variantMethod": "yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescueView.radarVariant",
   "variants": {
     "smeeta": "normal_sprite:yagens_mobs/kavat_smeeta.png",
     "adarza": "normal_sprite:yagens_mobs/kavat_adarza.png",

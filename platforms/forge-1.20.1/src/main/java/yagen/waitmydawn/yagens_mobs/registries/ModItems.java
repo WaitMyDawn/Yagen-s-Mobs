@@ -14,11 +14,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderBucket;
-import yagen.waitmydawn.yagens_mobs.entity.RockHangerSpawnEgg;
-import yagen.waitmydawn.yagens_mobs.silk.SilkLauncher;
-import yagen.waitmydawn.yagens_mobs.transport.CargoTongs;
-import yagen.waitmydawn.yagens_mobs.transport.MailBag;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderBucket;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHangerSpawnEgg;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.SilkLauncher;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.CargoTongs;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBag;
 
 public final class ModItems {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModIdentity.ID);
@@ -52,9 +52,9 @@ public final class ModItems {
     public static final RegistryObject<ForgeSpawnEggItem> VELOCIPOD_SPAWN_EGG = ITEMS.register("velocipod_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.VELOCIPOD, 0x574659, 0x76A59A, new Item.Properties()));
     public static final RegistryObject<BlockItem> SALVAGE_NEST_BOX = ITEMS.register("salvage_nest_box",
-            () -> new BlockItem(yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.NEST_BOX.get(), new Item.Properties()));
+            () -> new BlockItem(yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.NEST_BOX.get(), new Item.Properties()));
     public static final RegistryObject<ForgeSpawnEggItem> SALVAGE_RAY_SPAWN_EGG = ITEMS.register("salvage_ray_spawn_egg",
-            () -> new ForgeSpawnEggItem(yagen.waitmydawn.yagens_mobs.salvage.SalvageRays.RAY, 0x2b2138, 0x987BA7, new Item.Properties()));
+            () -> new ForgeSpawnEggItem(yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.RAY, 0x2b2138, 0x987BA7, new Item.Properties()));
     public static final RegistryObject<CreativeModeTab> YAGENS_MOBS = TABS.register("yagens_mobs",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.yagens_mobs"))

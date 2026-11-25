@@ -11,7 +11,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
-import yagen.waitmydawn.yagens_mobs.butterfly.LumenLootContext;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenLootContext;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 
 public record AttackerEnchantmentLevel(Holder<Enchantment> enchantment) implements ContextIntProvider,

@@ -28,18 +28,21 @@ The server config is `config/yagens_mobs/yagens_mobs-server.toml`. For a per-wor
 
 | `[spawns.<id>]` | 生成池与地形 / Pool and habitat | 默认权重 / Default weight | 默认组大小 / Default group size |
 | --- | --- | --- | --- |
-| `desert_skate` | 怪物池。沙漠、恶地类群系的沙地，白天也可生成。 / Monster pool. Sand in deserts and badlands biomes, including in daylight. | 2 | 3–4 |
-| `condroc` | 动物池。稀树草原、沙漠、恶地及有足够落差的露天峡谷。 / Creature pool. Savannas, deserts, badlands, and qualifying open ravines. | 8 / 3 / 1 | 1–3 |
+| `desert_skate` | 怪物池。沙漠、恶地类群系的沙地，白天也可生成。 / Monster pool. Sand in deserts and badlands biomes, including in daylight. | 3 (NeoForge 1.21.1), 2 (其他 / others) | 3–4 |
+| `condroc` | 动物池。稀树草原、沙漠、恶地及有足够落差的露天峡谷。 / Creature pool. Savannas, deserts, badlands, and qualifying open ravines. | 16 / 3 / 1 (NeoForge 1.21.1), 8 / 3 / 1 (其他 / others) | 1–3 |
 | `rock_hanger` | 怪物池。普通地下洞穴、溶洞和繁茂洞穴，跳过深暗之域和和平难度。 / Monster pool. Ordinary underground caves, dripstone caves, and lush caves, excluding the Deep Dark and Peaceful difficulty. | 普通、溶洞 10，繁茂 3 / 10 ordinary and dripstone, 3 lush | 1 |
 | `bubble_salamander` | 水生动物池。河流、温水海洋和暖水海洋。 / Water creature pool. Rivers, lukewarm oceans, and warm oceans. | 河流 5，海洋 3 / 5 river, 3 ocean | 1–2 |
 | `velocipod` | 动物池。沼泽、红树林沼泽的露天干燥地面。 / Creature pool. Dry ground under open sky in swamps and mangrove swamps. | 6 | 1–2 |
 | `lumen_butterfly` | 动物池。繁花森林、平原、向日葵平原和草甸。 / Creature pool. Flower forests, plains, sunflower plains, and meadows. | 8 | 2–4 |
 | `salvage_ray` | 末地外岛巢穴结构。 / Outer End nest structure. | `nestChance = 0.75` | 2–3 |
 | `snowcache_weasel` | 动物池。雪原、雪针林、冰刺之地和雪林。 / Creature pool. Snowy plains, snowy taiga, ice spikes, and groves. | 6 | 1–2 |
+| `kavat` | 动物池。主世界、下界及末地的有效地面，任意亮度。 / Creature pool. Valid ground across the Overworld, Nether and End at any light level (NeoForge 1.21.1). | 10 / 下界 Nether 20 | 1–4 |
 
 常规生物条目使用 `enabled`、`weight`、`minGroupSize`、`maxGroupSize`。权重为 0 时关闭该生成条目。权重决定同一个群系、同一个池选中该条目时的相对占比。生成尝试还要经过生物上限和地点检查。组大小是尝试数量，实刷数量可能更少。最大值小于最小值时使用最小值。秃鹫的旱地和峡谷权重分别按基础值的 0.4 和 0.13 倍计算，泡囊鲵海洋为 0.5 倍，繁茂洞穴的吊岩兽为 0.3 倍。缩放四舍五入，非零权重至少保留 1。拾遗鳐的 `nestChance` 走结构候选点判定。
 
 Regular creature entries use `enabled`, `weight`, `minGroupSize`, and `maxGroupSize`. A zero weight disables an entry. Weight determines an entry's relative share of selection in the same biome and pool. Attempts also pass mob cap and placement checks. Group sizes count attempts, so fewer mobs may spawn. A maximum below the minimum is raised to the minimum. Condroc weights are scaled by 0.4 in arid biomes and 0.13 in other biomes with qualifying ravines. Ocean salamanders use 0.5 and lush-cave Rock Hangers use 0.3. Scaling rounds to the nearest integer and keeps nonzero entries at a minimum of 1. Salvage Rays use `nestChance` for structure candidates.
+
+NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会保留。沙漠鳐鱼的实际权重为配置值的 1.5 倍。秃鹫可在露天陆地或树冠上方 0–3 格入场；吊岩兽也会从距洞顶 1–4 格的空气中寻找天然锚点，仍须满足黑暗与 16 格净空。 / On NeoForge 1.21.1, all nine species survive distance-based despawning and save with their chunks. Desert Skates use 1.5 times their configured spawn weight. Condrocs can spawn up to three blocks above exposed ground or foliage. Rock Hangers can also find an anchor from air within four blocks of a cave ceiling; darkness and 16 blocks of clearance still apply.
 
 <a id="desert-skate"></a>
 ## 沙漠鳐鱼 / Desert Skate
@@ -322,7 +325,7 @@ With Xaero’s Minimap installed, all eight creatures have face icons in its Ent
 
 Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬血型成功救助时，主人会看到同款头像从屏幕中央浮现，附近可听到一声猫叫。 / Xaero’s Minimap shows a distinct face for each breed. A successful Vasca rescue flashes its radar portrait on the owner’s screen and plays a cat meow nearby.
 
-自然生成使用怪物池和原版怪物光照判定，默认权重 10、组大小 1–4。服务器可在 `spawns.kavat` 中调整开关、权重和组大小。各地实际出现率还取决于当地生成池和可用位置。 / Natural spawns use the monster pool and vanilla monster light checks with weight 10 and groups of 1–4. The server can change all three settings under `spawns.kavat`. Encounter rates depend on the local pool and eligible positions.
+库娃使用陆生动物池，每组尝试 1–4 只。基础权重为 10，下界取基础值的两倍。白天、全黑和和平难度都允许生成。末地主岛自然补刷时，与其他野生库娃至少相距 64 格。`spawns.kavat.mainIslandSpacing` 可调整间距，0 表示关闭。 / Kavats use the creature pool in groups of 1–4, with base weight 10 and double that weight in the Nether. Daylight, darkness and Peaceful difficulty all allow spawning. On the central End island, new natural spawns require 64 blocks of separation from other wild Kavats. Set `spawns.kavat.mainIslandSpacing` to 0 to disable spacing.
 
 **采样和孵化 / Sampling and incubation**
 
@@ -347,5 +350,5 @@ Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬�
 ## 维护索引 / Maintenance index
 
 - **生成与配置 / Spawning and configuration** · [SpawnDefaults](common/src/main/java/yagen/waitmydawn/yagens_mobs/core/SpawnDefaults.java) · [ServerConfigs](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/config/ServerConfigs.java) · [Biome modifiers](platforms/neoforge-1.21.1/src/main/resources/data/yagens_mobs/neoforge/biome_modifier/)
-- **实体与互动 / Entities and interactions** · [Entity behaviors](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/) · [Condroc transport](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/transport/) · [Rock Silk](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/silk/) · [Lumen Butterfly](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/butterfly/) · [Salvage Ray](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/salvage/)
+- **实体与互动 / Entities and interactions** · [Entity behaviors](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/) · [Condroc transport](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/vulture/transport/) · [Rock Silk](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/rockhanger/silk/) · [Lumen Butterfly](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/butterfly/) · [Salvage Ray](platforms/neoforge-1.21.1/src/main/java/yagen/waitmydawn/yagens_mobs/entity/salvage/)
 - **配方、掉落与成就 / Recipes, loot and advancement** · [Recipes](platforms/neoforge-1.21.1/src/main/resources/data/yagens_mobs/recipe/) · [Loot](platforms/neoforge-1.21.1/src/main/resources/data/yagens_mobs/loot_table/) · [Juicy Meat](platforms/neoforge-1.21.1/src/main/resources/data/yagens_mobs/advancement/husbandry/juicy_meat.json)

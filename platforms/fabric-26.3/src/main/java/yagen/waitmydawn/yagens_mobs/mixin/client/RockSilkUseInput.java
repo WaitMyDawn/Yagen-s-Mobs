@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yagen.waitmydawn.yagens_mobs.client.RockSilkControls;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockSilkControls;
 
 @Mixin(Minecraft.class)
 abstract class RockSilkUseInput {
@@ -13,7 +13,7 @@ abstract class RockSilkUseInput {
     private void yagensMobs$tryRockSilkGrip(CallbackInfo callback) {
         var game = (Minecraft) (Object) this;
         if (game.gameMode != null && game.player != null && !game.player.isUsingItem()
-                && (yagen.waitmydawn.yagens_mobs.salvage.SalvageClient.cutPointedLink() || RockSilkControls.tryGrab())) {
+                && (yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageClient.cutPointedLink() || RockSilkControls.tryGrab())) {
             callback.cancel();
         }
     }

@@ -1,0 +1,15 @@
+gradle.beforeProject { p ->
+    if (p.projectDir.name != 'neoforge-1.21.1') return
+    p.plugins.withId('java') {
+        def survey = p.sourceSets.create('spawnSurvey') {
+            java.srcDir p.file('../../scripts/spawn-survey/java')
+            resources.srcDir p.file('../../scripts/spawn-survey/resources')
+            compileClasspath += p.sourceSets.main.compileClasspath + p.sourceSets.main.output
+        }
+        p.tasks.register('spawnSurveyJar', Jar) {
+            from survey.output
+            archiveFileName = 'spawn-survey.jar'
+            destinationDirectory = p.layout.buildDirectory.dir('survey')
+        }
+    }
+}

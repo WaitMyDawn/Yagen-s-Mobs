@@ -12,7 +12,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.biome.Biomes;
-import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.core.SpawnDefaults;
@@ -43,7 +43,7 @@ public final class ConfiguredMobSpawns {
         add("lumen_butterfly", tagged("lumen_butterfly_habitat"), LumenButterflies.TYPE.get(),
                 ServerConfigs.LUMEN_BUTTERFLY, 1);
         add("snowcache_weasel", tagged("snowcache_weasel_spawns"),
-                yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels.TYPE.get(), ServerConfigs.SNOWCACHE_WEASEL, 1);
+                yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.TYPE.get(), ServerConfigs.SNOWCACHE_WEASEL, 1);
     }
 
     private static Predicate<BiomeSelectionContext> tagged(String name) {

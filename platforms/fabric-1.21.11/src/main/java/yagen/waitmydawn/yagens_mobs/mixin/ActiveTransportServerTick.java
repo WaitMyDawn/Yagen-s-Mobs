@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import yagen.waitmydawn.yagens_mobs.transport.StationData;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationData;
 
 @Mixin(MinecraftServer.class)
 abstract class ActiveTransportServerTick {

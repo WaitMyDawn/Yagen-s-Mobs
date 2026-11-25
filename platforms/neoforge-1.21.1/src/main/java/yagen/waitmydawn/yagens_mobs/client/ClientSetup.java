@@ -1,5 +1,18 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.client.DesertSkateRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.LauncherScreen;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.MailBagScreen;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockHangerRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockSilkLineRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.client.SkateSpikeRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodControls;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VulturePostRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VultureRenderer;
+
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.neoforged.api.distmarker.Dist;
@@ -13,8 +26,8 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
-import yagen.waitmydawn.yagens_mobs.silk.LauncherMenu;
-import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.LauncherMenu;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 
 @EventBusSubscriber(modid = ModIdentity.ID, value = Dist.CLIENT)
 public final class ClientSetup {
@@ -28,8 +41,8 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(yagen.waitmydawn.yagens_mobs.kavat.KavatRescue.ID,
-                yagen.waitmydawn.yagens_mobs.kavat.KavatRescueView::draw);
+        event.registerAboveAll(yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescue.ID,
+                yagen.waitmydawn.yagens_mobs.entity.kavat.KavatRescueView::draw);
         event.registerAbove(VanillaGuiLayers.EXPERIENCE_BAR, VelocipodControls.STAMINA, VelocipodControls::renderStamina);
     }
 
@@ -37,7 +50,7 @@ public final class ClientSetup {
     public static void registerMenus(RegisterMenuScreensEvent event) {
         event.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
         event.register(LauncherMenu.TYPE.get(), LauncherScreen::new);
-        event.register(ModBlocks.INCUBATOR_MENU.get(), yagen.waitmydawn.yagens_mobs.kavat.IncubatorScreen::new);
+        event.register(ModBlocks.INCUBATOR_MENU.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorScreen::new);
     }
 
     @SubscribeEvent
@@ -53,8 +66,8 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.ROCK_HANGER.get(), RockHangerRenderer::new);
         event.registerEntityRenderer(ModEntities.BUBBLE_SALAMANDER.get(), BubbleSalamanderRenderer::new);
         event.registerEntityRenderer(ModEntities.VELOCIPOD.get(), VelocipodRenderer::new);
-        event.registerEntityRenderer(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.kavat.KavatView::new);
-        event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.kavat.KavatView::new);
+        event.registerEntityRenderer(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
+        event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_LINE.get(), RockSilkLineRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_GRIP.get(), NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.VULTURE_POST_ENTITY.get(), VulturePostRenderer::new);

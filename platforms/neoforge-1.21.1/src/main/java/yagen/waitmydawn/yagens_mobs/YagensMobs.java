@@ -1,34 +1,33 @@
 package yagen.waitmydawn.yagens_mobs;
 
 import net.neoforged.bus.api.IEventBus;
-import yagen.waitmydawn.yagens_mobs.kavat.KavatCombat;
-import yagen.waitmydawn.yagens_mobs.kavat.KavatMemories;
-import yagen.waitmydawn.yagens_mobs.kavat.KavatSpawns;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatCombat;
+import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import yagen.waitmydawn.yagens_mobs.butterfly.LumenButterflies;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
-import yagen.waitmydawn.yagens_mobs.entity.BubbleSalamanderWear;
-import yagen.waitmydawn.yagens_mobs.entity.VelocipodSprintInput;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderWear;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.VelocipodSprintInput;
 import yagen.waitmydawn.yagens_mobs.loot.AttackerEnchantmentLevel;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
-import yagen.waitmydawn.yagens_mobs.salvage.SalvageRays;
-import yagen.waitmydawn.yagens_mobs.weasel.SnowcacheWeasels;
-import yagen.waitmydawn.yagens_mobs.silk.LauncherMenu;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkPackets;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.LauncherMenu;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkPackets;
 import yagen.waitmydawn.yagens_mobs.spawn.ConfiguredMobSpawns;
-import yagen.waitmydawn.yagens_mobs.transport.StationData;
-import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
-import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationData;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationPackets;
 
 @Mod(YagensMobs.MODID)
 public final class YagensMobs {
@@ -58,7 +57,6 @@ public final class YagensMobs {
         NeoForge.EVENT_BUS.addListener(KavatCombat::redirect);
         NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, KavatCombat::rescue);
         NeoForge.EVENT_BUS.addListener(KavatMemories::login);
-        NeoForge.EVENT_BUS.addListener(KavatSpawns::pool);
     }
 
     private static void tickTransport(LevelTickEvent.Post event) {

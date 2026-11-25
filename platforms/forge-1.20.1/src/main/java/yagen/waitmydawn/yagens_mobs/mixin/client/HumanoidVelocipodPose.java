@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yagen.waitmydawn.yagens_mobs.entity.Velocipod;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.Velocipod;
 
 @Mixin(HumanoidModel.class)
 abstract class HumanoidVelocipodPose {

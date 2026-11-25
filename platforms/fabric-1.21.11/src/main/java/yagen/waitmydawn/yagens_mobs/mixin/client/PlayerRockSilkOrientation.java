@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yagen.waitmydawn.yagens_mobs.silk.RockSilkGrip;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkGrip;
 
 @Mixin(AvatarRenderer.class)
 abstract class PlayerRockSilkOrientation {

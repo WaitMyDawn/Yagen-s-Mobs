@@ -1,8 +1,10 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VultureStationScreen;
+
 import net.minecraft.client.Minecraft;
-import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
-import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationPackets;
 
 public final class LegacyClientPackets {
     private LegacyClientPackets() {}

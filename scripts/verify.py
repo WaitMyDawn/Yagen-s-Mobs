@@ -73,6 +73,18 @@ def verify_jar(project, target, jar):
                 require(json.loads(archive.read(item_model)).get("textures", {}).get("layer0") == expected_texture,
                         f"Invalid spawn egg model: {egg}")
         require("yagens_mobs.mixins.json" in entries, "Missing mixin configuration")
+        for config_path in (path for path in entries if path.endswith(".mixins.json")):
+            config = json.loads(archive.read(config_path))
+            for side in ("mixins", "client", "server"):
+                for mixin in config.get(side, []):
+                    class_path = (config["package"] + "." + mixin).replace(".", "/") + ".class"
+                    require(class_path in entries, f"{config_path} references missing class {class_path}")
+        radar_definitions = f"assets/xaerominimap/entity/icon/definition/{shared['mod_id']}/"
+        for path in (name for name in entries if name.startswith(radar_definitions) and name.endswith(".json")):
+            method = json.loads(archive.read(path)).get("variantMethod")
+            if method and method.startswith(shared["mod_group_id"] + "."):
+                owner = method.rsplit(".", 1)[0].replace(".", "/") + ".class"
+                require(owner in entries, f"{path} references missing radar callback class {owner}")
         if loader == "fabric":
             metadata = json.loads(archive.read("fabric.mod.json"))
             for key, property_key in (("id", "mod_id"), ("version", "mod_version"), ("name", "mod_name"),
@@ -89,9 +101,11 @@ def verify_jar(project, target, jar):
             require("yagens_mobs.mixins.json" in metadata.get("mixins", []), "Missing Fabric mixin registration")
             require(not any(path.startswith(f"data/{shared['mod_id']}/neoforge/") for path in entries),
                     "NeoForge biome modifiers are not Fabric runtime resources")
-            for side in ("main", "client"):
-                for entrypoint in metadata["entrypoints"][side]:
-                    require(entrypoint.replace(".", "/") + ".class" in entries, f"Missing {side} entrypoint")
+            for kind, entrypoints in metadata["entrypoints"].items():
+                for entrypoint in entrypoints:
+                    class_name = entrypoint if isinstance(entrypoint, str) else entrypoint["value"]
+                    class_path = class_name.split("::", 1)[0].replace(".", "/") + ".class"
+                    require(class_path in entries, f"Missing {kind} entrypoint {class_name}")
             nested_classes = set()
             for nested in metadata.get("jars", []):
                 name = nested["file"]

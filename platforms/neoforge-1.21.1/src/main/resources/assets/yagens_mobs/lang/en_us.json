@@ -200,6 +200,7 @@
   "kavat.generation": "Generation %s",
   "kavat.owner": "Source owner · %s",
   "kavat.extracted": "This Kavat has already been sampled.",
+  "kavat.sample_received": "Kavat traits: %1$s x%2$s",
   "kavat.own_templates": "Both imprints belong to you. Pair one with another owner's imprint.",
   "kavat.choose_samples": "Select samples below · Shift-click to select a stack",
   "kavat.start": "Incubate 10 codes or 2 imprints · 5 min",

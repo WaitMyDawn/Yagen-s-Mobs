@@ -14,7 +14,7 @@
     "main": [
       "yagen.waitmydawn.yagens_mobs.YagensMobs"
     ],
-    "jei_mod_plugin": ["yagen.waitmydawn.yagens_mobs.weasel.client.WeaselJei"],
+    "jei_mod_plugin": ["yagen.waitmydawn.yagens_mobs.entity.weasel.client.WeaselJei"],
     "client": [
       "yagen.waitmydawn.yagens_mobs.client.ClientSetup"
     ]

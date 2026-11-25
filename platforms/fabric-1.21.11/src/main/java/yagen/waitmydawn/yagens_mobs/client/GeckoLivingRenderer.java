@@ -10,7 +10,7 @@ import software.bernie.geckolib.constant.dataticket.DataTicket;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.base.GeoRenderState;
 
-abstract class GeckoLivingRenderer<T extends LivingEntity & GeoAnimatable>
+public abstract class GeckoLivingRenderer<T extends LivingEntity & GeoAnimatable>
         extends GeoEntityRenderer<T, GeckoLivingRenderer.State> {
     protected GeckoLivingRenderer(EntityRendererProvider.Context context, GeoAppearance<T> model) {
         super(context, model);
@@ -21,7 +21,7 @@ abstract class GeckoLivingRenderer<T extends LivingEntity & GeoAnimatable>
         return new State();
     }
 
-    static final class State extends LivingEntityRenderState implements GeoRenderState {
+    public static final class State extends LivingEntityRenderState implements GeoRenderState {
         private final Map<DataTicket<?>, Object> data = new HashMap<>();
 
         @Override

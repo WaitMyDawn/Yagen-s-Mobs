@@ -24,7 +24,7 @@ public record ConfiguredMobSpawns(HolderSet<Biome> biomes, EntityType<?> entityT
     private static final MapCodec<ConfiguredMobSpawns> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Biome.LIST_CODEC.fieldOf("biomes").forGetter(ConfiguredMobSpawns::biomes),
             BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity").forGetter(ConfiguredMobSpawns::entityType),
-            Codec.doubleRange(0.01, 1.0).optionalFieldOf("weight_factor", 1.0).forGetter(ConfiguredMobSpawns::weightFactor),
+            Codec.doubleRange(0.01, 16.0).optionalFieldOf("weight_factor", 1.0).forGetter(ConfiguredMobSpawns::weightFactor),
             Biome.LIST_CODEC.optionalFieldOf("excluded_biomes").forGetter(ConfiguredMobSpawns::excludedBiomes)
     ).apply(instance, ConfiguredMobSpawns::new));
 

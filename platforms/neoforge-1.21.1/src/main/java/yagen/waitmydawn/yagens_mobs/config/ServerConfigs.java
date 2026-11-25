@@ -29,6 +29,9 @@ public final class ServerConfigs {
             .defineInRange("spawns.condroc.juvenileChance", SpawnDefaults.CONDROC_JUVENILE_CHANCE, 0.0, 1.0);
     public static final Spawns SNOWCACHE_WEASEL = spawns(SpawnDefaults.SNOWCACHE_WEASEL);
     public static final Spawns KAVAT = spawns(SpawnDefaults.KAVAT);
+    public static final ModConfigSpec.IntValue KAVAT_MAIN_ISLAND_SPACING = BUILDER
+            .comment("Minimum distance between naturally spawning wild Kavats on the central End island. Zero disables spacing.")
+            .defineInRange("spawns.kavat.mainIslandSpacing", 64, 0, 128);
     public static final NestSpawns SALVAGE_RAY = new NestSpawns(
             BUILDER.comment("Generate Salvage Ray nests and their resident groups in new End chunks.")
                     .worldRestart().define("spawns.salvage_ray.enabled", true),

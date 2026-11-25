@@ -1,5 +1,6 @@
 {
   "type": "yagens_mobs:configured_mob_spawns",
   "biomes": "#yagens_mobs:has_desert_skate",
-  "entity": "yagens_mobs:desert_skate"
+  "entity": "yagens_mobs:desert_skate",
+  "weight_factor": 1.5
 }

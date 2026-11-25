@@ -1,6 +1,23 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
-import yagen.waitmydawn.yagens_mobs.butterfly.client.LumenRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.client.DesertSkateRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.LauncherPreview;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.LauncherScreen;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.MailBagScreen;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockHangerRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockSilkControls;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.client.RockSilkLineRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.desertskate.client.SkateSpikeRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodControls;
+import yagen.waitmydawn.yagens_mobs.entity.velocipod.client.VelocipodRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VulturePostRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VultureRenderer;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.VultureStationScreen;
+
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.client.LumenRenderer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -22,22 +39,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
-import yagen.waitmydawn.yagens_mobs.transport.StationPackets;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationPackets;
 
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
-import yagen.waitmydawn.yagens_mobs.silk.LauncherMenu;
-import yagen.waitmydawn.yagens_mobs.transport.MailBagMenu;
+import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.LauncherMenu;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 
 public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LumenRenderer.register();
-        yagen.waitmydawn.yagens_mobs.weasel.client.WeaselClient.register();
-        yagen.waitmydawn.yagens_mobs.salvage.SalvageClient.register();
+        yagen.waitmydawn.yagens_mobs.entity.weasel.client.WeaselClient.register();
+        yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageClient.register();
         ClientConfigs.reload();
         MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
         MenuScreens.register(LauncherMenu.TYPE.get(), LauncherScreen::new);
