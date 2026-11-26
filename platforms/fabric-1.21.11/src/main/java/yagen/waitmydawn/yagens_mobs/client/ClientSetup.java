@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
@@ -52,6 +53,7 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        if (FieldGuide.isAvailable()) yagen.waitmydawn.yagens_mobs.guide.FieldGuideClient.register();
         yagen.waitmydawn.yagens_mobs.entity.kavat.KavatClient.register();
         EntityRendererRegistry.register(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         EntityRendererRegistry.register(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);

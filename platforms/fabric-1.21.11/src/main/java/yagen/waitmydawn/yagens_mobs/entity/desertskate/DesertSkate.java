@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.desertskate;
 
+import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.compat.SaveTag;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
@@ -56,6 +57,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
 public final class DesertSkate extends Monster implements GeoEntity {
@@ -122,6 +124,21 @@ public final class DesertSkate extends Monster implements GeoEntity {
     public DesertSkate(EntityType<? extends DesertSkate> type, Level level) {
         super(type, level);
         this.nextBaitScan = random.nextInt(24);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return burrowPhase() == BurrowPhase.SURFACE ? CreatureCue.SKATE_IDLE.orElse(null) : null;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return CreatureCue.SKATE_HURT.orElse(super.getHurtSound(source));
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return CreatureCue.SKATE_DEATH.orElse(super.getDeathSound());
     }
 
     @Override
@@ -642,7 +659,7 @@ public final class DesertSkate extends Monster implements GeoEntity {
                 .add(0.0, 0.22 * ageScale, 0.0);
         ((ServerLevel) level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, bite),
                 mouth.x, mouth.y, mouth.z, 6, 0.12, 0.06, 0.12, 0.04);
-        playSound(SoundEvents.FOX_EAT, 0.65F, 0.85F);
+        CreatureCue.SKATE_EAT.playReplacing(this, 0.65F, SoundEvents.FOX_EAT, 0.85F);
     }
 
     private void hunt(LivingEntity target) {
@@ -680,7 +697,7 @@ public final class DesertSkate extends Monster implements GeoEntity {
             if (elapsed >= SkateSting.WINDUP_TICKS && tickCount >= nextShot) {
                 SkateSpike.fire((ServerLevel) level(), this, muzzle, aim);
                 nextShot = tickCount + SPIKE_COOLDOWN;
-                playSound(SoundEvents.LLAMA_SPIT, 0.8F, 1.25F);
+                CreatureCue.SKATE_SPINE.playReplacing(this, 0.8F, SoundEvents.LLAMA_SPIT, 1.25F);
             }
         } else if (tickCount + SkateSting.WINDUP_TICKS >= nextShot) {
             entityData.set(STING_STARTED_AT, level().getGameTime());

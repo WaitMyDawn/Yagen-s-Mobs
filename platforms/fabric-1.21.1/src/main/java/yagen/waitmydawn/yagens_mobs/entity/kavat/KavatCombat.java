@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 
 public final class KavatCombat {
@@ -47,7 +48,7 @@ public final class KavatCombat {
         cat.setHealth(cat.getHealth() - paid);
         player.setHealth(Math.min(player.getMaxHealth(), paid));
 
-        player.level().playSound(null, player.blockPosition(), SoundEvents.CAT_AMBIENT,
+        player.level().playSound(null, player.blockPosition(), CreatureCue.KAVAT_RESCUE.orElse(SoundEvents.CAT_AMBIENT),
                 SoundSource.NEUTRAL, 1F, 1F);
         ServerPlayNetworking.send(player, new KavatRescue());
         return true;

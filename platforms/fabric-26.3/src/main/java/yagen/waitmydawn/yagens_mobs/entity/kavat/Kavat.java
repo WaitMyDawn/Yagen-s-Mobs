@@ -30,6 +30,7 @@ import com.geckolib.animatable.manager.AnimatableManager;
 import com.geckolib.animation.*;
 import com.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 
@@ -164,12 +165,13 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     protected SoundEvent getAmbientSound() {
         if (decoy() || hidden()) return null;
         return activity() == KavatHabits.Pose.WARM || activity() == KavatHabits.Pose.SOCIAL_ROLL
-                || isInSittingPose() ? SOUNDS.purrSound().value() : SOUNDS.ambientSound().value();
+                || isInSittingPose() ? CreatureCue.KAVAT_PURR.orElse(SOUNDS.purrSound().value())
+                : CreatureCue.KAVAT_IDLE.orElse(SOUNDS.ambientSound().value());
     }
     @Override
     protected SoundEvent getHurtSound(DamageSource damage) { return SOUNDS.hurtSound().value(); }
     @Override
-    protected SoundEvent getDeathSound() { return SOUNDS.deathSound().value(); }
+    protected SoundEvent getDeathSound() { return CreatureCue.KAVAT_DEATH.orElse(SOUNDS.deathSound().value()); }
     public boolean decoy() {
         return getType() == ModEntities.KAVAT_DECOY.get();
     }
@@ -323,6 +325,7 @@ public class Kavat extends TamableAnimal implements GeoEntity {
         if (hand == InteractionHand.MAIN_HAND && held.isEmpty() && player.isShiftKeyDown() && isOwnedBy(player)) {
             if (!level().isClientSide()) {
                 setOrderedToSit(!isOrderedToSit());
+                CreatureCue.KAVAT_ANSWER.play(this, .8F);
                 setTarget(null);
                 getNavigation().stop();
                 player.sendOverlayMessage(Component.translatable(

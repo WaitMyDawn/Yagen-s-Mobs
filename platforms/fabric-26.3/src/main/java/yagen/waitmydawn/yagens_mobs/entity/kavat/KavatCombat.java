@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class KavatCombat {
     private static final ThreadLocal<Boolean> REFLECTING = ThreadLocal.withInitial(() -> false);
@@ -40,7 +41,7 @@ public final class KavatCombat {
         cat.setHealth(cat.getHealth() - paid);
         player.setHealth(Math.min(player.getMaxHealth(), paid));
 
-        player.level().playSound(null, player.blockPosition(), Kavat.SOUNDS.ambientSound().value(),
+        player.level().playSound(null, player.blockPosition(), CreatureCue.KAVAT_RESCUE.orElse(Kavat.SOUNDS.ambientSound().value()),
                 net.minecraft.sounds.SoundSource.NEUTRAL, 1F, 1F);
         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new KavatRescue());
         return true;

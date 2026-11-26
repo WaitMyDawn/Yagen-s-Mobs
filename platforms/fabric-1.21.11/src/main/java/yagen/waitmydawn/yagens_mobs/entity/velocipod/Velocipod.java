@@ -75,6 +75,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingAnimal, HasCustomInventoryScreen {
     @Override
@@ -137,6 +138,7 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingA
     private int sprintInputAt;
     private boolean aiSprint;
     private boolean sprintingThisTick;
+    private int nextWingSound;
     private final Vector3f previousRideMotion = new Vector3f();
     private final Vector3f rideMotion = new Vector3f();
     private int growth;
@@ -612,7 +614,13 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingA
             updateRiderMotion(moved, turn);
         }
         setYBodyRot(getYRot());
+        Flight previousFlight = flight();
         updateFlight(wasGrounded, wanted, turn, moved, rider != null);
+        if (!onGround() && tickCount >= nextWingSound && (flight() == Flight.TAKEOFF && previousFlight != Flight.TAKEOFF
+                || sprintingThisTick && moved.lengthSqr() > IDLE_SPEED * IDLE_SPEED)) {
+            CreatureCue.VELOCIPOD_WING.play(this, .75F);
+            nextWingSound = tickCount + 24;
+        }
         calculateEntityAnimation(false);
     }
 

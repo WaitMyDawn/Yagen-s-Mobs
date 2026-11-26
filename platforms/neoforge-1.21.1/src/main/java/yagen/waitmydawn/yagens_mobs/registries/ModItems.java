@@ -14,6 +14,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderBucket;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHangerSpawnEgg;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.SilkLauncher;
@@ -24,6 +25,9 @@ public final class ModItems {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModIdentity.ID);
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModIdentity.ID);
+
+    // Keep the item ID stable when a world temporarily runs without Patchouli.
+    public static final DeferredItem<FieldGuide> FIELD_GUIDE = ITEMS.register("field_guide", FieldGuide::new);
 
     public static final DeferredItem<Item> RAW_DESERT_SKATE = ITEMS.registerSimpleItem("raw_desert_skate",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.25F).build()));
@@ -56,6 +60,7 @@ public final class ModItems {
                     .title(Component.translatable("itemGroup.yagens_mobs"))
                     .icon(() -> COOKED_DESERT_SKATE.get().getDefaultInstance())
                     .displayItems((parameters, output) -> ITEMS.getEntries().stream()
+                            .filter(entry -> entry != FIELD_GUIDE || FieldGuide.isAvailable())
                             .map(DeferredHolder::get)
                             .sorted(Comparator.comparing(item -> item instanceof SpawnEggItem))
                             .forEach(output::accept))
@@ -74,7 +79,6 @@ public final class ModItems {
             () -> new DeferredSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
     private ModItems() {
     }
-
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
         TABS.register(modBus);

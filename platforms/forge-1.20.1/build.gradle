@@ -122,6 +122,9 @@ repositories {
 
 dependencies {
     // Configure the original dependencies before ForgeGradle registers them for remapping.
+    def patchouli = fg.deobf('maven.modrinth:patchouli:94dtOLgZ') { transitive = false }
+    compileOnly(patchouli)
+    if (providers.gradleProperty('withPatchouli').isPresent()) runtimeOnly(patchouli)
     compileOnly(fg.deobf('maven.modrinth:iron-chests:YjbOtYwN') { transitive = false })
     compileOnly(fg.deobf('maven.modrinth:sophisticated-backpacks:kHCIrzhV') { transitive = false })
     compileOnly(fg.deobf('maven.modrinth:sophisticated-core:45N2w0YX') { transitive = false })
@@ -129,3 +132,5 @@ dependencies {
     compileOnly(fg.deobf('maven.modrinth:create:8amzvn9x') { transitive = false })
     compileOnly(fg.deobf('net.createmod.ponder:Ponder-Forge-1.20.1:1.0.91') { transitive = false })
 }
+
+apply from: '../../gradle/field-guide.gradle'

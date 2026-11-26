@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.butterfly;
 
+import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
 import net.minecraft.world.entity.MoverType;
 import java.util.Comparator;
@@ -58,6 +59,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.entity.butterfly.mixin.LumenOrbAccess;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class LumenButterfly extends TamableAnimal implements GeoEntity {
     @Override
@@ -182,6 +184,11 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
     @Override
     protected PathNavigation createNavigation(Level level) {
         return new FlyingPathNavigation(this, level);
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return isBaby() ? null : CreatureCue.BUTTERFLY_IDLE.orElse(null);
     }
 
     private void configureMovement() {

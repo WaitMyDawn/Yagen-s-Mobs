@@ -1,0 +1,7 @@
+{
+  "name": "guide.yagens_mobs.catalog",
+  "icon": "yagens_mobs:field_guide",
+  "category": "yagens_mobs:wildlife",
+  "sortnum": -1,
+  "pages": ${catalogPages}
+}

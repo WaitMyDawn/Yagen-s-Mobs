@@ -1,0 +1,20 @@
+sourceSets.main.resources.srcDir('../../common/src/fieldGuide/resources')
+
+// Bake Patchouli's page array from the same ordered list that supplies the model cards.
+def guideSpecies = layout.projectDirectory.file('../../common/src/fieldGuide/resources/yagen/waitmydawn/yagens_mobs/guide/species.txt')
+def catalogPages = providers.fileContents(guideSpecies).asText.map { contents ->
+    def species = contents.readLines().findAll { !it.isBlank() }
+    def pages = species.collate(6).withIndex().collect { group, page ->
+        [type: 'yagens_mobs:field_plates', species: 'catalog', offset: page]
+    }
+    groovy.json.JsonOutput.toJson(pages)
+}
+tasks.named('processResources') {
+    inputs.property('fieldGuideCatalogPages', catalogPages)
+    from('../../common/src/fieldGuide/templates') {
+        include 'catalog.json.template'
+        into 'assets/yagens_mobs/patchouli_books/field_guide/en_us/entries'
+        rename { 'catalog.json' }
+        expand(catalogPages: catalogPages.get())
+    }
+}

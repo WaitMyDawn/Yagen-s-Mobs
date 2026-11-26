@@ -21,6 +21,11 @@ public final class ModSounds {
     }
 
     public static void register(IEventBus bus) {
+        var calls = DeferredRegister.create(Registries.SOUND_EVENT, ModIdentity.ID + "_audio");
+        for (var cue : CreatureCue.values()) {
+            cue.sound = calls.register(cue.path, SoundEvent::createVariableRangeEvent);
+        }
+        calls.register(bus);
         SOUNDS.register(bus);
     }
 }

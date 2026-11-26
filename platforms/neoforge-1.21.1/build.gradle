@@ -34,6 +34,7 @@ repositories {
             maven { url = providers.gradleProperty('storageCompatRepository').orElse('https://api.modrinth.com/maven').get() }
         }
         filter {
+            includeModule('maven.modrinth', 'patchouli')
             includeModule('maven.modrinth', 'create')
             includeModule('maven.modrinth', 'refined-storage')
             includeModule('maven.modrinth', 'sophisticated-backpacks')
@@ -64,6 +65,7 @@ dependencies {
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     compileOnly('org.apiguardian:apiguardian-api:1.1.2')
     compileOnly('net.createmod.ponder:ponder-neoforge:1.0.82+mc1.21.1') { transitive = false }
+    compileOnly('maven.modrinth:patchouli:BIogJv2D') { transitive = false }
     compileOnly('maven.modrinth:create:UjX6dr61') { transitive = false }
     compileOnly('maven.modrinth:refined-storage:lHHiI26k') { transitive = false }
     compileOnly('maven.modrinth:sophisticated-backpacks:8YikAvYD') { transitive = false }
@@ -79,6 +81,8 @@ runs {
     client {}
     server { argument '--nogui' }
 }
+
+apply from: 'field-guide.gradle'
 
 tasks.withType(ClasspathSerializer).configureEach { serializer ->
     // NeoGradle writes absolute paths even though its input fingerprint ignores paths.

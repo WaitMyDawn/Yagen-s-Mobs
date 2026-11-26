@@ -53,6 +53,11 @@ public final class YagensMobs {
         MinecraftForge.EVENT_BUS.addListener(KavatCombat::redirect);
         MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.LOWEST, KavatCombat::rescue);
         MinecraftForge.EVENT_BUS.addListener(KavatMemories::login);
+        if (yagen.waitmydawn.yagens_mobs.guide.FieldGuide.isAvailable()) {
+            yagen.waitmydawn.yagens_mobs.guide.FieldGuide.register();
+            MinecraftForge.EVENT_BUS.addListener(yagen.waitmydawn.yagens_mobs.guide.FieldGuide::onLogin);
+            MinecraftForge.EVENT_BUS.addListener(yagen.waitmydawn.yagens_mobs.guide.FieldNotes::observe);
+        }
         LegacyNetwork.register();
         StationData.registerTickets();
         MinecraftForge.EVENT_BUS.addListener(YagensMobs::tickTransport);

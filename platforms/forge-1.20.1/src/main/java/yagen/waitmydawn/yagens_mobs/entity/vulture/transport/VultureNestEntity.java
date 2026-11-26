@@ -1,8 +1,11 @@
 package yagen.waitmydawn.yagens_mobs.entity.vulture.transport;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -10,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 
@@ -52,7 +56,14 @@ public final class VultureNestEntity extends BlockEntity {
         }
         if (remaining == 0) {
             level.removeBlock(pos, false);
-            level.levelEvent(2001, pos, Block.getId(state));
+            var hatch = CreatureCue.CONDROC_HATCH.orElse(null);
+            if (hatch == null) {
+                level.levelEvent(2001, pos, Block.getId(state));
+            } else {
+                level.playSound(null, pos, hatch, SoundSource.BLOCKS, .8F, 1F);
+                server.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), pos.getX() + .5,
+                        pos.getY() + .15, pos.getZ() + .5, 20, .33, .08, .33, .035);
+            }
             Block.popResource(level, pos, new ItemStack(Items.STICK, 2 + level.random.nextInt(3)));
         } else if (remaining != state.getValue(VultureNestBlock.EGGS)) {
             level.setBlock(pos, state.setValue(VultureNestBlock.EGGS, remaining), Block.UPDATE_CLIENTS);

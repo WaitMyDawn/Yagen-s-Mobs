@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.weasel;
 
+import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.entity.PetHazards;
 import net.minecraft.world.entity.MoverType;
 import java.util.ArrayList;
@@ -52,8 +53,24 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return CreatureCue.WEASEL_IDLE.orElse(super.getAmbientSound());
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return CreatureCue.WEASEL_HURT.orElse(super.getHurtSound(source));
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return CreatureCue.WEASEL_DEATH.orElse(super.getDeathSound());
+    }
+
     @Override
     public void move(MoverType kind, Vec3 motion) {
         if (kind == MoverType.SELF && level() instanceof ServerLevel
@@ -373,6 +390,7 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
                 tell(materialsBlocked ? "materials_unreachable" : "materials_missing");
             } else {
                 recipeJob.stock().moveTo(delivery);
+                CreatureCue.WEASEL_DELIVER.play(this, .75F);
                 tell(recipeJob.complete() ? "complete" : "partial");
             }
             recipeJob = null;

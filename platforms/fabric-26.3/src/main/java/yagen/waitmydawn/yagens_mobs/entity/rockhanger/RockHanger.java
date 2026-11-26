@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.rockhanger;
 
+import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.compat.SaveTag;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
@@ -57,6 +58,7 @@ import com.geckolib.animation.RawAnimation;
 import com.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
@@ -132,6 +134,16 @@ public final class RockHanger extends Monster implements GeoEntity {
                         || RockHangerSurfaces.nearCeiling(level, pos))
                 && Monster.isDarkEnoughToSpawn(level, pos, random)
                 && RockHangerSurfaces.findSpawnAnchor(level, pos, type) != null;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return CreatureCue.HANGER_HURT.orElse(super.getHurtSound(source));
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return CreatureCue.HANGER_DEATH.orElse(super.getDeathSound());
     }
 
     @Override
@@ -322,7 +334,7 @@ public final class RockHanger extends Monster implements GeoEntity {
         if (target != null) {
             quarry = target.getUUID();
             changePhase(Phase.WARNING);
-            playSound(SoundEvents.POINTED_DRIPSTONE_LAND, 0.8F, 0.65F);
+            CreatureCue.HANGER_WARN.playReplacing(this, 0.8F, SoundEvents.POINTED_DRIPSTONE_LAND, 0.65F);
         } else if (tickCount >= nextLengthChange) {
             restLength = 1 + (restLength + random.nextInt(MAX_REST_LENGTH - 1)) % MAX_REST_LENGTH;
             changePhase(idleFeet().y < getY() ? Phase.LOWERING : Phase.RETRACTING);
@@ -403,7 +415,7 @@ public final class RockHanger extends Monster implements GeoEntity {
     private void beginFeeding() {
         entityData.set(TUFT_CLIPPED, false);
         changePhase(Phase.FEEDING);
-        playSound(SoundEvents.GENERIC_EAT.value(), 0.85F, 0.58F);
+        CreatureCue.HANGER_FEED.playReplacing(this, 0.85F, SoundEvents.GENERIC_EAT.value(), 0.58F);
     }
 
     private boolean inForagingArea(Vec3 position) {
@@ -619,6 +631,8 @@ public final class RockHanger extends Monster implements GeoEntity {
                 && player.level() == level();
     }
 
+    private double climbSoundDistance;
+
     private void climb() {
         if (route == null || routeIndex >= route.steps().size()) {
             fall(null);
@@ -639,7 +653,14 @@ public final class RockHanger extends Monster implements GeoEntity {
             cornerTicks--;
             return;
         }
-        if (!moveToward(step.feet(), 0.22)) {
+        Vec3 before = position();
+        boolean reached = moveToward(step.feet(), 0.22);
+        climbSoundDistance += before.distanceTo(position());
+        if (climbSoundDistance >= 1.6) {
+            climbSoundDistance -= 1.6;
+            CreatureCue.HANGER_CLIMB.play(this, .48F);
+        }
+        if (!reached) {
             return;
         }
         if (++routeIndex == route.steps().size()) {

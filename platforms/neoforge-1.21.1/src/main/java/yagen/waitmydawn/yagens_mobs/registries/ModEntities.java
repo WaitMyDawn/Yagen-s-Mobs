@@ -61,7 +61,6 @@ public final class ModEntities {
             id -> EntityType.Builder.of(Kavat::new, MobCategory.MISC).sized(.62F,.95F).noSave().noSummon().clientTrackingRange(10).build(id.toString()));
     private ModEntities() {
     }
-
     public static void register(IEventBus modBus) {
         TYPES.register(modBus);
         modBus.addListener(ModEntities::attributes);

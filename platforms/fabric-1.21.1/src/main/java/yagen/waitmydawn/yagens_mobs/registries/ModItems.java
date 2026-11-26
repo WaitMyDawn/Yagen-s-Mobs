@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBag;
 public final class ModItems {
     private static final List<Item> ENTRIES = new ArrayList<>();
 
+    public static final Supplier<FieldGuide> FIELD_GUIDE = item("field_guide", FieldGuide::new);
     public static final Supplier<Item> RAW_DESERT_SKATE = food("raw_desert_skate",
             new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.25F).build()));
     public static final Supplier<Item> COOKED_DESERT_SKATE = food("cooked_desert_skate",
@@ -85,6 +87,7 @@ public final class ModItems {
                         .title(Component.translatable("itemGroup.yagens_mobs"))
                         .icon(() -> COOKED_DESERT_SKATE.get().getDefaultInstance())
                         .displayItems((parameters, output) -> ENTRIES.stream()
+                                .filter(item -> item != FIELD_GUIDE.get() || FieldGuide.isAvailable())
                                 .sorted(Comparator.comparing(item -> item instanceof SpawnEggItem))
                                 .forEach(output::accept))
                         .build());

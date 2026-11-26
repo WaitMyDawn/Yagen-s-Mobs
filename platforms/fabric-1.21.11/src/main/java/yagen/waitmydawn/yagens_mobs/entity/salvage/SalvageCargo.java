@@ -27,11 +27,11 @@ final class SalvageCargo {
 
     private int remaining() { return CAPACITY - stacks.stream().mapToInt(ItemStack::getCount).sum(); }
 
-    void take(ItemEntity entity) {
+    boolean take(ItemEntity entity) {
         ItemStack left = entity.getItem().copy();
         int count = Math.min(remaining(), left.getCount());
         if (count <= 0 || !entity.isAlive()) {
-            return;
+            return false;
         }
         add(left.split(count));
         if (left.isEmpty()) {
@@ -39,6 +39,7 @@ final class SalvageCargo {
         } else {
             entity.setItem(left);
         }
+        return true;
     }
 
     private void add(ItemStack stack) {

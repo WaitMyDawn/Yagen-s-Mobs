@@ -6,6 +6,9 @@ group = mod_group_id
 base.archivesName = "${mod_id}-${platformLoader}-${minecraft_version}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(platform_java))
 
+// Compile mapped Minecraft APIs against each target's own game classes.
+sourceSets.main.java.srcDir('../../common/src/minecraft/java')
+
 evaluationDependsOn(':common')
 ext.commonProject = project(':common')
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

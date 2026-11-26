@@ -2,9 +2,11 @@ package yagen.waitmydawn.yagens_mobs.entity.kavat;
 
 import java.util.Comparator;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.*;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class KavatCombat {
     private static final ThreadLocal<Boolean> REFLECTING = ThreadLocal.withInitial(() -> false);
@@ -39,7 +41,7 @@ public final class KavatCombat {
             cat.setHealth(cat.getHealth() - paid);
             player.setHealth(Math.min(player.getMaxHealth(), paid));
             e.setCanceled(true);
-            player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.CAT_AMBIENT,
+            player.level().playSound(null, player.blockPosition(), CreatureCue.KAVAT_RESCUE.orElse(SoundEvents.CAT_AMBIENT),
                     net.minecraft.sounds.SoundSource.NEUTRAL, 1F, 1F);
             yagen.waitmydawn.yagens_mobs.network.LegacyNetwork.sendToPlayer(player, new KavatRescue());
         });

@@ -33,6 +33,38 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def verify_field_guide(project, archive, target, enabled):
+    shared = project / "common/src/fieldGuide/resources"
+    catalog = "assets/yagens_mobs/patchouli_books/field_guide/en_us/entries/catalog.json"
+    if not enabled:
+        require(catalog not in archive.namelist(), f"{target} ships a catalog without a reader")
+        return
+
+    roster = "yagen/waitmydawn/yagens_mobs/guide/species.txt"
+    override = project / "platforms" / target / "src/main/resources" / roster
+    photographs = "assets/yagens_mobs/textures/gui/field_guide/"
+    if override.is_file():
+        require(archive.read(roster) == override.read_bytes(), f"{target} field guide roster differs")
+        require(not any(p.startswith(photographs) for p in archive.namelist()), f"{target} ships obsolete plates")
+    for source in shared.rglob("*"):
+        if source.is_file():
+            name = source.relative_to(shared).as_posix()
+            if override.is_file() and (name == roster or name.startswith(photographs) or
+                                       name.startswith(catalog.rsplit("/", 1)[0] + "/")):
+                continue
+            require(archive.read(name) == source.read_bytes(), f"{target} differs from shared field guide: {name}")
+    species = archive.read(roster).decode().split()
+    require(bool(species) and len(species) == len(set(species)), f"{target} invalid species list")
+    pages = json.loads(archive.read(catalog))["pages"]
+    require([p["offset"] for p in pages] == list(range((len(species) + 5) // 6)), f"{target} catalog pagination")
+    for name in species:
+        entry = catalog.replace("/catalog.json", f"/{name}.json")
+        require(entry in archive.namelist(), f"Missing entry: {name}")
+        if override.is_file():
+            expected = [dict(type="yagens_mobs:field_plates", species=name, offset=side) for side in (0, 1)]
+            require(json.loads(archive.read(entry))["pages"] == expected, f"{target} invalid spread: {name}")
+
+
 def verify_jar(project, target, jar):
     shared = properties(project / "gradle.properties")
     local = properties(project / "platforms" / target / "gradle.properties")
@@ -43,8 +75,9 @@ def verify_jar(project, target, jar):
         entries = archive.namelist()
         require(len(entries) == len(set(entries)), f"Duplicate ZIP entries in {jar}")
         require(archive.testzip() is None, f"Corrupt ZIP entry in {jar}")
+        verify_field_guide(project, archive, target, (root / "java/yagen/waitmydawn/yagens_mobs/guide/FieldGuide.java").is_file())
         require(archive.read("LICENSE.md") == (project / "LICENSE.md").read_bytes(), "Embedded license differs")
-        for source, version in ((project / "common/src/main", 17), (root, java)):
+        for source, version in ((project / "common/src/main", 17), (project / "common/src/minecraft", java), (root, java)):
             for path in (source / "java").rglob("*.java"):
                 relative = path.relative_to(source / "java").with_suffix(".class").as_posix()
                 require(relative in entries, f"Missing class {relative}")
@@ -57,6 +90,11 @@ def verify_jar(project, target, jar):
                 require(archive.read(relative) == path.read_bytes(), f"Shared resource differs: {relative}")
         models = ("desert_skate", "condroc", "rock_hanger", "bubble_salamander", "velocipod")
         assets = f"assets/{shared['mod_id']}"
+        audio = json.loads(archive.read(f"{assets}_audio/sounds.json"))
+        for locale in ("en_us", "zh_cn"):
+            translations = json.loads(archive.read(f"{assets}/lang/{locale}.json"))
+            for event, definition in audio.items():
+                require(translations.get(definition["subtitle"]), f"{target} missing {locale} subtitle for {event}")
         gecko_version = local["geckolib_version"]
         gecko_major = int(gecko_version.split(".", 1)[0])
         model_folder = "geckolib/models" if gecko_major >= 5 else "geo"

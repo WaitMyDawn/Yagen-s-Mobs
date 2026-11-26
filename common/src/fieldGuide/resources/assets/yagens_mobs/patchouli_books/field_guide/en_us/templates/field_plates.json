@@ -1,0 +1,10 @@
+{
+  "components": [
+    {
+      "type": "patchouli:custom",
+      "class": "yagen.waitmydawn.yagens_mobs.guide.client.GuideTemplate",
+      "x": 0,
+      "y": 0
+    }
+  ]
+}

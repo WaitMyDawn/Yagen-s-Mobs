@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.salvage;
 
+import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.compat.SaveTag;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.SilkLauncher;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLauncher.Courier {
     public static final List<String> COLORS = List.of("blue", "purple", "pink", "black", "albino");
@@ -109,6 +111,16 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
     static AttributeSupplier.Builder attributes() {
         return createMobAttributes().add(Attributes.MAX_HEALTH, ADULT_HEALTH).add(Attributes.ARMOR, 2)
                 .add(Attributes.FLYING_SPEED, .5).add(Attributes.MOVEMENT_SPEED, .3);
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return CreatureCue.RAY_HURT.orElse(super.getHurtSound(source));
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return CreatureCue.RAY_DEATH.orElse(super.getDeathSound());
     }
 
     @Override
@@ -420,6 +432,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         if (chaseFall(player, new Vec3(0, RIDER_DROP, 0), 1.48, 1.35)
                 && SalvageFlight.landing(level, base.getBlockPos()) != null && player.startRiding(this, true, true)) {
             setDestination(base.getBlockPos(), base.id());
+            CreatureCue.RAY_CATCH.play(this, .8F);
             rescueReady = level.getGameTime() + 600;
             targetRescue = null;
         }
@@ -435,7 +448,8 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
 
     private void collect(ServerLevel level, ItemEntity first, boolean emergency) {
         Vec3 point = first.position();
-        carried.take(first);
+        if (!carried.take(first)) return;
+        CreatureCue.RAY_CATCH.play(this, .65F);
         if (carried.hasRoom()) {
             var nearby = level.getEntitiesOfClass(ItemEntity.class, first.getBoundingBox().inflate(2.5),
                     item -> item != first && canCollect(level, item) && item.distanceToSqr(point) <= 2.5 * 2.5
@@ -628,6 +642,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
             recognize(level, Vec3.atCenterOf(box.getBlockPos()));
             level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
         }
+        if (!carried.isEmpty()) CreatureCue.RAY_DEPOSIT.play(this, .65F);
         int inserted = 0;
         for (ItemStack stack : carried.stacks()) {
             inserted += box.deposit(stack);
@@ -695,6 +710,9 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
             double distance = 4 + random.nextDouble() * 45;
             wanderTarget = center.add(Math.cos(heading) * distance, 1 + random.nextDouble() * 8, Math.sin(heading) * distance);
             wanderUntil = tickCount + 95 + random.nextInt(100);
+        }
+        if ((tickCount + getId()) % 180 == 0 && distanceToSqr(center) <= SEARCH_RANGE * SEARCH_RANGE) {
+            CreatureCue.RAY_IDLE.play(this, .55F);
         }
         Vec3 target = withinRoam(center, wanderTarget);
         moveToward(target, .28);

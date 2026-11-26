@@ -26,6 +26,7 @@
     "fabric-api": "${fabric_api_requirement}",
     "geckolib": ">=${geckolib_version} <6"
   },
+  "suggests": {"patchouli": "*"},
   "mixins": [
     "yagens_mobs.mixins.json",
     "yagens_mobs.lumen_butterfly.mixins.json",

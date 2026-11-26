@@ -21,6 +21,12 @@ public final class ModSounds {
     }
 
     public static void register(IEventBus bus) {
+        DeferredRegister<SoundEvent> calls = DeferredRegister.create(Registries.SOUND_EVENT, ModIdentity.ID + "_audio");
+        for (var cue : CreatureCue.values()) {
+            var id = new ResourceLocation(ModIdentity.ID + "_audio", cue.path);
+            cue.sound = calls.register(cue.path, () -> SoundEvent.createVariableRangeEvent(id));
+        }
+        calls.register(bus);
         SOUNDS.register(bus);
     }
 }

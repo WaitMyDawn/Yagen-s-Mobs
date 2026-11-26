@@ -1,0 +1,334 @@
+{
+  "desert_skate.swim": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.swim",
+    "sounds": [
+      "yagens_mobs_audio:entity/desert_skate/swim"
+    ]
+  },
+  "bubble_salamander.attach": {
+    "subtitle": "subtitles.yagens_mobs.bubble_salamander.attach",
+    "sounds": [
+      "yagens_mobs_audio:entity/bubble_salamander/attach"
+    ]
+  },
+  "bubble_salamander.release": {
+    "subtitle": "subtitles.yagens_mobs.bubble_salamander.release",
+    "sounds": [
+      "yagens_mobs_audio:entity/bubble_salamander/release"
+    ]
+  },
+  "kavat.answer": {
+    "subtitle": "subtitles.yagens_mobs.kavat.answer",
+    "sounds": [
+      "yagens_mobs_audio:entity/kavat/answer"
+    ]
+  },
+  "lumen_butterfly.idle": {
+    "subtitle": "subtitles.yagens_mobs.lumen_butterfly.idle",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/lumen_butterfly/idle",
+        "attenuation_distance": 5,
+        "volume": 0.4
+      }
+    ]
+  },
+  "condroc.adult": {
+    "subtitle": "subtitles.yagens_mobs.condroc.adult",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/adult"
+      }
+    ]
+  },
+  "condroc.chick": {
+    "subtitle": "subtitles.yagens_mobs.condroc.chick",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/chick"
+      }
+    ]
+  },
+  "condroc.death": {
+    "subtitle": "subtitles.yagens_mobs.condroc.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/death"
+      }
+    ]
+  },
+  "condroc.dive": {
+    "subtitle": "subtitles.yagens_mobs.condroc.dive",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/dive"
+      }
+    ]
+  },
+  "condroc.eat": {
+    "subtitle": "subtitles.yagens_mobs.condroc.eat",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/eat"
+      }
+    ]
+  },
+  "condroc.flap": {
+    "subtitle": "subtitles.yagens_mobs.condroc.flap",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/flap"
+      }
+    ]
+  },
+  "condroc.hatch": {
+    "subtitle": "subtitles.yagens_mobs.condroc.hatch",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/hatch"
+      }
+    ]
+  },
+  "condroc.hurt": {
+    "subtitle": "subtitles.yagens_mobs.condroc.hurt",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/hurt"
+      }
+    ]
+  },
+  "condroc.perch": {
+    "subtitle": "subtitles.yagens_mobs.condroc.perch",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/condroc/perch"
+      }
+    ]
+  },
+  "rock_hanger.climb": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.climb",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/climb"
+      }
+    ]
+  },
+  "rock_hanger.death": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/death"
+      }
+    ]
+  },
+  "rock_hanger.feed": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.feed",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/feed"
+      }
+    ]
+  },
+  "rock_hanger.hang": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.hang",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/hang"
+      }
+    ]
+  },
+  "rock_hanger.hurt": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.hurt",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/hurt"
+      }
+    ]
+  },
+  "rock_hanger.warn": {
+    "subtitle": "subtitles.yagens_mobs.rock_hanger.warn",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/rock_hanger/warn"
+      }
+    ]
+  },
+  "kavat.death": {
+    "subtitle": "subtitles.yagens_mobs.kavat.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/kavat/death"
+      }
+    ]
+  },
+  "kavat.idle": {
+    "subtitle": "subtitles.yagens_mobs.kavat.idle",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/kavat/idle"
+      }
+    ]
+  },
+  "kavat.pounce": {
+    "subtitle": "subtitles.yagens_mobs.kavat.pounce",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/kavat/pounce"
+      }
+    ]
+  },
+  "kavat.purr": {
+    "subtitle": "subtitles.yagens_mobs.kavat.purr",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/kavat/purr"
+      }
+    ]
+  },
+  "kavat.rescue": {
+    "subtitle": "subtitles.yagens_mobs.kavat.rescue",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/kavat/rescue"
+      }
+    ]
+  },
+  "salvage_ray.catch": {
+    "subtitle": "subtitles.yagens_mobs.salvage_ray.catch",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/salvage_ray/catch"
+      }
+    ]
+  },
+  "salvage_ray.death": {
+    "subtitle": "subtitles.yagens_mobs.salvage_ray.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/salvage_ray/death"
+      }
+    ]
+  },
+  "salvage_ray.deposit": {
+    "subtitle": "subtitles.yagens_mobs.salvage_ray.deposit",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/salvage_ray/deposit"
+      }
+    ]
+  },
+  "salvage_ray.hurt": {
+    "subtitle": "subtitles.yagens_mobs.salvage_ray.hurt",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/salvage_ray/hurt"
+      }
+    ]
+  },
+  "salvage_ray.idle": {
+    "subtitle": "subtitles.yagens_mobs.salvage_ray.idle",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/salvage_ray/idle"
+      }
+    ]
+  },
+  "desert_skate.death": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/death"
+      }
+    ]
+  },
+  "desert_skate.dive": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.dive",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/dive"
+      }
+    ]
+  },
+  "desert_skate.eat": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.eat",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/eat"
+      }
+    ]
+  },
+  "desert_skate.emerge": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.emerge",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/emerge"
+      }
+    ]
+  },
+  "desert_skate.hurt": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.hurt",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/hurt"
+      }
+    ]
+  },
+  "desert_skate.idle": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.idle",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/idle"
+      }
+    ]
+  },
+  "desert_skate.spine": {
+    "subtitle": "subtitles.yagens_mobs.desert_skate.spine",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/desert_skate/spine"
+      }
+    ]
+  },
+  "velocipod.wing": {
+    "subtitle": "subtitles.yagens_mobs.velocipod.wing",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/velocipod/wing"
+      }
+    ]
+  },
+  "snowcache_weasel.death": {
+    "subtitle": "subtitles.yagens_mobs.snowcache_weasel.death",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/snowcache_weasel/death"
+      }
+    ]
+  },
+  "snowcache_weasel.deliver": {
+    "subtitle": "subtitles.yagens_mobs.snowcache_weasel.deliver",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/snowcache_weasel/deliver"
+      }
+    ]
+  },
+  "snowcache_weasel.hurt": {
+    "subtitle": "subtitles.yagens_mobs.snowcache_weasel.hurt",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/snowcache_weasel/hurt"
+      }
+    ]
+  },
+  "snowcache_weasel.idle": {
+    "subtitle": "subtitles.yagens_mobs.snowcache_weasel.idle",
+    "sounds": [
+      {
+        "name": "yagens_mobs_audio:entity/snowcache_weasel/idle",
+        "attenuation_distance": 7,
+        "volume": 0.56
+      }
+    ]
+  }
+}

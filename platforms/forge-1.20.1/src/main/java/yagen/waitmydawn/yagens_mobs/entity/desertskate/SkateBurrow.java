@@ -11,6 +11,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import yagen.waitmydawn.yagens_mobs.entity.desertskate.DesertSkate.BurrowPhase;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
 final class SkateBurrow {
@@ -21,6 +22,7 @@ final class SkateBurrow {
     private final DesertSkate skate;
     private Vec3 heading = Vec3.ZERO;
     private int turnAt;
+    private int nextSwimCall;
     private Vec3 transitionFrom = Vec3.ZERO;
     private Vec3 transitionTo = Vec3.ZERO;
     @Nullable private Vec3 lastTrailPosition;
@@ -39,7 +41,7 @@ final class SkateBurrow {
             return false;
         }
         if (animate) {
-            sandBurst(skate.position());
+            sandBurst(skate.position(), CreatureCue.SKATE_DIVE);
             begin(BurrowPhase.DIVING, inside);
         } else {
             skate.setPos(inside);
@@ -97,7 +99,7 @@ final class SkateBurrow {
         if (progress >= 1.0F) {
             skate.setBurrowPhase(finishedPhase);
             if (finishedPhase == BurrowPhase.SURFACE) {
-                sandBurst(transitionTo);
+                sandBurst(transitionTo, CreatureCue.SKATE_EMERGE);
             }
         }
     }
@@ -126,13 +128,13 @@ final class SkateBurrow {
         }
     }
 
-    private void sandBurst(Vec3 exit) {
+    private void sandBurst(Vec3 exit, CreatureCue cue) {
         var level = (ServerLevel) skate.level();
         var sand = level.getBlockState(BlockPos.containing(exit).below());
         if (sand.is(ModTags.BURROWABLE_SAND)) {
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, sand),
                     exit.x, exit.y + 0.15, exit.z, 16, 0.45, 0.18, 0.45, 0.11);
-            skate.playSound(SoundEvents.SAND_BREAK, 1.0F, 0.75F);
+            cue.playReplacing(skate, 1.0F, SoundEvents.SAND_BREAK, 0.75F);
         }
     }
 
@@ -196,6 +198,10 @@ final class SkateBurrow {
             return false;
         }
         skate.setPos(next);
+        if (skate.tickCount >= nextSwimCall) {
+            nextSwimCall = skate.tickCount + 55 + Math.floorMod(skate.getId() + skate.tickCount, 36);
+            CreatureCue.SAND_SWIM.play(skate, .55F);
+        }
         if (step.horizontalDistanceSqr() > 1.0E-6) {
             float yaw = (float) (Mth.atan2(step.z, step.x) * Mth.RAD_TO_DEG - 90.0);
             skate.setYRot(yaw);

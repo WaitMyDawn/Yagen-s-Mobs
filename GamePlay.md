@@ -6,6 +6,7 @@ This guide documents implemented gameplay in the current source tree, using **Ne
 
 ## 目录 / Contents
 
+- [生物图鉴 / Field Guide](#field-guide)
 - [生成与配置 / Spawning and configuration](#spawning)
 - [沙漠鳐鱼 / Desert Skate](#desert-skate)
 - [秃鹫 / Condroc](#condroc)
@@ -18,6 +19,25 @@ This guide documents implemented gameplay in the current source tree, using **Ne
 - [库娃与孵化器 / Kavat and incubator](#kavat)
 - [Xaero 生物头像 / Xaero entity icons](#xaero-entity-icons)
 - [合成与获取 / Crafting and acquisition](#recipes)
+
+<a id="field-guide"></a>
+## 生物图鉴 / Field Guide
+
+**帕秋莉手册（Patchouli）联动**：Forge 1.20.1、NeoForge 1.21.1 和 Fabric 1.21.1 使用对应平台的 Patchouli。Fabric 1.21.11 使用社区移植版 [Patchouli: Fabric Edition](https://www.curseforge.com/minecraft/mc-mods/patchouli-fabric-edition)。Fabric 26.3 暂无此图鉴联动。
+
+安装对应手册后，每位玩家首次进入世界时会获得一本生物图鉴。已有存档的玩家也会在安装手册后首次登录时获得图鉴。图鉴遗失后，可用一本书和一根羽毛无序合成。右键翻开双页目录，每页最多展示六张生物模型卡片，按三列两行排列。点击卡片可阅读属性、生成、掉落、驯服、繁殖及玩法。玩法页之后收录变种照片。
+
+使用望远镜瞄准 64 格内无遮挡的生物，即可为自己记录观察结果，无需携带图鉴。记录随玩家保存，死亡后保留。混色泡囊鲵按混色类别收录，图中为示例花纹。
+
+在 NeoForge 1.21.1 上，各节连续排版。变种页显示「已记录 x/y」和自己见过的变种。服务端使用模组模型和纹理生成静态图，图片由同一存档内的观察者共用。悬停可见自己第一次观察的游戏日，精确到 0.1 日。点击变种首页左上角的图标切换顺序。日间时钟表示从早到晚，夜间时钟表示从晚到早，书本表示字典序。库娃每组完整外观单独收录，共 960 种。客户端配置 `kavatGuideSortOrder` 控制字典序的优先部位，默认为 `breed,coat,ear,tail`。旧图鉴的库娃记录只含单项特征，需要重新观察才能登记组合。其他支持图鉴的平台仍使用问号卡片和独立部位记录。
+
+**Patchouli integration** — Install Patchouli for Forge 1.20.1, NeoForge 1.21.1 or Fabric 1.21.1. Fabric 1.21.11 uses the community port [Patchouli: Fabric Edition](https://www.curseforge.com/minecraft/mc-mods/patchouli-fabric-edition). The Field Guide is currently unavailable on Fabric 26.3.
+
+Each player receives a Field Guide on their first login with the reader installed, including in existing worlds. Craft a book and a feather together for a replacement. Open the guide to browse up to six live model cards per page. Select a card to read about attributes, habitat, drops, taming, breeding and behavior, then turn to the variant photographs.
+
+Aim a spyglass at an unobstructed creature within 64 blocks to record a sighting, even without carrying the guide. Discoveries belong to the player and survive death. Mixed salamanders share a coat category and use a representative photograph.
+
+On NeoForge 1.21.1, sections flow across the spread. The gallery counts discovered variants and shows only those you have seen. The server renders a static image from the mod assets and shares that image across the save. Hover over a card to see your own first sighting to the nearest tenth of a game day. Click the icon on the first gallery page to cycle between a daytime clock (oldest first), a nighttime clock (newest first), and a book (alphabetical). Each of the 960 Kavat appearances has its own entry. Set `kavatGuideSortOrder` in the client config to reorder the four traits. It defaults to `breed,coat,ear,tail`. Earlier Kavat notebooks recorded independent traits, so sight the animal again to register its combination. Other supported platforms retain their original question-mark galleries.
 
 <a id="spawning"></a>
 ## 生成与配置 / Spawning and configuration
@@ -42,7 +62,7 @@ The server config is `config/yagens_mobs/yagens_mobs-server.toml`. For a per-wor
 
 Regular creature entries use `enabled`, `weight`, `minGroupSize`, and `maxGroupSize`. A zero weight disables an entry. Weight determines an entry's relative share of selection in the same biome and pool. Attempts also pass mob cap and placement checks. Group sizes count attempts, so fewer mobs may spawn. A maximum below the minimum is raised to the minimum. Condroc weights are scaled by 0.4 in arid biomes and 0.13 in other biomes with qualifying ravines. Ocean salamanders use 0.5 and lush-cave Rock Hangers use 0.3. Scaling rounds to the nearest integer and keeps nonzero entries at a minimum of 1. Salvage Rays use `nestChance` for structure candidates.
 
-NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会保留。沙漠鳐鱼的实际权重为配置值的 1.5 倍。秃鹫可在露天陆地或树冠上方 0–3 格入场；吊岩兽也会从距洞顶 1–4 格的空气中寻找天然锚点，仍须满足黑暗与 16 格净空。 / On NeoForge 1.21.1, all nine species survive distance-based despawning and save with their chunks. Desert Skates use 1.5 times their configured spawn weight. Condrocs can spawn up to three blocks above exposed ground or foliage. Rock Hangers can also find an anchor from air within four blocks of a cave ceiling; darkness and 16 blocks of clearance still apply.
+NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会保留。沙漠鳐鱼的实际权重为配置值的 1.5 倍。秃鹫可在露天陆地或树冠上方 0–3 格入场；吊岩兽也会从距洞顶 1–4 格的空气中寻找天然锚点，仍须满足黑暗与 16 格净空。 / On NeoForge 1.21.1, all ten species survive distance-based despawning and save with their chunks. Desert Skates use 1.5 times their configured spawn weight. Condrocs can spawn up to three blocks above exposed ground or foliage. Rock Hangers can also find an anchor from air within four blocks of a cave ceiling; darkness and 16 blocks of clearance still apply.
 
 ### 宠物停火与避险 / Pet commands and hazards
 
@@ -61,7 +81,7 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 - **狩猎。** 潜沙时，发现头顶 4 格内的玩家、兔子或村民后会先扬起沙粒预警。12 tick 后复查原目标的位置和视线，再破沙伏击。地面战斗中会追踪目标，目标逼近约 4 格时后退，并在有效射程内翘起尾部蓄力，随后从尾尖发射尖刺。蓄力 10 tick，尖刺伤害 4，射程 8 格。
 - **背部减伤。** 两个年龄阶段都把来自上方的命中乘以 0.1，再进行护甲计算。弹射物取飞行方向的反向，近战取攻击者眼睛相对鳐鱼碰撞箱中心的方向。归一化后竖直分量达到 0.6 才算命中背部。无来源位置或绕过护甲的伤害不触发背甲。
 - **成长与繁殖。** 幼体不主动攻击，跟随成年体，领头成年体战斗时会潜入可用沙层并躲在其下方。成长需要 20 分钟活跃实体时间，每吃一份生肉或生鱼减少 2 分钟。成年体进食后有 60 秒可繁殖，寻找 16 格内同样就绪的成年体，配对后产 1 只幼体，双方冷却 20 分钟。
-- **掉落与食物。** 成年体必掉 1–3 块生鳐鱼肉，抢夺每级独立有 50% 概率加 1。幼体掉 1–2 块，无抢夺加成。生肉恢复 4 饱食度、2 饱和度，熟肉恢复 12 饱食度、12 饱和度。熔炉、烟熏炉、营火均可烹饪，获得熟肉解锁 **多汁的肉**，说明是“里面的水似乎烤不完！”。进食、潜沙、破沙和射击分别使用原版的吃食、沙步、挖沙和羊驼吐息。
+- **掉落与食物。** 成年体必掉 1–3 块生鳐鱼肉，抢夺每级独立有 50% 概率加 1。幼体掉 1–2 块，无抢夺加成。生肉恢复 4 饱食度、2 饱和度，熟肉恢复 12 饱食度、12 饱和度。熔炉、烟熏炉、营火均可烹饪，获得熟肉解锁 **多汁的肉**，说明是“里面的水似乎烤不完！”。进食、潜沙、破沙和发射尖刺各有专属音效，伏击预警沿用沙上脚步声。
 - **饮水兼容。** Thirst Was Taken 2 和 Homeostatic 的生肉水量与水分饱和度为 20 / 10，熟肉为 16 / 8。Homeostatic 的玩家水分饱和度上限为 5。Tough As Nails 采用生 20、熟 16 的水量和 20% 水合档，水分饱和度最高分别为 8 和 6.4。
 
 **English**
@@ -72,7 +92,7 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 - **Hunting.** A buried adult emits a sand warning when a player, rabbit, or villager passes within four blocks above it. After 12 ticks it checks that the original prey remains close and visible before ambushing. On the surface it backs away as prey closes to about four blocks. It curls its tail for a ten-tick windup and fires a spine from the tip. The spine deals 4 base damage and travels up to eight blocks.
 - **Dorsal armor.** Both ages take 10% of incoming damage from above before normal armor calculations. A projectile uses its reverse velocity. Melee uses the attacker's eye relative to the center of the skate's hitbox. The normalized direction needs an upward component of at least 0.6. Damage with no source position or that bypasses armor skips this reduction.
 - **Growth and breeding.** Juveniles follow an adult and burrow beneath it in dry sand when it fights. Juveniles do not initiate attacks. They mature after 20 minutes of active entity time. Each raw meat or fish meal takes two minutes off that time. Fed adults remain ready for 60 seconds and seek another ready adult within 16 blocks. A pair produces one juvenile and both enter a 20-minute cooldown.
-- **Loot and food.** Adults always roll 1–3 raw skate meat, with each Looting level independently having a 50% chance to add one. Juveniles drop 1–2 with no Looting bonus. Raw meat restores 4 hunger and 2 saturation. Cooked meat restores 12 hunger and 12 saturation. A furnace, smoker, or campfire cooks it. Obtaining cooked meat grants **Juicy Meat**. Eating, diving, surfacing, and firing use vanilla sound sources.
+- **Loot and food.** Adults always roll 1–3 raw skate meat, with each Looting level independently having a 50% chance to add one. Juveniles drop 1–2 with no Looting bonus. Raw meat restores 4 hunger and 2 saturation. Cooked meat restores 12 hunger and 12 saturation. A furnace, smoker, or campfire cooks it. Obtaining cooked meat grants **Juicy Meat**. Eating, diving, emerging, and firing spines each have a distinct sound. The ambush warning uses the vanilla sand step.
 - **Thirst integration.** Thirst Was Taken 2 and Homeostatic assign 20 water and 10 water saturation to raw meat, and 16 water and 8 water saturation to cooked meat. Homeostatic caps player water saturation at 5. Tough As Nails uses the same water amounts and its 20% hydration tier, yielding up to 8 and 6.4 water saturation respectively.
 
 [实机 / In game](docs/assets-for-readme/desert-skate-intro.gif)
@@ -88,8 +108,8 @@ NeoForge 1.21.1 中，九种生物都可以随区块保存，远离玩家也会�
 - **中文。** 两个年龄阶段都搜寻约 24 格内掉落的腐肉和生肉、生鱼，吃一份获得生命恢复 I 15 秒。用腐肉手喂或让成年体自己捡食腐肉可进入 60 秒繁殖状态。两只就绪成年体在 16 格内配对，找有支撑的空位筑巢。巢内有 1–3 颗蛋，约 5 分钟后孵化，巢破碎并掉 2–4 根木棍。亲本冷却 5 分钟。
 - **English.** Both ages seek dropped rotten flesh and raw meat or fish within about 24 blocks. A meal gives 15 seconds of Regeneration I. Adult Condrocs become ready to breed for 60 seconds after eating rotten flesh from hand-feeding or the ground. Two ready adults within 16 blocks can build a supported nest containing 1–3 eggs. After about five minutes it hatches the chicks, breaks, and drops 2–4 sticks. The parents have a five-minute cooldown.
 
-- **中文。** 成年体空闲时优先去有腐肉的驿站。找不到驿站时可以落在裸露的金合欢原木或原木正上方的树冠上。正常巡飞以地表上方 8–12 格为目标，幼鸟飞得更低。幼鸟使用两种专用啾鸣变奏，开启原版字幕后可看到对应文字。成年体掉落 1–2 根秃鹫长羽，每级抢夺独立有 50% 概率增 1 根。幼鸟无长羽掉落。
-- **English.** Idle adults prefer stocked Vulture Posts. Without one, they can rest on exposed acacia logs or on the canopy directly above a log. Adults aim to patrol 8–12 blocks above the ground, while chicks fly closer to the surface. Chicks have two dedicated chirp variants with text in the vanilla subtitle display. Adults drop 1–2 Flight Feathers with an independent 50% chance of one more per Looting level. Chicks drop no Flight Feathers.
+- **中文。** 成年体空闲时优先去有腐肉的驿站。找不到驿站时可以落在裸露的金合欢原木或原木正上方的树冠上。正常巡飞以地表上方 8–12 格为目标，幼鸟飞得更低。幼鸟轻啾，成鸟低鸣；起飞、俯冲和落架各有对应的声音与字幕。成年体掉落 1–2 根秃鹫长羽，每级抢夺独立有 50% 概率增 1 根。幼鸟无长羽掉落。
+- **English.** Idle adults prefer stocked Vulture Posts. Without one, they can rest on exposed acacia logs or on the canopy directly above a log. Adults aim to patrol 8–12 blocks above the ground, while chicks fly closer to the surface. Chicks chirp and adults give a low call. Takeoff, dives, and perching each have their own sound and subtitle. Adults drop 1–2 Flight Feathers with an independent 50% chance of one more per Looting level. Chicks drop no Flight Feathers.
 
 ### 驿站、货运与邮袋 / Posts, freight and Mailbags
 

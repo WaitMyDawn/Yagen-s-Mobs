@@ -54,6 +54,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
@@ -156,6 +157,16 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
     }
 
     @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return CreatureCue.CONDROC_HURT.orElse(super.getHurtSound(source));
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return CreatureCue.CONDROC_DEATH.orElse(super.getDeathSound());
+    }
+
+    @Override
     public boolean removeWhenFarAway(double distance) {
         return false;
     }
@@ -178,7 +189,8 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
 
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
-        return isBaby() ? ModSounds.VULTURE_CHICK.get() : super.getAmbientSound();
+        return isBaby() ? CreatureCue.CONDROC_CHICK.orElse(ModSounds.VULTURE_CHICK.get())
+                : CreatureCue.CONDROC_ADULT.orElse(super.getAmbientSound());
     }
 
     @Override
@@ -384,7 +396,7 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
         addEffect(new MobEffectInstance(MobEffects.REGENERATION, MEAL_REGENERATION_TICKS));
         level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, stack), getX(), getEyeY(), getZ(),
                 5, .18, .10, .18, .03);
-        playSound(SoundEvents.FOX_EAT, .65F, .80F);
+        CreatureCue.CONDROC_EAT.playReplacing(this, .65F, SoundEvents.FOX_EAT, .80F);
     }
 
     private boolean ready(ServerLevel level) {
@@ -479,7 +491,7 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
                     return false;
                 }
             }
-            entityData.set(MODE, PERCHED);
+            setFlightMode(PERCHED);
             perchApproachTicks = 0;
         } else if (++perchApproachTicks > 240) {
             releaseSeat(stations);
@@ -525,7 +537,7 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
                 treeRestUntil = level.getGameTime() + 600 + random.nextInt(601);
             }
             treeApproachTicks = 0;
-            entityData.set(MODE, PERCHED);
+            setFlightMode(PERCHED);
             return true;
         }
         if (++treeApproachTicks > 180) {
@@ -655,7 +667,7 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
         if (entityData.get(MODE) == PERCHED) {
             takeoffUntil = tickCount + TAKEOFF_TICKS;
         }
-        entityData.set(MODE, flightPose(step, mode));
+        setFlightMode(flightPose(step, mode));
         setDeltaMovement(Vec3.ZERO);
         if (look.horizontalDistanceSqr() > .0001) {
             float yaw = (float) (Mth.atan2(look.z, look.x) * Mth.RAD_TO_DEG - 90.0);
@@ -665,6 +677,20 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
         }
         move(MoverType.SELF, step);
         fallDistance = 0;
+    }
+
+    private void setFlightMode(byte mode) {
+        byte previous = entityData.get(MODE);
+        if (previous == mode) return;
+        entityData.set(MODE, mode);
+        if (mode == PERCHED) {
+            CreatureCue.CONDROC_PERCH.play(this, .65F);
+        } else if (mode == DIVING) {
+            CreatureCue.CONDROC_DIVE.play(this, .8F);
+        } else if ((mode == TAKING_OFF || mode == FLAPPING || mode == HAULING)
+                && previous != TAKING_OFF && previous != FLAPPING && previous != HAULING) {
+            CreatureCue.CONDROC_FLAP.play(this, .75F);
+        }
     }
 
     private byte flightPose(Vec3 step, byte requested) {
@@ -734,7 +760,7 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
         entityData.set(CARGO_DISPLAY, (byte) display.ordinal());
         if (entityData.get(MODE) == PERCHED) {
             takeoffUntil = tickCount + TAKEOFF_TICKS;
-            entityData.set(MODE, TAKING_OFF);
+            setFlightMode(TAKING_OFF);
         } else {
             entityData.set(MODE, HAULING_GLIDE);
         }

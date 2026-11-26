@@ -89,3 +89,16 @@ dependencies {
     modCompileOnly('curse.maven:ironchest-498534:7536130') { transitive = false }
     modCompileOnly('maven.modrinth:create-fly:fn0H9rSj') { transitive = false }
 }
+
+apply from: '../../gradle/field-guide.gradle'
+
+
+dependencies {
+    modCompileOnly('curse.maven:patchouli-fabric-edition-1664943:8713841') { transitive = false }
+    if (providers.gradleProperty('withPatchouli').isPresent()) {
+        modRuntimeOnly('curse.maven:patchouli-fabric-edition-1664943:8713841') { transitive = false }
+        // Loom strips nested jars during dev remapping. The release distribution already bundles Fiber.
+        def distribution = configurations.detachedConfiguration(project.dependencies.create('curse.maven:patchouli-fabric-edition-1664943:8713841'))
+        modRuntimeOnly(files(zipTree(distribution.singleFile).matching { include 'META-INF/jars/fiber-*.jar' }))
+    }
+}

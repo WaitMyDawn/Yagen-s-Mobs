@@ -1,0 +1,52 @@
+{
+  "name": "entity.yagens_mobs.velocipod",
+  "icon": "yagens_mobs:velocipod_spawn_egg",
+  "category": "yagens_mobs:wildlife",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.attributes",
+      "text": "guide.yagens_mobs.velocipod.attributes"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.habitat",
+      "text": "guide.yagens_mobs.velocipod.habitat"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.loot",
+      "text": "guide.yagens_mobs.velocipod.loot"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.taming",
+      "text": "guide.yagens_mobs.velocipod.taming"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.breeding",
+      "text": "guide.yagens_mobs.velocipod.breeding"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.behavior",
+      "text": "guide.yagens_mobs.velocipod.behavior"
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "velocipod",
+      "offset": 0
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "velocipod",
+      "offset": 4
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "velocipod",
+      "offset": 8
+    }
+  ]
+}

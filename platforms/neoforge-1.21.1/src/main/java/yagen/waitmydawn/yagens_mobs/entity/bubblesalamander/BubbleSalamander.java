@@ -59,6 +59,7 @@ import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
@@ -387,7 +388,9 @@ public final class BubbleSalamander extends TamableAnimal implements Bucketable,
         alignToWearer(player);
         player.setAirSupply(player.getMaxAirSupply());
         player.removeEffect(MobEffects.DIG_SLOWDOWN);
-        playSound(SoundEvents.BUBBLE_COLUMN_UPWARDS_INSIDE, .55F, 1.3F);
+        if (!CreatureCue.BUBBLE_ATTACH.play(this, .7F)) {
+            playSound(SoundEvents.BUBBLE_COLUMN_UPWARDS_INSIDE, .55F, 1.3F);
+        }
     }
 
     public void detach() {
@@ -395,6 +398,7 @@ public final class BubbleSalamander extends TamableAnimal implements Bucketable,
         if (player == null) {
             return;
         }
+        CreatureCue.BUBBLE_RELEASE.play(this, .65F);
         attachedPlayer = null;
         entityData.set(WEARER, -1);
         wornTicks = 0;

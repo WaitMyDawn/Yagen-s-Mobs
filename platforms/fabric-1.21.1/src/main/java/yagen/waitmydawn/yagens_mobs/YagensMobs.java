@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.minecraft.world.item.context.UseOnContext;
@@ -52,6 +53,7 @@ public final class YagensMobs implements ModInitializer {
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.register();
         yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register();
         ModItems.register();
+        if (FieldGuide.isAvailable()) FieldGuide.register();
         LumenButterflies.register();
         KavatMemories.register();
         PayloadTypeRegistry.playS2C().register(

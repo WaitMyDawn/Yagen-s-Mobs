@@ -20,5 +20,10 @@ public final class ModSounds {
     }
 
     public static void register() {
+        for (var cue : CreatureCue.values()) {
+            var id = ResourceLocation.fromNamespaceAndPath(ModIdentity.ID + "_audio", cue.path);
+            var event = Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
+            cue.sound = () -> event;
+        }
     }
 }

@@ -52,8 +52,11 @@ def replacedSources = fileTree(overlays).matching { include '**/*.java' }.files.
     overlays.toPath().relativize(it.toPath()).toString().replace('\\', '/')
 }
 def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
-    from('../fabric-1.21.11/src/main/java') { include '**/weasel/FabricSlotInventory.java' }
-    from new File(reference, 'java')
+    from('../fabric-1.21.11/src/main/java') {
+        include '**/weasel/FabricSlotInventory.java', '**/guide/client/PatchouliReader.java'
+    }
+    // Fabric's field guide uses the static gallery and its list-based discovery packet.
+    from(new File(reference, 'java')) { exclude '**/yagens_mobs/guide/**' }
     exclude replacedSources
     exclude '**/weasel/NeoPhysicalStorage.java', '**/weasel/NeoRefinedStorage.java', '**/weasel/NeoCreateStorage.java'
     exclude '**/weasel/mixin/WeaselCreateFunnelOutput.java'
@@ -66,7 +69,7 @@ idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/referenc
 tasks.named('processResources') {
     from new File(reference, 'resources'), {
         include 'assets/**', 'data/**'
-        exclude 'data/yagens_mobs/recipe/recipe_blueprint.json'
+        exclude 'data/yagens_mobs/recipe/recipe_blueprint.json', 'data/yagens_mobs/recipe/field_guide.json'
         exclude '**/neoforge/**'
     }
 }
@@ -106,4 +109,16 @@ dependencies {
     modCompileOnly('maven.modrinth:refined-storage:PMoDGaFz') { transitive = false }
     modCompileOnly('maven.modrinth:sophisticated-backpacks-unoffical-fabric-port:nHhuPdda') { transitive = false }
     modCompileOnly('maven.modrinth:sophisticated-core-unofficial-fabric-port:ZLVrtF0Q') { transitive = false }
+}
+
+apply from: '../../gradle/field-guide.gradle'
+
+dependencies {
+    modCompileOnly('maven.modrinth:patchouli:XIjNwQkI') { transitive = false }
+    if (providers.gradleProperty('withPatchouli').isPresent()) {
+        modRuntimeOnly('maven.modrinth:patchouli:XIjNwQkI') { transitive = false }
+        // Loom strips nested jars during dev remapping. The release distribution already bundles Fiber.
+        def distribution = configurations.detachedConfiguration(project.dependencies.create('maven.modrinth:patchouli:XIjNwQkI'))
+        modRuntimeOnly(files(zipTree(distribution.singleFile).matching { include 'META-INF/jars/fiber-*.jar' }))
+    }
 }

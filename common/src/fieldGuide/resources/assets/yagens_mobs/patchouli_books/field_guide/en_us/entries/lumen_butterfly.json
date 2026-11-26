@@ -1,0 +1,62 @@
+{
+  "name": "entity.yagens_mobs.lumen_butterfly",
+  "icon": "yagens_mobs:lumen_butterfly_spawn_egg",
+  "category": "yagens_mobs:wildlife",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.attributes",
+      "text": "guide.yagens_mobs.lumen_butterfly.attributes"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.habitat",
+      "text": "guide.yagens_mobs.lumen_butterfly.habitat"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.loot",
+      "text": "guide.yagens_mobs.lumen_butterfly.loot"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.taming",
+      "text": "guide.yagens_mobs.lumen_butterfly.taming"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.breeding",
+      "text": "guide.yagens_mobs.lumen_butterfly.breeding"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "guide.yagens_mobs.behavior",
+      "text": "guide.yagens_mobs.lumen_butterfly.behavior"
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "lumen_butterfly",
+      "offset": 0
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "lumen_butterfly",
+      "offset": 4
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "lumen_butterfly",
+      "offset": 8
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "lumen_butterfly",
+      "offset": 12
+    },
+    {
+      "type": "yagens_mobs:field_plates",
+      "species": "lumen_butterfly",
+      "offset": 16
+    }
+  ]
+}

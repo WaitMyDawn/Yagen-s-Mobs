@@ -1,0 +1,145 @@
+Yagen's Mobs creature sounds
+Source recordings dedicated to the public domain under CC0 1.0.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Desert Skate swimming
+Sand slidding out of shovel slowly.wav — XfiXy8 — https://freesound.org/s/467301/
+
+Bubble Salamander attaching and releasing
+Suction Cup — michorvath — https://freesound.org/s/386885/
+Blop sound — helloIJustWantSomeSounds — https://freesound.org/s/609207/ (attachment only)
+
+Kavat answering its owner
+Cat trilling — jsbarrett — https://freesound.org/s/200336/
+
+lumen_butterfly.idle
+Large bird wing flutter.wav — anebulafont — https://freesound.org/s/651753/
+
+condroc.adult
+Vulture — AntumDeluge — https://freesound.org/s/188041/
+
+condroc.chick
+Baby Chicks Chirp.boaay — BOAAY — https://freesound.org/s/519193/
+
+condroc.death
+Vulture — AntumDeluge — https://freesound.org/s/188041/
+Large bird wing flutter.wav — anebulafont — https://freesound.org/s/651753/
+
+condroc.dive
+Strong Melee Swing — SypherZent — https://freesound.org/s/420670/
+Foley_Leather_Stress_Mono.wav — Nox_Sound — https://freesound.org/s/559079/
+
+condroc.eat
+Click Beetle — BugginOut.wav — https://freesound.org/s/831713/
+Eating Juicy Meat.wav — ProductionNow — https://freesound.org/s/234237/
+
+condroc.flap
+Bird Flap B 05.wav — deleted_user_2104797 — https://freesound.org/s/330967/
+Large bird wing flutter.wav — anebulafont — https://freesound.org/s/651753/
+
+condroc.hatch
+branch breaking forest twig snap crunch.wav — kyles — https://freesound.org/s/452570/
+
+condroc.hurt
+Vulture — AntumDeluge — https://freesound.org/s/188041/
+
+condroc.perch
+Bird Flap B 05.wav — deleted_user_2104797 — https://freesound.org/s/330967/
+Click Beetle — BugginOut.wav — https://freesound.org/s/831713/
+
+rock_hanger.climb
+Rocks.wav — adamgryu — https://freesound.org/s/336023/
+
+rock_hanger.death
+Rocks.wav — adamgryu — https://freesound.org/s/336023/
+PiedraDesmoronandose.wav — Trancox — https://freesound.org/s/391919/
+
+rock_hanger.feed
+Wet Sloppy Eating.wav — bbrocer — https://freesound.org/s/382673/
+Click Beetle — BugginOut.wav — https://freesound.org/s/831713/
+
+rock_hanger.hang
+Foley_Leather_Stress_Mono.wav — Nox_Sound — https://freesound.org/s/559079/
+Click Beetle — BugginOut.wav — https://freesound.org/s/831713/
+
+rock_hanger.hurt
+PiedraDesmoronandose.wav — Trancox — https://freesound.org/s/391919/
+
+rock_hanger.warn
+Rocks.wav — adamgryu — https://freesound.org/s/336023/
+PiedraDesmoronandose.wav — Trancox — https://freesound.org/s/391919/
+
+kavat.death
+Cat Meowing_Yowl_far_mono.wav — _stubb — https://freesound.org/s/406613/
+
+kavat.idle
+Cat trill 4 — MBPL — https://freesound.org/s/668825/
+
+kavat.pounce
+Basic Melee Swing / Miss / Whoosh — SypherZent — https://freesound.org/s/420668/
+Large bird wing flutter.wav — anebulafont — https://freesound.org/s/651753/
+
+kavat.purr
+Cat purr — druulian — https://freesound.org/s/656500/
+
+kavat.rescue
+Cat trilling — jsbarrett — https://freesound.org/s/200336/
+
+salvage_ray.catch
+Strong Melee Swing — SypherZent — https://freesound.org/s/420670/
+LowWhalesong.wav — RebekahDay — https://freesound.org/s/171945/
+
+salvage_ray.death
+LowWhalesong.wav — RebekahDay — https://freesound.org/s/171945/
+
+salvage_ray.deposit
+Look in a drawer — sangtao — https://freesound.org/s/190462/
+LowWhalesong.wav — RebekahDay — https://freesound.org/s/171945/
+
+salvage_ray.hurt
+Diving with whales.wav — KEVOY — https://freesound.org/s/82325/
+
+salvage_ray.idle
+LowWhalesong.wav — RebekahDay — https://freesound.org/s/171945/
+
+desert_skate.death
+frog.mp3 — BinaryMonkFlint — https://freesound.org/s/251938/
+Sand slidding out of shovel slowly.wav — XfiXy8 — https://freesound.org/s/467301/
+
+desert_skate.dive
+Sand slidding out of shovel slowly.wav — XfiXy8 — https://freesound.org/s/467301/
+
+desert_skate.eat
+Eating Juicy Meat.wav — ProductionNow — https://freesound.org/s/234237/
+
+desert_skate.emerge
+PiedraDesmoronandose.wav — Trancox — https://freesound.org/s/391919/
+Sand slidding out of shovel slowly.wav — XfiXy8 — https://freesound.org/s/467301/
+
+desert_skate.hurt
+frog.mp3 — BinaryMonkFlint — https://freesound.org/s/251938/
+Click Beetle — BugginOut.wav — https://freesound.org/s/831713/
+
+desert_skate.idle
+frog.mp3 — BinaryMonkFlint — https://freesound.org/s/251938/
+
+desert_skate.spine
+branch breaking forest twig snap crunch.wav — kyles — https://freesound.org/s/452570/
+Basic Melee Swing / Miss / Whoosh — SypherZent — https://freesound.org/s/420668/
+
+velocipod.wing
+Bumblebee — Breviceps — https://freesound.org/s/466795/
+Wasp Wings 2 — Wakerone — https://freesound.org/s/398487/
+
+snowcache_weasel.death
+Rat.ogg — egomassive — https://freesound.org/s/536753/
+
+snowcache_weasel.deliver
+Look in a drawer — sangtao — https://freesound.org/s/190462/
+Mouse Squeaks.wav — shyguy014 — https://freesound.org/s/463789/
+
+snowcache_weasel.hurt
+Rat.ogg — egomassive — https://freesound.org/s/536753/
+
+snowcache_weasel.idle
+Mouse Squeaks.wav — shyguy014 — https://freesound.org/s/463789/

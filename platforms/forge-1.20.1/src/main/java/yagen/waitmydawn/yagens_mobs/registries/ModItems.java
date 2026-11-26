@@ -25,6 +25,7 @@ public final class ModItems {
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ModIdentity.ID);
 
+    public static final RegistryObject<yagen.waitmydawn.yagens_mobs.guide.FieldGuide> FIELD_GUIDE = ITEMS.register("field_guide", yagen.waitmydawn.yagens_mobs.guide.FieldGuide::new);
     public static final RegistryObject<Item> RAW_DESERT_SKATE = ITEMS.register("raw_desert_skate",
             () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).saturationMod(0.25F).build())));
     public static final RegistryObject<Item> COOKED_DESERT_SKATE = ITEMS.register("cooked_desert_skate",
@@ -61,6 +62,7 @@ public final class ModItems {
                     .icon(() -> COOKED_DESERT_SKATE.get().getDefaultInstance())
                     .displayItems((parameters, output) -> ITEMS.getEntries().stream()
                             .map(RegistryObject::get)
+                            .filter(item -> item != FIELD_GUIDE.get() || yagen.waitmydawn.yagens_mobs.guide.FieldGuide.isAvailable())
                             .sorted(Comparator.comparing(item -> item instanceof SpawnEggItem))
                             .forEach(output::accept))
                     .build());

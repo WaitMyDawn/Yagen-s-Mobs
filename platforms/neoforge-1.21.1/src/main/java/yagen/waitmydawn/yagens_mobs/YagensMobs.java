@@ -15,6 +15,8 @@ import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenButterflies;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.core.ModIdentity;
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
+import yagen.waitmydawn.yagens_mobs.guide.FieldNotes;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderWear;
 import yagen.waitmydawn.yagens_mobs.entity.velocipod.VelocipodSprintInput;
 import yagen.waitmydawn.yagens_mobs.loot.AttackerEnchantmentLevel;
@@ -54,6 +56,13 @@ public final class YagensMobs {
         modBus.addListener(RockSilkPackets::register);
         modBus.addListener(VelocipodSprintInput::register);
         modBus.addListener(PetRecall::register);
+        if (FieldGuide.isAvailable()) {
+            modBus.addListener(FieldGuide::register);
+            NeoForge.EVENT_BUS.addListener(FieldGuide::onLogin);
+            NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) -> {
+                if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) FieldNotes.observe(player);
+            });
+        }
         modBus.addListener(BubbleSalamanderWear::registerPayloads);
         modBus.addListener(StationData::registerTickets);
         NeoForge.EVENT_BUS.addListener(YagensMobs::tickTransport);

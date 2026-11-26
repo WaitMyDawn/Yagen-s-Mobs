@@ -4,6 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.Vec3;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 
 final class KavatMeleeGoal extends MeleeAttackGoal {
     private final Kavat cat;
@@ -47,6 +48,7 @@ final class KavatMeleeGoal extends MeleeAttackGoal {
         cat.getNavigation().stop();
         cat.setYRot((float) Math.toDegrees(Math.atan2(-offset.x, offset.z)));
         cat.setPouncing(true);
+        CreatureCue.KAVAT_POUNCE.play(cat, .65F);
         cat.setOnGround(false);
         cat.setDeltaMovement(velocity);
         cat.hasImpulse = true;

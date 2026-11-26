@@ -60,17 +60,20 @@ public final class ServerConfigs {
     }
 
     private static Spawns spawns(SpawnDefaults defaults) {
-        BUILDER.push("spawns").push(defaults.path());
+        return spawns(defaults.path(), defaults.weight(), defaults.minGroupSize(), defaults.maxGroupSize());
+    }
+    private static Spawns spawns(String path,int weight,int min,int max) {
+        BUILDER.push("spawns").push(path);
         var settings = new Spawns(
                 BUILDER.comment("Enable natural spawning.").worldRestart().define("enabled", true),
                 BUILDER.comment("Relative weight among the biome's eligible spawns. Zero disables this entry.")
-                        .worldRestart().defineInRange("weight", defaults.weight(), 0, 1000),
+                        .worldRestart().defineInRange("weight", weight, 0, 1000),
                 BUILDER.comment("Minimum number of spawn attempts when a group is selected.")
-                        .worldRestart().defineInRange("minGroupSize", defaults.minGroupSize(), 1, 16),
+                        .worldRestart().defineInRange("minGroupSize", min, 1, 16),
                 BUILDER.comment("Maximum group size. Values below the minimum are raised to the minimum.")
-                        .worldRestart().defineInRange("maxGroupSize", defaults.maxGroupSize(), 1, 16));
+                        .worldRestart().defineInRange("maxGroupSize", max, 1, 16));
         BUILDER.pop(2);
-        BY_ENTITY.put(ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, defaults.path()), settings);
+        BY_ENTITY.put(ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, path), settings);
         return settings;
     }
 

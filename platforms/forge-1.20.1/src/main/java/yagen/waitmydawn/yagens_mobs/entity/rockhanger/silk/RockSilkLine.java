@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 
 public final class RockSilkLine extends Entity {
@@ -212,7 +213,7 @@ public final class RockSilkLine extends Entity {
             data.putDouble("Bottom", drop.end().y);
             paidSpools = drop.spools();
             entityData.set(GEOMETRY, data);
-            playSound(SoundEvents.CHAIN_PLACE, 0.7F, 1.3F);
+            CreatureCue.HANGER_HANG.playReplacing(this, 0.7F, SoundEvents.CHAIN_PLACE, 1.3F);
         }
         if (hasLauncher) {
             SilkLauncher.clear(stack);
