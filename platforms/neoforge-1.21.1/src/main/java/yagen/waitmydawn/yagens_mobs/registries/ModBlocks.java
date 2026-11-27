@@ -4,6 +4,9 @@ import net.minecraft.core.registries.Registries;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.Incubator;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -23,6 +26,11 @@ public final class ModBlocks {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ModIdentity.ID);
     private static final DeferredRegister<BlockEntityType<?>> ENTITIES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ModIdentity.ID);
+
+    public static final DeferredHolder<Block, yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock> VOID_CLOUD =
+            BLOCKS.register("void_cloud", () -> new yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock(
+                    BlockBehaviour.Properties.of().strength(-1.0F, 3_600_000.0F).sound(SoundType.WOOL)
+                            .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK)));
 
     public static final DeferredHolder<Block, VulturePostBlock> VULTURE_POST = BLOCKS.register("vulture_post",
             () -> new VulturePostBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOD)
@@ -54,9 +62,14 @@ public final class ModBlocks {
     private static final DeferredRegister<net.minecraft.world.inventory.MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ModIdentity.ID);
     public static final DeferredHolder<net.minecraft.world.inventory.MenuType<?>, net.minecraft.world.inventory.MenuType<yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu>> INCUBATOR_MENU =
             MENUS.register("kavat_incubator", () -> new net.minecraft.world.inventory.MenuType<>(yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+    public static final DeferredHolder<Block, AirBladderBlock> AIR_BLADDER = BLOCKS.register("air_bladder",
+            () -> new AirBladderBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).noCollission()
+                    .strength(.25F).sound(SoundType.SLIME_BLOCK)));
+
     private ModBlocks() {}
 
     public static void register(IEventBus bus) {
+        BladderFluid.register(bus);
         BLOCKS.register(bus);
         ENTITIES.register(bus);
         MENUS.register(bus);

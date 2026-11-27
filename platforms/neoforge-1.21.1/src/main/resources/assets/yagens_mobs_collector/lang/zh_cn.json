@@ -1,0 +1,16 @@
+{
+  "entity.yagens_mobs.collector": "收藏者",
+  "item.yagens_mobs.collector_spawn_egg": "收藏者刷怪蛋",
+  "guide.yagens_mobs.collector.attributes": "温顺的陆生动物，拥有 20 点生命值。",
+  "guide.yagens_mobs.collector.habitat": "见于平原与草甸、沙漠、洞穴群系、积雪地带、沼泽和樱花树林。",
+  "guide.yagens_mobs.collector.loot": "无特殊死亡掉落。",
+  "guide.yagens_mobs.collector.taming": "无法驯服。",
+  "guide.yagens_mobs.collector.breeding": "无法繁殖。",
+  "guide.yagens_mobs.collector.behavior": "丢下任一吊牌所示的物品。它收走一个，回赠一件事先未知的物品。成交的吊牌在五分钟后更新。",
+  "guide.yagens_mobs.variant.prairie": "草原",
+  "guide.yagens_mobs.variant.desert": "沙漠",
+  "guide.yagens_mobs.variant.cave": "洞穴",
+  "guide.yagens_mobs.variant.snow": "雪原",
+  "guide.yagens_mobs.variant.swamp": "沼泽",
+  "guide.yagens_mobs.variant.cherry": "樱花"
+}

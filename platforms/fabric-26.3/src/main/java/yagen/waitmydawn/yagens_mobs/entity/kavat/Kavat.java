@@ -15,6 +15,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.ai.goal.*;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.gameevent.GameEvent;
 import com.geckolib.animatable.GeoEntity;
 import com.geckolib.animatable.instance.AnimatableInstanceCache;
 import com.geckolib.animatable.manager.AnimatableManager;
@@ -33,6 +36,7 @@ import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
+import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
 public class Kavat extends TamableAnimal implements GeoEntity {
     @Override
@@ -286,13 +290,25 @@ public class Kavat extends TamableAnimal implements GeoEntity {
     }
     @Override
     public boolean isFood(ItemStack food) {
-        return false;
+        return food.is(ModTags.KAVAT_RAW_MEAT) || food.is(ModTags.KAVAT_COOKED_MEAT);
     }
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (decoy())
             return InteractionResult.PASS;
         var held = player.getItemInHand(hand);
+        if (isFood(held)) {
+            if (!isAlive() || getHealth() >= getMaxHealth()) {
+                return InteractionResult.PASS;
+            }
+            if (!level().isClientSide()) {
+                heal(held.is(ModTags.KAVAT_COOKED_MEAT) ? 16 : 8);
+                held.consume(1, player);
+                playSound(SoundEvents.GENERIC_EAT.value(), .7F, 1.12F);
+                gameEvent(GameEvent.EAT);
+            }
+            return InteractionResult.SUCCESS;
+        }
         if (held.is(ModItems.KAVAT_TEMPLATE.get()) && !held.has(net.minecraft.core.component.DataComponents.CUSTOM_DATA)) {
             if (!isOwnedBy(player)) return InteractionResult.PASS;
             if (!level().isClientSide()) {
@@ -349,6 +365,9 @@ public class Kavat extends TamableAnimal implements GeoEntity {
                     || !getUUID().equals(cat.image))
                 discard();
             return;
+        }
+        if (isAlive() && isOrderedToSit() && !hasEffect(MobEffects.REGENERATION)) {
+            addEffect(new MobEffectInstance(MobEffects.REGENERATION, 50, 0, true, false));
         }
         if (cooldown > 0)
             cooldown--;

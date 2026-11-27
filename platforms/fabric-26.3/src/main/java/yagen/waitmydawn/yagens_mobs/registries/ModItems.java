@@ -1,5 +1,10 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import net.minecraft.world.level.block.DispenserBlock;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrowItem;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -40,6 +45,9 @@ public final class ModItems {
     public static final Supplier<CargoTongs> CARGO_TONGS = item("cargo_tongs",
             properties -> new CargoTongs(properties.stacksTo(1)));
     public static final Supplier<Item> CONDROC_FLIGHT_FEATHER = item("condroc_flight_feather", Item::new);
+    public static final Supplier<LongFeatherArrowItem> LONG_FEATHER_ARROW = item("long_feather_arrow", LongFeatherArrowItem::new);
+    public static final Supplier<SnowcacheFur> SNOWCACHE_FUR = item("snowcache_fur", SnowcacheFur::new);
+    public static final Supplier<Item> SALVAGE_RAY_MOLT = item("salvage_ray_molt", Item::new);
     public static final Supplier<MailBag> MAIL_BAG = item("mail_bag",
             properties -> new MailBag(properties.stacksTo(1).fireResistant()));
     public static final Supplier<SpawnEggItem> VULTURE_SPAWN_EGG = item("condroc_spawn_egg",
@@ -60,6 +68,12 @@ public final class ModItems {
             properties -> new SpawnEggItem(properties.spawnEgg(LumenButterflies.TYPE.get())));
 
     public static final Supplier<net.minecraft.world.item.BlockItem> KAVAT_INCUBATOR = item("kavat_incubator", properties -> new net.minecraft.world.item.BlockItem(ModBlocks.INCUBATOR.get(), properties.useBlockDescriptionPrefix()));
+    public static final Supplier<net.minecraft.world.item.BlockItem> AIR_BLADDER = item("air_bladder", properties -> new net.minecraft.world.item.BlockItem(ModBlocks.AIR_BLADDER.get(), properties.useBlockDescriptionPrefix()) {
+        @Override
+        public boolean isFoil(net.minecraft.world.item.ItemStack stack) {
+            return AirBladderBlock.color(stack) == BubbleSalamanderColor.MIXED || super.isFoil(stack);
+        }
+    });
     public static final Supplier<Item> KAVAT_CODE = item("kavat_genetic_code", Item::new);
     public static final Supplier<Item> KAVAT_TEMPLATE = item("kavat_imprint", properties -> new Item(properties) {
         @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
@@ -68,6 +82,8 @@ public final class ModItems {
         }
     });
     public static final Supplier<Item> KAVAT_EXTRACTOR = item("kavat_extractor", Item::new);
+    public static final Supplier<SpawnEggItem> COLLECTOR_EGG = item("collector_spawn_egg",
+            properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.COLLECTOR.get())));
     public static final Supplier<SpawnEggItem> KAVAT_EGG = item("kavat_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(ModEntities.KAVAT.get())));
     private ModItems() {
@@ -89,6 +105,7 @@ public final class ModItems {
     }
 
     public static void register() {
+        DispenserBlock.registerProjectileBehavior(LONG_FEATHER_ARROW.get());
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(ModIdentity.ID, "yagens_mobs"),
                 FabricCreativeModeTab.builder()
                         .title(Component.translatable("itemGroup.yagens_mobs"))

@@ -1,0 +1,15 @@
+def source = file('../neoforge-1.21.1/src/main/resources')
+def legacy = projectDir.name == 'forge-1.20.1'
+def modern = projectDir.name in ['fabric-1.21.11', 'fabric-26.3']
+
+tasks.named('processResources') {
+    if (legacy || modern) {
+        from(new File(source, 'data/minecraft/tags/item')) {
+            include 'arrows.json'
+            into legacy ? 'data/minecraft/tags/items' : 'data/minecraft/tags/item'
+        }
+    }
+    if (modern) {
+        from('../../common/src/gathering/modern')
+    }
+}

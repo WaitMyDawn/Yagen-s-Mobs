@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:is_nether",
+    "#minecraft:is_end",
+    "#yagens_mobs:kavat_reduced_habitat",
+    "minecraft:desert",
+    "minecraft:cherry_grove"
+  ]
+}

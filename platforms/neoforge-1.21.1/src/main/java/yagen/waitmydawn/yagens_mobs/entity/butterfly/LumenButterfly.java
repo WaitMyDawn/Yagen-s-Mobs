@@ -280,7 +280,15 @@ public final class LumenButterfly extends TamableAnimal implements GeoEntity {
     }
 
     void absorb(double amount) {
+        if (!Double.isFinite(amount) || amount <= 0) {
+            return;
+        }
+        double previousXp = storedXp;
         setStoredXp(storedXp + amount);
+        double creditedXp = Math.min(amount, storedXp - previousXp);
+        if (creditedXp > 0 && getHealth() < getMaxHealth()) {
+            heal((float) Math.min(creditedXp, getMaxHealth() - getHealth()));
+        }
     }
 
     double fundShield(double damage) {

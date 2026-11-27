@@ -1,0 +1,13 @@
+{
+  "item.yagens_mobs.long_feather_arrow": "Long Feather Arrow",
+  "entity.yagens_mobs.long_feather_arrow": "Long Feather Arrow",
+  "item.yagens_mobs.snowcache_fur": "Snowcache Weasel Fur",
+  "item.yagens_mobs.salvage_ray_molt": "Salvage Ray Molt",
+  "item.yagens_mobs.salvage_ray_molt.coating": "Void Protection",
+  "block.yagens_mobs.void_cloud": "Void Cloud",
+  "message.yagens_mobs.snowcache_fur.hint": "Hold a sample in your other hand. Use on a container to pin the item, or sneak-use to pin its creative tab. Sneak-use without a sample to clear the label.",
+  "message.yagens_mobs.snowcache_fur.set": "Pinned category · %s",
+  "message.yagens_mobs.snowcache_fur.cleared": "Pinned category cleared",
+  "message.yagens_mobs.snowcache_fur.unavailable": "This container cannot be labelled right now",
+  "message.yagens_mobs.snowcache_fur.uncategorized": "Uncategorized"
+}

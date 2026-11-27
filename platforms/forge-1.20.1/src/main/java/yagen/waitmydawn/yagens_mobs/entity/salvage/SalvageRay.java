@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.salvage;
 
+import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -167,6 +170,9 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         setHealth(fraction * getMaxHealth());
         if (!isBaby()) {
             parentId = null;
+            if (level() instanceof ServerLevel && isAlive()) {
+                spawnAtLocation(ModItems.SALVAGE_RAY_MOLT.get());
+            }
         }
     }
 
@@ -657,7 +663,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         boolean knownBox = box.id().equals(known.get(box.getBlockPos()));
         if (carried.eatFruit()) {
             recognize(level, Vec3.atCenterOf(box.getBlockPos()));
-            level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
+            finishFruitMeal(level);
         }
         if (!carried.isEmpty()) CreatureCue.RAY_DEPOSIT.play(this, .65F);
         int inserted = 0;
@@ -679,6 +685,11 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         }
         box.consumeChorusFruit();
         breedReady = true;
+        finishFruitMeal(level);
+    }
+
+    private void finishFruitMeal(ServerLevel level) {
+        addEffect(new MobEffectInstance(MobEffects.REGENERATION, 8 * 20, 1));
         level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
     }
 

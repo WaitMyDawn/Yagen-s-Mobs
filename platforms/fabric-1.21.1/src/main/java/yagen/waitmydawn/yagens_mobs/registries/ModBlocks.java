@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorBlock;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.Incubator;
@@ -9,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.world.level.block.Block;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -23,6 +25,9 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostBlock;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostEntity;
 
 public final class ModBlocks {
+    public static final Supplier<VoidCloudBlock> VOID_CLOUD = block("void_cloud",
+            () -> new VoidCloudBlock(BlockBehaviour.Properties.of().strength(-1.0F, 3_600_000.0F).sound(SoundType.WOOL)
+                    .noOcclusion().noLootTable().pushReaction(PushReaction.BLOCK)));
     public static final Supplier<VulturePostBlock> VULTURE_POST = block("vulture_post",
             () -> new VulturePostBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOD)
                     .noOcclusion().pushReaction(PushReaction.BLOCK)));
@@ -54,6 +59,9 @@ public final class ModBlocks {
             ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, "kavat_incubator"),
             new net.minecraft.world.inventory.MenuType<>(IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
     public static final Supplier<net.minecraft.world.inventory.MenuType<IncubatorMenu>> INCUBATOR_MENU = () -> MENU;
+
+    public static final Supplier<AirBladderBlock> AIR_BLADDER = block("air_bladder",
+            () -> new AirBladderBlock(BlockBehaviour.Properties.of().noOcclusion().noCollission().strength(.25F).sound(SoundType.SLIME_BLOCK)));
 
     private ModBlocks() {}
 

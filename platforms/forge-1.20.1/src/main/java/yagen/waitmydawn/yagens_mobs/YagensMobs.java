@@ -1,4 +1,6 @@
 package yagen.waitmydawn.yagens_mobs;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
 import yagen.waitmydawn.yagens_mobs.entity.CompanionTravel;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
@@ -39,6 +41,9 @@ public final class YagensMobs {
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.register(modBus);
         ModBlocks.register(modBus);
         ModItems.register(modBus);
+        SnowcacheFur.install();
+        MinecraftForge.EVENT_BUS.addListener(MoltVoidProtection::anvil);
+        MinecraftForge.EVENT_BUS.addListener(MoltVoidProtection::tick);
         ModSounds.register(modBus);
         MailBagMenu.register(modBus);
         LauncherMenu.register(modBus);

@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
 import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.minecraft.world.item.context.UseOnContext;
@@ -41,10 +43,13 @@ public final class YagensMobs implements ModInitializer {
         ServerConfigs.reload(null);
         StationData.register();
         ModEntities.register();
+        yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid.register();
         ModBlocks.register();
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.register();
         yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register();
         ModItems.register();
+        SnowcacheFur.install();
+        ServerTickEvents.END_LEVEL_TICK.register(level -> level.players().forEach(MoltVoidProtection::tick));
         LumenButterflies.register();
         yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories.register();
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
@@ -75,6 +80,7 @@ public final class YagensMobs implements ModInitializer {
             if (result.consumesAction() || player.isSpectator()) return result;
             var stack = player.getItemInHand(hand);
             var context = new UseOnContext(player, hand, hit);
+            if (stack.getItem() instanceof SnowcacheFur fur) return fur.onItemUseFirst(stack, context);
             if (stack.getItem() instanceof CargoTongs tongs) return tongs.onItemUseFirst(stack, context);
             if (stack.getItem() instanceof SilkLauncher launcher) return launcher.onItemUseFirst(stack, context);
             return InteractionResult.PASS;

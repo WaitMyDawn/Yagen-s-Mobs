@@ -5,6 +5,7 @@
   "refmap": "yagens_mobs.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BladderWaterContact",
     "PetCombatOrder",
     "PlayerBubbleSalamanderMining",
     "CompanionTeleportSequence",
@@ -12,6 +13,7 @@
     "SlimeFlightAvoidance"
   ],
   "client": [
+    "client.BladderCamera",
     "client.PetViewport",
     "client.BubbleSalamanderNightVision",
     "client.HumanoidRockSilkPose",

@@ -1,0 +1,13 @@
+{
+  "item.yagens_mobs.long_feather_arrow": "长羽箭",
+  "entity.yagens_mobs.long_feather_arrow": "长羽箭",
+  "item.yagens_mobs.snowcache_fur": "雪藏鼬绒毛",
+  "item.yagens_mobs.salvage_ray_molt": "拾遗鳐蜕膜",
+  "item.yagens_mobs.salvage_ray_molt.coating": "虚空保护",
+  "block.yagens_mobs.void_cloud": "虚空云雾",
+  "message.yagens_mobs.snowcache_fur.hint": "另一只手拿样品，右键按物品分类，潜行右键按其创造标签分类。空手样品位时潜行右键清除分类。",
+  "message.yagens_mobs.snowcache_fur.set": "固定分类 · %s",
+  "message.yagens_mobs.snowcache_fur.cleared": "已清除固定分类",
+  "message.yagens_mobs.snowcache_fur.unavailable": "现在无法给这个容器设置分类",
+  "message.yagens_mobs.snowcache_fur.uncategorized": "未分类"
+}

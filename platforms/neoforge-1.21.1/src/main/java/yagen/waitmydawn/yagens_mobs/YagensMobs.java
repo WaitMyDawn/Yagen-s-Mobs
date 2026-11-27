@@ -25,7 +25,9 @@ import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
 import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
 import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.LauncherMenu;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkPackets;
 import yagen.waitmydawn.yagens_mobs.spawn.ConfiguredMobSpawns;
@@ -44,6 +46,7 @@ public final class YagensMobs {
         LumenButterflies.register(modBus);
         SalvageRays.register(modBus);
         SnowcacheWeasels.register(modBus);
+        SnowcacheFur.install();
         ModBlocks.register(modBus);
         ModItems.register(modBus);
         ModSounds.register(modBus);
@@ -75,6 +78,8 @@ public final class YagensMobs {
         NeoForge.EVENT_BUS.addListener(KavatCombat::redirect);
         NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, KavatCombat::rescue);
         NeoForge.EVENT_BUS.addListener(KavatMemories::login);
+        NeoForge.EVENT_BUS.addListener(MoltVoidProtection::anvil);
+        NeoForge.EVENT_BUS.addListener(MoltVoidProtection::tick);
     }
 
     private static void tickTransport(LevelTickEvent.Post event) {

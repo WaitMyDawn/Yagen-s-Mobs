@@ -20,6 +20,7 @@ public final class ServerConfigs {
     public static final Spawns BUBBLE_SALAMANDER = spawns(SpawnDefaults.BUBBLE_SALAMANDER);
     public static final Spawns VELOCIPOD = spawns(SpawnDefaults.VELOCIPOD);
     public static final Spawns LUMEN_BUTTERFLY = spawns(SpawnDefaults.LUMEN_BUTTERFLY);
+    public static final Spawns COLLECTOR = spawns(SpawnDefaults.COLLECTOR);
     public static final Spawns KAVAT = spawns(SpawnDefaults.KAVAT);
     public static final Supplier<Integer> KAVAT_MAIN_ISLAND_SPACING = register(FabricConfig.integer(
             "spawns.kavat.mainIslandSpacing", 64, 0, 128, "Minimum separation of wild Kavats on the central End island."));

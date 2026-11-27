@@ -3,5 +3,5 @@
   "biomes": "#minecraft:is_overworld",
   "entity": "yagens_mobs:condroc",
   "weight_factor": 0.13,
-  "excluded_biomes": "#yagens_mobs:condroc_habitat"
+  "excluded_biomes": "#yagens_mobs:condroc_ravine_exclusions"
 }

@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import org.jetbrains.annotations.Nullable;
 import yagen.waitmydawn.yagens_mobs.entity.weasel.mixin.WeaselChestLock;
@@ -28,6 +29,10 @@ final class NeoPhysicalStorage {
 
     static boolean iron(Object entity) { return ironLoaded() && entity instanceof AbstractIronChestBlockEntity; }
     private static boolean backpack(Object entity) { return backpackLoaded() && entity instanceof BackpackBlockEntity; }
+
+    static ItemStack backpackStack(BlockEntity entity) {
+        return backpack(entity) ? ((BackpackBlockEntity) entity).getBackpackWrapper().getBackpack() : ItemStack.EMPTY;
+    }
 
     static @Nullable WeaselChests.Site at(ServerLevel level, BlockEntity entity, ServerPlayer owner) {
         var pos = entity.getBlockPos();

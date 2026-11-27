@@ -308,13 +308,21 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
     public boolean isFood(ItemStack stack) { return stack.is(Items.RABBIT) || stack.is(Items.CHICKEN); }
 
     @Override
+    protected void usePlayerItem(Player player, InteractionHand hand, ItemStack stack) {
+        super.usePlayerItem(player, hand, stack);
+        if (!level().isClientSide && getHealth() < getMaxHealth()) {
+            heal(getMaxHealth() - getHealth());
+        }
+    }
+
+    @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack item = player.getItemInHand(hand);
         if (isFood(item)) {
             if (!isTame()) {
                 if (!level().isClientSide) {
                     boolean rabbit = item.is(Items.RABBIT);
-                    item.consume(1, player);
+                    usePlayerItem(player, hand, item);
                     if ((rabbit || random.nextInt(3) == 0)
                             && SnowcacheWeasels.allowTame(this, player)) {
                         tame(player);
@@ -324,6 +332,12 @@ public final class SnowcacheWeasel extends TamableAnimal implements GeoEntity {
                     } else {
                         level().broadcastEntityEvent(this, (byte) 6);
                     }
+                }
+                return InteractionResult.sidedSuccess(level().isClientSide);
+            }
+            if (!isBaby() && (getAge() != 0 || !canFallInLove()) && getHealth() < getMaxHealth()) {
+                if (!level().isClientSide) {
+                    usePlayerItem(player, hand, item);
                 }
                 return InteractionResult.sidedSuccess(level().isClientSide);
             }

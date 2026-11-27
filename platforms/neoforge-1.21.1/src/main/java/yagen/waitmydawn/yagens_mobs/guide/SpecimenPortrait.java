@@ -27,6 +27,10 @@ final class SpecimenPortrait {
         boolean young = v[1].equals("young");
         String species = v[0], model = species, texture = species, age = young ? "_juvenile" : "";
         switch (species) {
+            case "collector" -> {
+                model = "collector/" + v[1];
+                texture = model;
+            }
             case "kavat" -> {
                 model = "kavat/" + v[1] + "_" + v[3] + "_" + v[4];
                 texture = "kavat/" + v[2];

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "decay_stage=0": { "model": "yagens_mobs:block/void_cloud" },
+    "decay_stage=1": { "model": "yagens_mobs:block/void_cloud_hairline" },
+    "decay_stage=2": { "model": "yagens_mobs:block/void_cloud_fractured" }
+  }
+}

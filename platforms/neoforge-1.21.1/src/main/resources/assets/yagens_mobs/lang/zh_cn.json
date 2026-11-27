@@ -335,7 +335,7 @@
   "guide.yagens_mobs.desert_skate.behavior": "观察沙迹，避开头顶的伏击范围。出沙后会保持距离，翘尾发射尖刺。背部能抵挡大部分伤害。",
   "guide.yagens_mobs.condroc.attributes": "中立飞禽，生命16；成年俯冲伤害8。",
   "guide.yagens_mobs.condroc.habitat": "以稀树草原为主，也见于沙漠、恶地和露天峡谷。",
-  "guide.yagens_mobs.condroc.loot": "成年掉落1–2根秃鹫长羽，受抢夺影响；幼鸟没有长羽。",
+  "guide.yagens_mobs.condroc.loot": "成年死亡掉落 1–2 根秃鹫长羽，受抢夺影响。在驿站吃一份腐肉时，有 50% 概率掉落 1 根长羽。",
   "guide.yagens_mobs.condroc.taming": "不能驯服。向驿站存入腐肉可吸引成年秃鹫停栖。",
   "guide.yagens_mobs.condroc.breeding": "两只成年秃鹫吃腐肉后筑巢，产下1–3颗蛋。",
   "guide.yagens_mobs.condroc.behavior": "它会俯冲攻击僵尸。驿站间可运送保留内容物的方块，每只搬一格。用长羽制作邮袋，可让秃鹫把物品送回绑定的驿站。",

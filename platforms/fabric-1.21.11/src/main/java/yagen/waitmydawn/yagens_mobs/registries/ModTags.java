@@ -19,7 +19,10 @@ public final class ModTags {
     public static final TagKey<Block> BURROWABLE_SAND = TagKey.create(Registries.BLOCK, id("desert_skate_burrowable"));
     public static final TagKey<Item> SKATE_BAIT = TagKey.create(Registries.ITEM, id("desert_skate_bait"));
     public static final TagKey<Item> VULTURE_FOOD = TagKey.create(Registries.ITEM, id("condroc_food"));
+    public static final TagKey<Item> KAVAT_RAW_MEAT = TagKey.create(Registries.ITEM, id("kavat_raw_meat"));
+    public static final TagKey<Item> KAVAT_COOKED_MEAT = TagKey.create(Registries.ITEM, id("kavat_cooked_meat"));
     public static final TagKey<Biome> VULTURE_HABITAT = TagKey.create(Registries.BIOME, id("condroc_habitat"));
+    public static final TagKey<Biome> VULTURE_RAVINE_EXCLUSIONS = TagKey.create(Registries.BIOME, id("condroc_ravine_exclusions"));
     public static final TagKey<EntityType<?>> SKATE_PREY = TagKey.create(Registries.ENTITY_TYPE, id("desert_skate_prey"));
 
     private ModTags() {

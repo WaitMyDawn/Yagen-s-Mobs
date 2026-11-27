@@ -1,5 +1,11 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.LongFeatherArrowRenderer;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
@@ -52,7 +58,17 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 public final class ClientSetup implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        var membrane = new net.minecraft.client.resources.model.sprite.Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("yagens_mobs","block/air_bladder"), true);
+        net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry.register(BladderFluid.MEDIUM,
+                new net.minecraft.client.renderer.block.FluidModel.Unbaked(membrane, membrane, null, null), new FluidRenderHandler() {
+            @Override public void renderFluid(net.minecraft.client.renderer.block.FluidRenderer renderer, BlockPos pos,
+                    net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.client.renderer.block.FluidRenderer.Output out,
+                    BlockState state, FluidState fluid) {
+                // The connected membrane block provides all visible geometry.
+            }
+        });
         yagen.waitmydawn.yagens_mobs.entity.kavat.KavatClient.register();
+        EntityRendererRegistry.register(ModEntities.COLLECTOR.get(), yagen.waitmydawn.yagens_mobs.entity.collector.client.CollectorRenderer::new);
         EntityRendererRegistry.register(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         EntityRendererRegistry.register(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         BlockEntityRendererRegistry.register(ModBlocks.INCUBATOR_ENTITY.get(),yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorRenderer::new);
@@ -67,6 +83,7 @@ public final class ClientSetup implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.DESERT_SKATE.get(), DesertSkateRenderer::new);
         EntityRendererRegistry.register(ModEntities.SKATE_SPIKE.get(), SkateSpikeRenderer::new);
         EntityRendererRegistry.register(ModEntities.VULTURE.get(), VultureRenderer::new);
+        EntityRendererRegistry.register(ModEntities.LONG_FEATHER_ARROW.get(), LongFeatherArrowRenderer::new);
         EntityRendererRegistry.register(ModEntities.ROCK_HANGER.get(), RockHangerRenderer::new);
         EntityRendererRegistry.register(ModEntities.BUBBLE_SALAMANDER.get(), BubbleSalamanderRenderer::new);
         EntityRendererRegistry.register(ModEntities.VELOCIPOD.get(), VelocipodRenderer::new);

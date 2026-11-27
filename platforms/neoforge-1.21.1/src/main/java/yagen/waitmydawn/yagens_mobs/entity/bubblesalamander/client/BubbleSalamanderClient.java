@@ -9,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -41,6 +42,14 @@ public final class BubbleSalamanderClient {
         if (DISENGAGE.consumeClick()) PetCommandControls.disengage(client);
         if (REMOVE.consumeClick() && client.screen == null && player != null && BubbleSalamander.wornBy(player) != null) {
             PacketDistributor.sendToServer(BubbleSalamanderWear.Remove.INSTANCE);
+        }
+    }
+
+    @SubscribeEvent
+    public static void waterOverlay(RenderBlockScreenEffectEvent event) {
+        if (event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER
+                && BladderView.eyesInsideMembrane(event.getPlayer())) {
+            event.setCanceled(true);
         }
     }
 

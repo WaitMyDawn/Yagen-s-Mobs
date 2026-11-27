@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.salvage;
 
+import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import net.minecraft.sounds.SoundEvent;
 import yagen.waitmydawn.yagens_mobs.compat.SaveTag;
 import java.util.Comparator;
@@ -24,6 +25,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -62,6 +65,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
     private static final float YOUNG_SCALE = .55F;
     private static final float YOUNG_HEALTH = 12;
     private static final float ADULT_HEALTH = 24;
+    private static final int FRUIT_REGENERATION_TICKS = 8 * 20;
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(SalvageRay.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TAILS = SynchedEntityData.defineId(SalvageRay.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<ItemStack> CARGO = SynchedEntityData.defineId(SalvageRay.class, EntityDataSerializers.ITEM_STACK);
@@ -162,6 +166,9 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         setHealth(fraction * getMaxHealth());
         if (!isBaby()) {
             parentId = null;
+            if (level() instanceof ServerLevel server && isAlive()) {
+                spawnAtLocation(server, new ItemStack(ModItems.SALVAGE_RAY_MOLT.get()));
+            }
         }
     }
 
@@ -639,6 +646,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         // The delivery must have been to a known box before this meal discovers new ones.
         boolean knownBox = box.id().equals(known.get(box.getBlockPos()));
         if (carried.eatFruit()) {
+            addEffect(new MobEffectInstance(MobEffects.REGENERATION, FRUIT_REGENERATION_TICKS, 1));
             recognize(level, Vec3.atCenterOf(box.getBlockPos()));
             level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
         }
@@ -661,6 +669,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
             return;
         }
         box.consumeChorusFruit();
+        addEffect(new MobEffectInstance(MobEffects.REGENERATION, FRUIT_REGENERATION_TICKS, 1));
         breedReady = true;
         level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
     }

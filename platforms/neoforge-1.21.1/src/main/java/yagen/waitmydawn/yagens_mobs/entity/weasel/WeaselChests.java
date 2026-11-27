@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -19,6 +22,17 @@ import org.jetbrains.annotations.Nullable;
 
 final class WeaselChests {
     static final int RANGE = 16;
+    private static BiFunction<ServerLevel, Site, Label> labelReader = (level, site) -> null;
+    private static Consumer<SnowcacheWeasel> workedBox = mob -> {};
+
+    static void installPhysicalLabels(BiFunction<ServerLevel, Site, Label> reader, Consumer<SnowcacheWeasel> onWorkedBox) {
+        labelReader = reader;
+        workedBox = onWorkedBox;
+    }
+
+    static void worked(SnowcacheWeasel mob, Site site) {
+        if (!site.routed()) workedBox.accept(mob);
+    }
 
     enum Mode {
         BOTH, DEPOSIT, TAKE;
@@ -35,7 +49,17 @@ final class WeaselChests {
         boolean routed() { return kind != Kind.BOX; }
     }
 
-    record Site(BlockPos pos, WeaselInventory items, Endpoint endpoint) {
+    record Label(@Nullable Item item, @Nullable ResourceLocation tab) {
+        boolean matches(ItemStack stack) {
+            return item != null ? stack.is(item) : WeaselTabs.of(stack).equals(tab);
+        }
+    }
+
+    record Site(BlockPos pos, WeaselInventory items, Endpoint endpoint, @Nullable Label label) {
+        Site(BlockPos pos, WeaselInventory items, Endpoint endpoint) {
+            this(pos, items, endpoint, null);
+        }
+
         boolean routed() { return endpoint.routed(); }
 
         Mode mode(SnowcacheWeasel mob) {
@@ -59,12 +83,28 @@ final class WeaselChests {
         }
 
         @Nullable ResourceLocation category() {
+            if (label != null) return label.tab();
             int first = first();
             return first < 0 ? null : WeaselTabs.of(items.peek(first));
         }
 
+        boolean matchesPrimary(ItemStack stack) {
+            return matchesPrimary(stack, category());
+        }
+
+        boolean matchesPrimary(ItemStack stack, @Nullable ResourceLocation tab) {
+            if (label != null) return label.matches(stack);
+            return tab == null || tab.equals(WeaselTabs.of(stack));
+        }
+
+        int firstSortableSlot(Mode mode) {
+            if (mode == Mode.TAKE || label != null) return 0;
+            return first() + 1;
+        }
+
         int room(ItemStack stack, boolean fallback) {
             if (routed()) return items.insert(stack, true);
+            if (label != null) return label.matches(stack) ? items.insert(stack, true) : 0;
             int room = 0;
             int first = first();
             for (int slot = 0; slot < items.size() && room < stack.getCount(); slot++) {
@@ -77,7 +117,8 @@ final class WeaselChests {
 
         int deposit(ItemStack stack, boolean fallback) {
             int before = stack.getCount();
-            if (routed()) {
+            if (routed() || label != null) {
+                if (label != null && !label.matches(stack)) return 0;
                 int accepted = items.insert(stack, false);
                 stack.shrink(accepted);
                 return accepted;
@@ -121,7 +162,7 @@ final class WeaselChests {
         }
 
         boolean fitsAtEnd(List<ItemStack> cargo) {
-            if (routed()) return false;
+            if (routed() || label != null) return false;
             if (items instanceof WeaselInventory.Vanilla vanilla) return fitsVanilla(cargo, vanilla.container());
             int first = first();
             var counts = new int[items.size()];
@@ -209,6 +250,13 @@ final class WeaselChests {
     private WeaselChests() {}
 
     static @Nullable Site at(ServerLevel level, BlockPos pos, ServerPlayer owner) {
+        Site site = findSite(level, pos, owner);
+        if (site == null || site.routed()) return site;
+        Label label = labelReader.apply(level, site);
+        return label == null ? site : new Site(site.pos(), site.items(), site.endpoint(), label);
+    }
+
+    private static @Nullable Site findSite(ServerLevel level, BlockPos pos, ServerPlayer owner) {
         if (!level.hasChunkAt(pos) || !level.mayInteract(owner, pos)) {
             return null;
         }

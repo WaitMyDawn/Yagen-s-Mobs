@@ -56,7 +56,11 @@ def stageReferenceSources = tasks.register('stageReferenceSources', Sync) {
         include '**/weasel/FabricSlotInventory.java', '**/guide/client/PatchouliReader.java'
     }
     // Fabric's field guide uses the static gallery and its list-based discovery packet.
-    from(new File(reference, 'java')) { exclude '**/yagens_mobs/guide/**' }
+    from(new File(reference, 'java')) {
+        exclude '**/yagens_mobs/guide/**', '**/entity/collector/client/CollectorCatalog.java'
+        exclude '**/mixin/BladderWaterContact.java', '**/bubblesalamander/client/BladderClient.java',
+                '**/bubblesalamander/client/ConnectedBladderModel.java'
+    }
     exclude replacedSources
     exclude '**/weasel/NeoPhysicalStorage.java', '**/weasel/NeoRefinedStorage.java', '**/weasel/NeoCreateStorage.java'
     exclude '**/weasel/mixin/WeaselCreateFunnelOutput.java'
@@ -68,6 +72,7 @@ idea.module.generatedSourceDirs += layout.buildDirectory.dir('generated/referenc
 
 tasks.named('processResources') {
     from new File(reference, 'resources'), {
+        exclude 'data/yagens_mobs/tags/item/collector/**'
         include 'assets/**', 'data/**'
         exclude 'data/yagens_mobs/recipe/recipe_blueprint.json', 'data/yagens_mobs/recipe/field_guide.json'
         exclude '**/neoforge/**'
@@ -122,3 +127,7 @@ dependencies {
         modRuntimeOnly(files(zipTree(distribution.singleFile).matching { include 'META-INF/jars/fiber-*.jar' }))
     }
 }
+
+apply from: '../../gradle/bladder.gradle'
+apply from: '../../gradle/gathering.gradle'
+apply from: '../../gradle/collector-pools.gradle'

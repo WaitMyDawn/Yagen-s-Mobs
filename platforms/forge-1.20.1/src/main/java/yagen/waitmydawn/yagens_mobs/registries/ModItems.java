@@ -1,5 +1,9 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrowItem;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import java.util.Comparator;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -36,6 +40,11 @@ public final class ModItems {
     public static final RegistryObject<CargoTongs> CARGO_TONGS = ITEMS.register("cargo_tongs",
             () -> new CargoTongs(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> CONDROC_FLIGHT_FEATHER = ITEMS.register("condroc_flight_feather", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<LongFeatherArrowItem> LONG_FEATHER_ARROW = ITEMS.register("long_feather_arrow",
+            () -> new LongFeatherArrowItem(new Item.Properties()));
+    public static final RegistryObject<SnowcacheFur> SNOWCACHE_FUR = ITEMS.register("snowcache_fur",
+            () -> new SnowcacheFur(new Item.Properties()));
+    public static final RegistryObject<Item> SALVAGE_RAY_MOLT = ITEMS.register("salvage_ray_molt", () -> new Item(new Item.Properties()));
     public static final RegistryObject<MailBag> MAIL_BAG = ITEMS.register("mail_bag",
             () -> new MailBag(new Item.Properties().stacksTo(1).fireResistant()));
     public static final RegistryObject<ForgeSpawnEggItem> VULTURE_SPAWN_EGG = ITEMS.register("condroc_spawn_egg",
@@ -68,6 +77,12 @@ public final class ModItems {
                     .build());
 
     public static final RegistryObject<BlockItem> KAVAT_INCUBATOR = ITEMS.register("kavat_incubator", () -> new BlockItem(ModBlocks.INCUBATOR.get(),new Item.Properties()));
+    public static final RegistryObject<BlockItem> AIR_BLADDER = ITEMS.register("air_bladder", () -> new BlockItem(ModBlocks.AIR_BLADDER.get(),new Item.Properties()) {
+        @Override
+        public boolean isFoil(net.minecraft.world.item.ItemStack stack) {
+            return AirBladderBlock.color(stack) == BubbleSalamanderColor.MIXED || super.isFoil(stack);
+        }
+    });
     public static final RegistryObject<Item> KAVAT_CODE = ITEMS.register("kavat_genetic_code", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> KAVAT_TEMPLATE = ITEMS.register("kavat_imprint", () -> new Item(new Item.Properties()) {
         @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
@@ -76,6 +91,8 @@ public final class ModItems {
         }
     });
     public static final RegistryObject<Item> KAVAT_EXTRACTOR = ITEMS.register("kavat_extractor", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<ForgeSpawnEggItem> COLLECTOR_EGG = ITEMS.register("collector_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.COLLECTOR, 0x978883, 0x78904c, new Item.Properties()));
     public static final RegistryObject<ForgeSpawnEggItem> KAVAT_EGG = ITEMS.register("kavat_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
     private ModItems() {
@@ -84,5 +101,7 @@ public final class ModItems {
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
         TABS.register(modBus);
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) ->
+                event.enqueueWork(() -> LONG_FEATHER_ARROW.get().registerDispenser()));
     }
 }

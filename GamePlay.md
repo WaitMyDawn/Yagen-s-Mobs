@@ -56,7 +56,7 @@ The server config is `config/yagens_mobs/yagens_mobs-server.toml`. For a per-wor
 | `lumen_butterfly` | 动物池。繁花森林、平原、向日葵平原和草甸。 / Creature pool. Flower forests, plains, sunflower plains, and meadows. | 8 | 2–4 |
 | `salvage_ray` | 末地外岛巢穴结构。 / Outer End nest structure. | `nestChance = 0.75` | 2–3 |
 | `snowcache_weasel` | 动物池。雪原、雪针林、冰刺之地和雪林。 / Creature pool. Snowy plains, snowy taiga, ice spikes, and groves. | 6 | 1–2 |
-| `kavat` | 动物池。主世界、下界及末地的有效地面，任意亮度。 / Creature pool. Valid ground across the Overworld, Nether and End at any light level (NeoForge 1.21.1). | 10 / 下界 Nether 20 | 1–4 |
+| `kavat` | 动物池。主世界、下界及末地的有效地面，任意亮度。 / Creature pool. Valid ground across the Overworld, Nether and End at any light level. | 基础 10，下界 20，平原、热带草原、雪原 5，沙漠和末地 3，樱花树林 2。 / Base 10, Nether 20, plains, savanna and snowy plains 5, desert and End 3, cherry grove 2. | 1–4 |
 
 常规生物条目使用 `enabled`、`weight`、`minGroupSize`、`maxGroupSize`。权重为 0 时关闭该生成条目。权重决定同一个群系、同一个池选中该条目时的相对占比。生成尝试还要经过生物上限和地点检查。组大小是尝试数量，实刷数量可能更少。最大值小于最小值时使用最小值。秃鹫的旱地和峡谷权重分别按基础值的 0.4 和 0.13 倍计算，泡囊鲵海洋为 0.5 倍，繁茂洞穴的吊岩兽为 0.3 倍。缩放四舍五入，非零权重至少保留 1。拾遗鳐的 `nestChance` 走结构候选点判定。
 
@@ -105,6 +105,8 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 - **中文。** 秃鹫最常见于稀树草原，也会出现在沙漠、恶地和露天峡谷。峡谷按地形判定，在某一水平轴的两个方向各相隔 9 格的位置，都要比生成点高至少 8 格。自然生成个体有 20% 概率为幼鸟，可用 `juvenileChance` 调整。幼鸟 20 分钟长大。秃鹫生命值 16。成年秃鹫主动俯冲抓挠僵尸类，基础伤害 8，攻击后重新拉升，对玩家保持中立。
 - **English.** Condrocs are most common in savannas and also appear in deserts, badlands, and exposed ravines. In a ravine, terrain must rise at least eight blocks nine blocks out on both sides of one horizontal axis. Each natural spawn has a 20% chance to be a chick, controlled by `juvenileChance`. Chicks mature after 20 minutes. Condrocs have 16 health. Adults dive at zombie-family mobs for 8 base damage, then pull up again. They do not hunt players.
 
+露天峡谷生成排除繁茂洞穴、溶洞、深暗之域、雪原和樱花树林。 / Ravine spawning excludes lush caves, dripstone caves, the Deep Dark, snowy plains, and cherry groves.
+
 - **中文。** 两个年龄阶段都搜寻约 24 格内掉落的腐肉和生肉、生鱼，吃一份获得生命恢复 I 15 秒。用腐肉手喂或让成年体自己捡食腐肉可进入 60 秒繁殖状态。两只就绪成年体在 16 格内配对，找有支撑的空位筑巢。巢内有 1–3 颗蛋，约 5 分钟后孵化，巢破碎并掉 2–4 根木棍。亲本冷却 5 分钟。
 - **English.** Both ages seek dropped rotten flesh and raw meat or fish within about 24 blocks. A meal gives 15 seconds of Regeneration I. Adult Condrocs become ready to breed for 60 seconds after eating rotten flesh from hand-feeding or the ground. Two ready adults within 16 blocks can build a supported nest containing 1–3 eggs. After about five minutes it hatches the chicks, breaks, and drops 2–4 sticks. The parents have a five-minute cooldown.
 
@@ -113,7 +115,9 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 
 ### 驿站、货运与邮袋 / Posts, freight and Mailbags
 
-1. **建站 / Build a station.** 秃鹫驿站高两格，同向、同所有者的相邻柱段沿横梁相连，只有两端保留支柱。每列有一个栖位和一个下方货位。手持腐肉右键投放，也可用界面批量存取。点击界面顶部的驿站名称开始编辑，按 Enter 保存或按 Esc 取消。连起来的一座驿站共储存至多 **65,536** 个腐肉。驻站成鸟每 10 分钟消耗一个腐肉，缺粮会离开。 / A Vulture Post stands two blocks tall. Adjacent columns with the same owner and orientation connect along the beam, leaving supports at the two ends. Each column provides one perch and one cargo slot. Right-click with rotten flesh or use the bulk inventory controls. Click the station name to edit it, then press Enter to save or Esc to cancel. A connected station holds up to **65,536** flesh in total. Each resting adult consumes one every ten minutes and leaves if supplies run out.
+**长羽箭。** 将燧石、木棍和秃鹫长羽竖着摆放，合成 4 支。前 2 秒不受重力影响，随后以普通箭一半的重力下坠。生存玩家使用无限弓仍会消耗长羽箭。 / Stack flint, a stick and a Flight Feather vertically to craft four Long Feather Arrows. They fly without gravity for two seconds, then fall at half normal arrow gravity. A Survival bow with Infinity still spends these arrows.
+
+1. **建站 / Build a station.** 秃鹫驿站高两格，同向、同所有者的相邻柱段沿横梁相连，只有两端保留支柱。每列有一个栖位和一个下方货位。手持腐肉右键投放，也可用界面批量存取。点击界面顶部的驿站名称开始编辑，按 Enter 保存或按 Esc 取消。连起来的一座驿站共储存至多 **65,536** 个腐肉。驻站成鸟每 10 分钟消耗一个腐肉，每餐有 **50%** 概率在栖位掉落一根秃鹫长羽。缺粮时会离开。 / A Vulture Post stands two blocks tall. Adjacent columns with the same owner and orientation connect along the beam, leaving supports at the two ends. Each column provides one perch and one cargo slot. Right-click with rotten flesh or use the bulk inventory controls. Click the station name to edit it, then press Enter to save or Esc to cancel. A connected station holds up to **65,536** flesh in total. Each resting adult eats one every ten minutes. Each meal has a **50%** chance to drop one Flight Feather at the perch. Birds leave if supplies run out.
 2. **装货 / Stage cargo.** 普通方块直接右键放入下格，潜行右键取回。用空摄物钳右键采集功能方块及其方块实体数据。也可潜行用空钳在两对角点选体积至多 64 格的区域。用已装载的钳子右键下格装货，潜行使用空钳收回功能方块或多格货物。空地上右键可原样放回，须有足够空间。大箱子的两半占两个相邻货位，运输时保留连体外观。依赖货物外部的模组网络可能要在目的地重新连接。 / Right-click a lower slot with an ordinary block to stage it, and sneak-right-click to take it back. Empty Cargo Tongs capture a functional block and its saved block entity data. Sneak-use empty tongs on two opposite corners to select up to 64 cells. Use loaded tongs on a lower slot to stage the load. Sneak-use empty tongs to retrieve functional or multi-block cargo, then use them in the world where it fits. A double chest takes two adjoining slots and keeps its joined appearance in flight. Modded networks connected to blocks outside the selection may need reconnection.
 3. **派送 / Dispatch.** 右键横梁打开同维度的站点列表，查看谁放置了驿站、距离、方位、空闲柱数与腐肉成本。悬停可以查看预约来自哪座驿站。所有者可改名、设置列表可见性和是否返程。派送时立即预留目的站的货位，一格货物要一只就位成年秃鹫，费用为 `ceil(距离 / 100) × 秃鹫数量` 个腐肉，距离按站点中心之间的三维直线计算。目的站需有足够货位，满栖仍能卸货。落地后成鸟优先就空栖位。 / Right-click the beam to see stations in the same dimension, ownership markers, distance, bearing, available cargo slots, and fuel cost. Hover to see which stations reserved slots. The owner can change the name, listing visibility, and whether the birds return. Dispatch reserves destination cargo space immediately and assigns one perched adult per loaded block. It costs `ceil(distance / 100) × number of birds` rotten flesh, using straight-line 3D distance between station centers. A station with free cargo space can receive a shipment even if all perches are occupied. Arriving birds use available perches when they can.
 4. **飞行与回收 / Flight and recovery.** 秃鹫并排挂着真实货物飞，边向前边爬升，巡航约 4 格/秒，地形净空目标为至少 24 格。开阔处约每分钟滑降一格，约两分钟振翅回升两格。每秒测一次真实位移，连续三次不超过两格时，尝试局部绕行。等区块加载的时间不计入卡住判断。运输、可选返程、泊站和坠货恢复期间临时加载有关区块。任何一只承运鸟死亡会让整件货物坠落，系统寻找可完整放置的位置并通知发送者坐标。货运存档可恢复，地形、承运鸟或目的站失效会转入恢复流程。 / Birds fly in formation with the visible cargo, climbing as they move forward. Cruise speed is about four blocks per second, with a target terrain clearance of at least 24 blocks. In open air they sink about one block per minute, then flap to regain two blocks after roughly two minutes. Three consecutive one-second samples of two blocks or less trigger a local detour search. Waiting for chunks does not count as a stall. Freight, optional return trips, docking, and cargo recovery temporarily keep relevant chunks loaded. If a carrier dies, the entire load falls. The server looks for room to place it intact and reports the position to the sender. Jobs are saved for resumption and can enter recovery if terrain, carriers, or the destination become invalid.
@@ -152,6 +156,10 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 <a id="bubble-salamander"></a>
 ## 泡囊鲵 / Bubble Salamander
 
+**剪取泡囊。** 手持剪刀右键未佩戴的成年泡囊鲵，会掉落一个泡囊。野生个体可直接剪取，驯服的个体只接受主人操作。剪下的泡囊保留来源体色，混色泡囊在手上有附魔光泽，放置后膜面有流动的虹彩。相邻泡囊只在整片膜的外缘显示边框。玩家可以在内上浮、下潜和疾游，头部进入泡囊时会像在空气中一样恢复氧气。泡囊内部视野清晰，游入真实水体时恢复水下雾和遮罩。剪取后的泡囊鲵暂时无法佩戴，活动满 6,000 个游戏刻（正常速度下五分钟）后恢复。装桶或卸载区块会暂停计时，放出或重新加载后接着生长。
+
+**Shearing.** Use shears on an unworn adult to collect one Air Bladder. Anyone can shear a wild adult. A tamed adult accepts only its owner. The membrane retains the color of the salamander. Mixed bladders glint as items and shimmer with moving rainbow colors when placed. Adjoining blocks share a continuous outer rim. Players can rise, dive and sprint-swim inside, and regain air while their head is within a bladder. The interior has clear visibility. Underwater fog and the screen overlay resume on entering real water. The salamander can be worn again after 6,000 entity ticks, or five minutes at normal speed. Time spent in a bucket or an unloaded chunk pauses regrowth.
+
 在 NeoForge 1.21.1，主人传送到水中时，处于水中跟随模式的泡囊鲵会尝试在附近水域与主人会合。等待中的个体留在等待点。 / On NeoForge 1.21.1, a following Bubble Salamander rejoins its owner in nearby water when the owner teleports into water. Waiting salamanders stay at their waiting point.
 
 **中文**
@@ -183,7 +191,7 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 **中文**
 
 - **属性与取食。** 成年体 80 生命、8 护甲，幼体 40 生命、0 护甲。对玩家是中立生物，受攻击会反击，简单、普通、困难难度咬击 **8 / 10 / 12**。主动捕猎史莱姆，成年体可打所有体型，幼体只主动打最大生命 4 或以下的小、中史莱姆。每次有效咬击史莱姆给节虫 **生命恢复 II 4 秒**，幼体咬中合格史莱姆额外缩短 30 秒成长时间。会被它捕猎的史莱姆在 16 格内尝试向外逃离。
-- **甘蔗。** 在环境交互规则允许时，会从甘蔗顶部吃掉一格，保留根部，并寻找符合原版种植条件的空位补种。手喂每份甘蔗有 **20%** 概率驯服，甘蔗也可恢复体力。
+- **甘蔗。** 在环境交互规则允许时，会从甘蔗顶部吃掉一格，保留根部，并寻找符合原版种植条件的空位补种。手喂每份甘蔗有 **20%** 概率驯服。每吃一份恢复 **4 点生命**和 **50 点体力**。即使体力已满，主人也可以给受伤的节虫喂甘蔗。
 - **育幼。** 成年体击杀最大型史莱姆可触发育幼。它先找干燥、有空间、附近没有敌对生物的安全地面位置，抵达后育幼 **60 秒**，产一只幼体。完成后繁殖冷却 20 分钟。幼体自然成长 20 分钟，有 90% 继承亲本体色、10% 随机抽色。绿、紫、蓝、粉、黄是两年龄阶段共有的五种配色。没有专属死亡物品掉落，死亡时背包内容会掉出。
 - **骑乘。** 主人空手右键已驯服成年体可站上背部。战斗或育幼中的个体不能骑。方向键移动，地面约 **5 格/秒**。跳跃键起飞和抬升，空中前后移动结合视角俯仰控制升降，普通飞行 **12 格/秒**，疾跑 **36 格/秒**。降低高度接近地面会着陆。潜行下坐骑。骑手和节虫一起侧倾，最大 30°，冲刺时更快振翅。碰撞会检查骑手头顶空间。起飞、悬停、前飞、转向、降落和待机均有动画表现。
 - **体力与背包。** 体力为 0–100，骑乘时以无数字进度条占用经验条位置。低于 30 点不能冲刺。着地每 tick 回 1 点，空中速度不超过 2 格/秒每 tick 回 0.2 点，普通飞行每 tick 耗 0.1 点，冲刺每 tick 耗 0.25 点。一次甘蔗回复 50 点。主人潜行右键或骑乘时按 **E** 打开 27 格背包。有甘蔗且低于 50 点时会自己消耗一份。
@@ -192,7 +200,7 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 **English**
 
 - **Stats and hunting.** Adults have 80 health and 8 armor. Juveniles have 40 health and no armor. Velocipods are neutral to players and retaliate when attacked. The bite deals **8 / 10 / 12** on Easy, Normal, and Hard. Adults hunt all sizes of regular slime. Juveniles only hunt small and medium slimes with a maximum of 4 health. A successful slime bite grants **Regeneration II for four seconds**. A juvenile also takes 30 seconds off its growth time for each successful bite on eligible prey. Slimes the Velocipod can hunt try to flee out of its 16-block radius.
-- **Sugar cane.** When mob interactions are allowed, Velocipods eat a block off the top of a cane stalk, leave the root, and look for an empty slot where vanilla cane can grow. Each hand-fed cane has a **20%** chance to tame a wild Velocipod and can restore stamina.
+- **Sugar cane.** When mob interactions are allowed, Velocipods eat a block off the top of a cane stalk, leave the root, and look for an empty slot where vanilla cane can grow. Each hand-fed cane has a **20%** chance to tame a wild Velocipod. Eating one restores **4 health** and **50 stamina**. Owners can feed injured Velocipods even when stamina is full.
 - **Brooding.** Killing a largest-size slime can make an adult brood. It first seeks dry, clear ground away from hostile mobs. After **60 seconds** at a safe site it produces one juvenile, then enters a 20-minute cooldown. Juveniles mature in 20 minutes. A juvenile inherits the parent's color 90% of the time and rolls a random color 10% of the time. Both ages come in green, purple, blue, pink, and yellow. The species has no dedicated death loot and drops its backpack contents on death.
 - **Riding.** The owner can empty-hand right-click a tamed adult to stand on its back. A fighting or brooding adult cannot be mounted. Move at about **5 blocks/s** on the ground. Jump to take off or climb. In flight, forward and backward motion follow the camera pitch. Cruise at **12 blocks/s** or sprint at **36 blocks/s**. Descend to land and sneak to dismount. Mount and rider bank together up to 30° and the wings beat faster during sprints. Movement checks rider headroom. Takeoff, hovering, forward flight, turns, landing, and idle movement have distinct animation behavior.
 - **Stamina and backpack.** Stamina ranges from 0 to 100 and replaces the experience bar with an unnumbered bar while riding. Sprint requires 30 stamina. Recover 1 per tick on the ground or 0.2 per tick in the air at up to 2 blocks/s. Ordinary flight consumes 0.1 per tick and sprinting consumes 0.25. A cane restores 50 points. The owner can sneak-right-click or press **E** while mounted to open a 27-slot backpack. The Velocipod eats a stored cane when below 50 stamina.
@@ -212,6 +220,8 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 
 - **中文。** 野生成蝶会飞向约 12 格内的经验球并吸收。玩家击杀生物时，把原本掉落的经验均分给同维度、32 格内的成年跟随蝶。绿色加成先算再均分，专用经验粒子从死亡生物飞到每只蝶。经验以小数保存，主人普通右键取回，整点进入经验条，余数保留在账本里。有主蝶死亡会把正余额返给主人，包括离线主人上线后的结算。无主蝶死亡时一般掉 2–3 个较大经验球，经验不足时更少，小数余量保留。
 - **English.** Wild adults fly toward experience orbs in about a 12-block search area and absorb them. When a player kills a mob, its normal experience is split among adult followers within 32 blocks in the same dimension. The green multiplier is applied before division, and custom experience particles fly from the defeated mob to each butterfly. Balances preserve fractions. Right-click as owner to withdraw. Whole points reach the bar, with remainders kept in the ledger. A pet's positive balance returns to its owner on death, with offline payouts held until the owner is available. Wild butterflies normally drop two or three larger orbs on death. Low totals may produce fewer, and fractions are retained.
+
+受伤的蓄辉蝶每吸收 1 点经验就恢复 1 点生命，按实际入账的经验计算，小数也有效。吸收的经验仍存入余额。 / Injured butterflies recover one health per experience point credited, including fractions. The absorbed XP remains in their balance.
 
 ### 颜色与能力 / Colors and powers
 
@@ -260,6 +270,12 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 - **Void rescue.** Empty-hand sneak-right-click a Nest Box to sign up or cancel. A resident ray uses 64-block predictive interception to catch registered players falling into the void or falling rapidly toward solid ground, then returns them safely to the box. Creative flight, elytra flight, and existing passengers do not trigger rescue. A ray has a 30-second cooldown after a successful pickup.
 - **Long silk relay.** Fire the first pin, keep the line attached to the launcher, and right-click an available ray. Aim at the second anchor and use the launcher again. The silk follows the ray until it flies to the target and sets the second pin. The relay bypasses the ordinary 64-block limit. Aim distance is limited by the shorter of render distance and the height boundary along the view ray. It also requires loaded chunks, a valid anchor, and enough spools. Using the launcher while aiming at empty sky cancels the relay selection. Each spool gives 32 blocks and the designated chamber slot follows the normal launcher rules. The completed line can be climbed and recovered. A failed relay attempts to return the paid spools at the first anchor.
 
+拾遗鳐吃下一颗紫颂果后获得 **生命恢复 II，8 秒**，带回巢匣进食和繁殖时吃果均会触发。 / Eating a chorus fruit grants a ray **Regeneration II for 8 seconds**, whether it brought the fruit back or ate it to breed.
+
+**拾遗鳐蜕膜。** 幼体长大后掉落一片。用铁砧花费 1 级经验将一片蜕膜贴在护甲或鞘翅上，保留装备原有的铁砧惩罚。每件装备最多贴一片。穿戴时若即将坠入虚空，最低可放置层会生成最多 3×3 格的紫色云雾平台，消耗一件装备上的蜕膜。云雾 5 秒后消散，可站立和作为搭建支撑。每次连续坠落只能触发一次，用掉的蜕膜可用铁砧补贴。 / A juvenile sheds one molt upon reaching adulthood. Apply one molt to each piece of armor or elytra for one anvil level, preserving its prior work penalty. When a wearer is about to fall into the void, a single equipped coating is consumed to form up to a 3×3 cloud platform at the lowest build layer. The cloud supports standing and building, then disperses after five seconds. Protection triggers once per uninterrupted fall. A spent coating can be replaced at an anvil.
+
+按住 Shift 查看装备上的紫色「虚空保护」提示。云雾在出现后 3.5 秒浮现细裂纹，4.4 秒时裂纹加深，5 秒时消散。 / Hold Shift over coated gear to see its purple Void Protection tooltip. Fine cracks appear after 3.5 seconds, deepen after 4.4 seconds, and the cloud disperses at 5 seconds.
+
 [实机 / In game](docs/assets/salvage-ray/salvage-ray-ingame.gif) · [实机变种 / In-game variants](docs/assets/salvage-ray/salvage-ray-ingame-variants.png) · [新巢穴 / Redesigned nest](docs/assets/salvage-ray/salvage-ray-ingame-nest.png) · [幼体 / Juvenile](docs/assets/salvage-ray/salvage-ray-ingame-juvenile.png)
 
 <a id="snowcache-weasel"></a>
@@ -275,6 +291,10 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 - Right-click the weasel with an empty hand to pick it up. Adults perch on your head and juveniles perch on your shoulder. While carrying a weasel, sneak-right-click a chest to cycle **deposit and withdraw**, **deposit only**, and **withdraw only** for that weasel. Both halves of a large chest share one mode. Sneak-right-click another block with an empty hand to set it down and assign a new work area.
 - A tamed adult searches for chests within a three-dimensional radius of 16 blocks from its assigned work point. Blueprint jobs use the same work point. The first occupied slot defines the chest’s creative tab. Items on multiple tabs use the first category tab in tab order. Items absent from category tabs share an uncategorized group. The first item placed in an empty chest establishes its category.
 - The weasel carries up to nine stacks of the same category per trip. If a matching chest cannot receive the remaining cargo, it first looks for the nearest chest that can hold the entire batch and starts by appending to occupied slots. Items in ordinary mixed chests are only picked up for a matching or empty destination. Permission, capacity, and interaction mode are rechecked during transfers.
+
+雪藏鼬每吃一份生兔肉或生鸡肉就回满生命，繁殖冷却期间也能给受伤个体喂食。 / Eating raw rabbit or chicken fully heals a Snowcache Weasel. An injured weasel can eat during its breeding cooldown.
+
+**雪藏鼬绒毛。** 雪藏鼬每次成功从实物容器取放物品，有 **2%** 概率掉一撮。手持绒毛，另一只手拿样品，右键箱子或当前版本支持的已放置精妙背包固定这个物品，潜行右键改为固定样品所属的创造模式分类。设置新分类消耗一撮绒毛，清空容器后仍保留。另一只手空着时，右键查看当前分类，潜行右键清除。 / Each successful weasel transfer at a physical container has a **2%** chance to drop one fur. Hold fur in one hand and a sample in the other. Use it on a chest or a supported placed Sophisticated Backpack to pin the item, or sneak-use to pin the sample's creative tab. Setting a new label consumes one fur and survives emptying the container. Use with no sample to inspect the label, or sneak-use to erase it.
 
 ### 配方图 / Recipe Blueprint
 
@@ -316,9 +336,9 @@ Fabric 26.3 同时安装精妙背包移植版和 JEI 时，背包前置要求 JE
 <a id="xaero-entity-icons"></a>
 ## Xaero 生物头像 / Xaero entity icons
 
-安装 Xaero 的小地图后，八种生物在实体雷达中各有一张头像。在「实体雷达设置」中可将「图标」设为「总是显示」。同时安装 Xaero 的世界地图时，可在大地图里开启小地图的实体雷达叠层。
+安装 Xaero 的小地图后，十种生物在实体雷达中都显示专用头像。收藏者的六种外观共用一张头像。在「实体雷达设置」中可将「图标」设为「总是显示」。同时安装 Xaero 的世界地图时，可在大地图里开启小地图的实体雷达叠层。
 
-With Xaero’s Minimap installed, all eight creatures have face icons in its Entity Radar. Set Icons to Always in the radar settings. With Xaero’s World Map also installed, you can enable the minimap radar overlay on the full map.
+With Xaero’s Minimap installed, all ten creatures have face icons in its Entity Radar. The six Collector coats share one icon. Set Icons to Always in the radar settings. With Xaero’s World Map also installed, you can enable the minimap radar overlay on the full map.
 
 <a id="recipes"></a>
 ## 合成与获取 / Crafting and acquisition
@@ -338,6 +358,8 @@ With Xaero’s Minimap installed, all eight creatures have face icons in its Ent
 ## 库娃与孵化器 / Kavat and incubator
 
 库娃成年体采用 1.5× 模型体型，基础生命 40、攻击 8。野生库娃可供采样。孵化器产出的库娃属于启动任务的玩家，主人主手空手时潜行右键可切换跟随和原地待命，快捷栏上方会显示切换后的模式。 / Adult Kavats use a 1.5× species scale, have 40 health and deal 8 base damage. Wild Kavats supply genetic samples. Incubated Kavats belong to the player who starts the job. Sneak-right-click with an empty main hand to switch between following and staying. The new mode appears above the hotbar.
+
+受伤的库娃吃一份生肉恢复 **8 点生命**，熟肉恢复 **16 点生命**。牛、鸡、羊、猪、兔和沙漠鳐鱼的肉均可使用。库娃在原地待命时持续获得 **生命恢复 I**。 / Feed an injured Kavat raw meat to restore **8 health** or cooked meat to restore **16 health**. It accepts beef, chicken, mutton, pork, rabbit, and Desert Skate meat. A Kavat on stay duty gains **Regeneration I** while resting.
 
 | 野生体色 / Wild coat | 来源 / Habitat | 复活材料 / Revival item |
 | --- | --- | --- |
@@ -366,6 +388,8 @@ Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬�
 
 库娃使用陆生动物池，每组尝试 1–4 只。基础权重为 10，下界取基础值的两倍。白天、全黑和和平难度都允许生成。末地主岛自然补刷时，与其他野生库娃至少相距 64 格。`spawns.kavat.mainIslandSpacing` 可调整间距，0 表示关闭。 / Kavats use the creature pool in groups of 1–4, with base weight 10 and double that weight in the Nether. Daylight, darkness and Peaceful difficulty all allow spawning. On the central End island, new natural spawns require 64 blocks of separation from other wild Kavats. Set `spawns.kavat.mainIslandSpacing` to 0 to disable spacing.
 
+平原、热带草原和雪原的权重取基础值的 0.5 倍，沙漠和末地取 0.3 倍，樱花树林取 0.2 倍。 / Plains, savanna, and snowy plains use 0.5 times the base weight, desert and the End use 0.3, and cherry groves use 0.2.
+
 **采样和孵化 / Sampling and incubation**
 
 - 基因提取器配方为 `G·G / G·G / ·I·`，G 为玻璃板，I 为铁锭。右键库娃消耗一个提取器，每只终生可提取一次，产出 1–3 个记录四项性状的遗传密码。 / Craft an extractor with four glass panes and one iron ingot. Use one on a Kavat to obtain 1–3 codes encoding its four traits, once per animal.
@@ -385,6 +409,20 @@ Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬�
 | 镜像型 / Adarza | 受到来自活体的伤害时，有 50% 概率把实际受到的伤害以双倍数值反射给攻击者。 / Each damaging hit from a living attacker has a 50% chance to reflect twice the damage received. |
 | 笑面型 / Smeeta | 有攻击目标时隐形并召唤诱饵，主人能看见体色描边。目标消失或分身死亡后显形，冷却 18 秒。 / In combat the Kavat vanishes, showing its owner a coat-colored outline, and lures enemies to a decoy. Losing its target or decoy reveals it and starts an 18-second cooldown. |
 | 噬血型 / Vasca | 攻击 10。同维度跟随中的库娃可在主人受到致命伤害时转移最多 20% 自身最大生命，至少为自己保留 1 点；无冷却。 / Attack damage 10. A following Vasca in the same dimension can spend up to 20% of its maximum health to save a mortally injured owner. It retains at least 1 HP and has no cooldown. |
+
+## 收藏者 / Collector
+
+温顺的陆生收藏者有 20 点生命。草原、沙漠、洞穴、雪原、沼泽和樱花六型随生成群系确定。默认单只生成，在适用群系的陆生动物池中权重为 1。服务端配置 `spawns.collector` 控制开关、权重与群体大小。
+
+A Collector has 20 health and spawns alone by default. Prairie, desert, cave, snow, swamp and cherry coats follow the local biome. Each eligible biome receives a single entry of weight 1 in the creature pool. Server settings under `spawns.collector` control spawning, weight and group size.
+
+- 三枚吊牌分别显示想收的物品。把其中一种丢在地上，它会走近取一个，甩到背上，然后把一件隐藏的回礼抛向投喂者。同种需求可以重复。成交只收起对应吊牌，经过 6,000 个世界刻后独立补货。
+- Each tag shows one requested item. Drop it nearby and the Collector takes one, flicks it into its basket and tosses a mystery reward toward the player. Independent rolls can repeat. Only the completed tag disappears and renews after 6,000 world ticks.
+- 数据包物品标签 / Datapack item tags: `yagens_mobs:collector/requests`, `yagens_mobs:collector/rewards`. 吊牌与回礼在重进存档后保留。 / Offers and pending rewards persist across saves.
+- 需求和回礼各有独立的物品标签。1.21.1 默认可需求 1,211 种物品、回礼 1,212 种，两池各含 15 种本模组物品。紫水晶母岩仅作为回礼。其他版本按当地注册表抽取，可选的模组物品仅在已注册时参与。修改池子会影响新抽取的交易。NeoForge 1.21.1 可在客户端执行 `/ym_collector_catalog`，将游戏目录的 `collector-catalog.json` 导入[收藏者交易池编辑器](scripts/collector-pools.html)，按整合包的创造标签页编辑。
+- Requests and rewards use independent item tags. The default 1.21.1 pools contain 1,211 requests and 1,212 rewards, each including 15 items from this mod. Budding amethyst is exclusive to the reward pool. Other versions draw from their local registries. Optional modded items participate when registered. Pool changes apply to newly rolled offers. On NeoForge 1.21.1, run `/ym_collector_catalog` in the client and import `collector-catalog.json` from the game directory into the [Collector pool editor](scripts/collector-pools.html) to browse a modpack’s creative tabs.
+
+Windows 下双击 [open-collector-editor.cmd](scripts/open-collector-editor.cmd) 可通过 Python 3 直接打开当前项目的交易池。每次写入都会回读并显示文件名及物品数。 / On Windows, launch [open-collector-editor.cmd](scripts/open-collector-editor.cmd) with Python 3 installed to edit the current checkout. Each save reads the files back and displays their item counts.
 
 ## 维护索引 / Maintenance index
 

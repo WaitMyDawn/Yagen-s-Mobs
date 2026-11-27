@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": {
+      "force_translucent": true,
+      "sprite": "yagens_mobs:block/void_cloud_hairline"
+    }
+  }
+}

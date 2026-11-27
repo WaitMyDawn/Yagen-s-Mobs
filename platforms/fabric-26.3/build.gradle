@@ -45,9 +45,15 @@ dependencies { implementation "maven.modrinth:geckolib:${geckolib_artifact}" }
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
+        include 'data/yagens_mobs/tags/worldgen/biome/collector/**'
+        exclude 'assets/yagens_mobs/models/block/void_cloud*.json'
         include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_adjusted_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_reduced_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/condroc_ravine_exclusions.json'
         include 'data/yagens_mobs/tags/worldgen/biome/kavat_habitat.json', 'data/yagens_mobs/loot_table/blocks/kavat_incubator.json'
+        include 'data/yagens_mobs/tags/item/kavat_raw_meat.json', 'data/yagens_mobs/tags/item/kavat_cooked_meat.json'
         include 'data/minecraft/tags/block/mineable/pickaxe.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'
         includeEmptyDirs = false
@@ -113,3 +119,7 @@ dependencies {
     compileOnly('curse.maven:sophisticated-core-unofficial-fabric-continuation-1749510:9727610') { transitive = false }
     compileOnly('curse.maven:iron-core-utilities-1721007:9134588') { transitive = false }
 }
+
+apply from: '../../gradle/bladder.gradle'
+apply from: '../../gradle/gathering.gradle'
+apply from: '../../gradle/collector-pools.gradle'

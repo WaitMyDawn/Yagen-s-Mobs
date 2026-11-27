@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "yagen.waitmydawn.yagens_mobs.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BladderBreathing"
+  ],
+  "client": ["client.BladderCamera", "client.BladderOverlay"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

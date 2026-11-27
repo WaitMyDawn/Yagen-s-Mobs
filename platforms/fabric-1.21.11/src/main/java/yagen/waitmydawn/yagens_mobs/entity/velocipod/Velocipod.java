@@ -390,7 +390,8 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingA
             return (level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME);
         }
         ItemStack held = player.getItemInHand(hand);
-        if (held.is(Items.SUGAR_CANE) && (!isTamed() || isOwnedBy(player) && stamina() < STAMINA_MAX)) {
+        if (held.is(Items.SUGAR_CANE) && (!isTamed()
+                || isOwnedBy(player) && (stamina() < STAMINA_MAX || getHealth() < getMaxHealth()))) {
             if (!level().isClientSide()) {
                 held.consume(1, player);
                 restoreFromCane();
@@ -491,6 +492,7 @@ public final class Velocipod extends PathfinderMob implements GeoEntity, FlyingA
 
     void restoreFromCane() {
         adjustStamina(CANE_RESTORE);
+        heal(4F);
         playSound(SoundEvents.GENERIC_EAT.value(), .7F, 1.12F);
         gameEvent(GameEvent.EAT);
     }

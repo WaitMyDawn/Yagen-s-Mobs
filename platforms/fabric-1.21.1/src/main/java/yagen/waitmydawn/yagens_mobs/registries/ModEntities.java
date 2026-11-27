@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrow;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatSpawns;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.Kavat;
 import java.util.function.Supplier;
@@ -26,7 +28,7 @@ import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkLine;
 
 public final class ModEntities {
     public static final Supplier<EntityType<BubbleSalamander>> BUBBLE_SALAMANDER = entity(
-            "bubble_salamander", id -> EntityType.Builder.of(BubbleSalamander::new, MobCategory.WATER_CREATURE)
+            "bubble_salamander", id -> EntityType.Builder.<BubbleSalamander>of(yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.ShearableBubbleSalamander::new, MobCategory.WATER_CREATURE)
                     .sized(.95F, 1.10F).eyeHeight(.94F).clientTrackingRange(8).updateInterval(2).build(id.toString()));
     public static final Supplier<EntityType<DesertSkate>> DESERT_SKATE = entity("desert_skate",
             id -> EntityType.Builder.of(DesertSkate::new, MobCategory.MONSTER)
@@ -34,6 +36,9 @@ public final class ModEntities {
     public static final Supplier<EntityType<SkateSpike>> SKATE_SPIKE = entity("skate_spike",
             id -> EntityType.Builder.<SkateSpike>of(SkateSpike::new, MobCategory.MISC)
                     .sized(0.15F, 0.15F).clientTrackingRange(4).updateInterval(1).noSave().build(id.toString()));
+    public static final Supplier<EntityType<LongFeatherArrow>> LONG_FEATHER_ARROW = entity("long_feather_arrow",
+            id -> EntityType.Builder.<LongFeatherArrow>of(LongFeatherArrow::new, MobCategory.MISC)
+                    .sized(.5F, .5F).clientTrackingRange(8).updateInterval(2).build(id.toString()));
     public static final Supplier<EntityType<Vulture>> VULTURE = entity("condroc",
             id -> EntityType.Builder.of(Vulture::new, MobCategory.CREATURE)
                     .sized(.72F, 1.15F).eyeHeight(1.02F).clientTrackingRange(10).updateInterval(2).build(id.toString()));
@@ -55,6 +60,8 @@ public final class ModEntities {
             id -> EntityType.Builder.of(Velocipod::new, MobCategory.CREATURE)
                     .sized(1.24F, 1.73F).eyeHeight(1.40F).clientTrackingRange(10).updateInterval(1).build(id.toString()));
 
+    public static final Supplier<EntityType<Collector>> COLLECTOR = entity("collector", id ->
+            EntityType.Builder.of(Collector::new, MobCategory.CREATURE).sized(1.05F,1.45F).clientTrackingRange(10).build(id.toString()));
     public static final Supplier<EntityType<Kavat>> KAVAT = entity("kavat", id ->
             EntityType.Builder.of(Kavat::new, MobCategory.CREATURE).sized(.62F,.95F).eyeHeight(.69F).clientTrackingRange(10).build(id.toString()));
     public static final Supplier<EntityType<Kavat>> KAVAT_DECOY = entity("kavat_decoy", id ->
@@ -71,8 +78,10 @@ public final class ModEntities {
     }
 
     public static void register() {
+        FabricDefaultAttributeRegistry.register(COLLECTOR.get(), Collector.attributes().build());
         FabricDefaultAttributeRegistry.register(KAVAT.get(), Kavat.attributes());
         FabricDefaultAttributeRegistry.register(KAVAT_DECOY.get(), Kavat.attributes());
+        SpawnPlacements.register(COLLECTOR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Collector::placement);
         SpawnPlacements.register(KAVAT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, KavatSpawns::placement);
         FabricDefaultAttributeRegistry.register(BUBBLE_SALAMANDER.get(), BubbleSalamander.createAttributes());
         FabricDefaultAttributeRegistry.register(DESERT_SKATE.get(), DesertSkate.createAttributes());

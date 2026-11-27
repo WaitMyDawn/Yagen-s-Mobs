@@ -166,6 +166,18 @@
     "sounds": [
       {
         "name": "yagens_mobs_audio:entity/kavat/idle"
+      },
+      {
+        "name": "yagens_mobs_audio:entity/kavat/idle_murmur"
+      },
+      {
+        "name": "yagens_mobs_audio:entity/kavat/idle_mew"
+      },
+      {
+        "name": "yagens_mobs_audio:entity/kavat/idle_double_trill"
+      },
+      {
+        "name": "yagens_mobs_audio:entity/kavat/idle_chirp"
       }
     ]
   },

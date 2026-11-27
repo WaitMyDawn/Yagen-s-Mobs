@@ -4,6 +4,7 @@
   "package": "yagen.waitmydawn.yagens_mobs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "MoltAnvil",
     "PetCombatOrder",
     "KavatDamage",
     "KavatMob",

@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.guide;
 
+import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,6 +40,7 @@ public final class FieldNotes {
     private FieldNotes() {}
 
     public static List<String> variants(String species) {
+        if (species.equals("collector")) return java.util.Arrays.stream(Collector.Coat.values()).map(coat -> coat.key).toList();
         var result = new ArrayList<String>();
         if (species.equals("kavat")) {
             for (var group : List.of(KavatGenes.BREEDS, KavatGenes.EARS, KavatGenes.TAILS, KavatGenes.COATS)) result.addAll(group);
@@ -68,6 +70,7 @@ public final class FieldNotes {
     }
 
     private static List<String> observed(Mob mob) {
+        if (mob instanceof Collector collector) return List.of(collector.coat());
         String age = mob.isBaby() ? "young" : "adult";
         if (mob instanceof Kavat cat) {
             var g = cat.genes();

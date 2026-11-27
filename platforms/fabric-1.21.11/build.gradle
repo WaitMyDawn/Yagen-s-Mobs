@@ -45,9 +45,14 @@ dependencies { modImplementation "maven.modrinth:geckolib:${geckolib_artifact}" 
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
+        include 'data/yagens_mobs/tags/worldgen/biome/collector/**'
         include 'assets/**', 'data/yagens_mobs/**/salvage_ray*.json', 'data/yagens_mobs/loot_table/blocks/salvage_nest_box.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_adjusted_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_reduced_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/condroc_ravine_exclusions.json'
         include 'data/yagens_mobs/tags/worldgen/biome/kavat_habitat.json', 'data/yagens_mobs/loot_table/blocks/kavat_incubator.json'
+        include 'data/yagens_mobs/tags/item/kavat_raw_meat.json', 'data/yagens_mobs/tags/item/kavat_cooked_meat.json'
         include 'data/minecraft/tags/block/mineable/pickaxe.json'
         exclude 'assets/yagens_mobs/models/item/*_spawn_egg.json'
         includeEmptyDirs = false
@@ -102,3 +107,7 @@ dependencies {
         modRuntimeOnly(files(zipTree(distribution.singleFile).matching { include 'META-INF/jars/fiber-*.jar' }))
     }
 }
+
+apply from: '../../gradle/bladder.gradle'
+apply from: '../../gradle/gathering.gradle'
+apply from: '../../gradle/collector-pools.gradle'

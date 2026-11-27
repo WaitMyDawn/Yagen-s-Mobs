@@ -1,0 +1,102 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import javax.imageio.ImageIO
+
+// Bake coat colours for loaders with different block and inventory tint APIs.
+def source = file('../../common/src/bladder/resources')
+def legacy = minecraft_version == '1.20.1'
+def modern = minecraft_version in ['1.21.11', '26.3']
+def materials = minecraft_version == '26.3'
+def generated = layout.buildDirectory.dir('generated/bladder-assets')
+def bake = tasks.register('generateBladderAssets') {
+    inputs.dir(source)
+    inputs.property('gameVersion', minecraft_version)
+    outputs.dir(generated)
+    doLast {
+        def out = generated.get().asFile
+        def assets = 'assets/yagens_mobs'
+        def colors = [green:0x90ddac, albino:0xfff1e8, pink:0xffa9cb, yellow:0xffde82, black:0x7d7892,
+                      brown:0xc79e79, red:0xf89083, blue:0x85b9f7, mixed:0xffffff]
+        def read = { path -> new JsonSlurper().parse(new File(source,path)) }
+        def save = { path, data ->
+            def f = new File(out,path)
+            f.parentFile.mkdirs()
+            f.setText(JsonOutput.toJson(data),'UTF-8')
+        }
+        project.copy {
+            from source
+            into out
+            exclude 'assets/yagens_mobs/models/**', 'assets/yagens_mobs/blockstates/**', '**/textures/block/bladder/film*.png'
+            eachFile { f ->
+                if (legacy) f.path = f.path.replace('/loot_table/', '/loot_tables/').replace('/tags/fluid/', '/tags/fluids/')
+                if (modern) f.path = f.path.replace('/geo/entity/', '/geckolib/models/entity/')
+            }
+        }
+        def variants = [:]
+        // Texture-space left, right, top and bottom on each unrotated cube face.
+        def edges = [north:['east','west','up','down'], south:['west','east','up','down'],
+                     west:['north','south','up','down'], east:['south','north','up','down'],
+                     up:['west','east','north','south'], down:['west','east','south','north']]
+        def itemCases = []
+        def overrides = []
+        def model = { name, template, texture ->
+            def obj = read("${assets}/models/block/${template}.json")
+            obj.elements.each { e -> e.faces.values().each { it.remove('tintindex') } }
+            obj.textures.replaceAll { k,v -> materials && k != 'particle' ? [sprite:texture,force_translucent:true] : texture }
+            save("${assets}/models/block/${name}.json",obj)
+        }
+        colors.eachWithIndex { tone, rgb, index ->
+            def mixed = tone == 'mixed'
+            (0..<16).each { mask ->
+                def suffix = Integer.toHexString(mask)
+                def template = "bladder/${mixed ? 'rainbow' : 'film'}${suffix}"
+                def name = "bladder/${tone}_${suffix}"
+                def sprite = mixed ? template : name
+                if (!mixed) {
+                    def img = ImageIO.read(new File(source,"${assets}/textures/block/${template}.png"))
+                    for (int y=0; y<img.height; y++) for (int x=0; x<img.width; x++) {
+                        int c=img.getRGB(x,y), result=c & 0xff000000
+                        for (int shift : [0,8,16]) result |= (((((c >>> shift)&255)*((rgb >>> shift)&255)).intdiv(255)) << shift)
+                        img.setRGB(x,y,result)
+                    }
+                    def dest = new File(out,"${assets}/textures/block/${sprite}.png")
+                    dest.parentFile.mkdirs()
+                    ImageIO.write(img,'png',dest)
+                }
+                if (mask==15) model("bladder/item_${tone}",'air_bladder',"yagens_mobs:block/${sprite}")
+            }
+            // Bake the complete mask so mesh workers only read the selected model.
+            (0..<64).each { neighbors ->
+                def connected = [:]
+                edges.keySet().eachWithIndex { face, bit -> connected[face] = (neighbors & (1 << bit)) != 0 }
+                def obj = read("${assets}/models/block/air_bladder.json")
+                obj.textures = [particle:"yagens_mobs:block/bladder/${mixed ? 'rainbow' : tone+'_'}f"]
+                edges.each { face, sides ->
+                    int mask = 0
+                    sides.eachWithIndex { side, bit -> if (!connected[side]) mask |= 1 << bit }
+                    def sprite = "yagens_mobs:block/bladder/${mixed ? 'rainbow' : tone+'_'}${Integer.toHexString(mask)}"
+                    obj.textures[face] = materials ? [sprite:sprite,force_translucent:true] : sprite
+                    def quad = obj.elements[0].faces[face]
+                    quad.texture = "#${face}"
+                    quad.remove('tintindex')
+                }
+                def path = "block/bladder/shape/${tone}_${neighbors}"
+                save("${assets}/models/${path}.json",obj)
+                def properties = connected + [color:tone]
+                variants[properties.collect { k,v -> "${k}=${v}" }.join(',')] = [model:"yagens_mobs:${path}"]
+            }
+            def itemModel = "yagens_mobs:block/bladder/item_${tone}"
+            itemCases << ['when':tone, model:[type:'minecraft:model',model:itemModel]]
+            if (index) overrides << [predicate:['yagens_mobs:bladder_coat':index / 8.0],model:itemModel]
+        }
+        save("${assets}/blockstates/air_bladder.json",[variants:variants])
+        save("${assets}/models/item/air_bladder.json",[parent:'yagens_mobs:block/bladder/item_green',overrides:overrides])
+        if (modern) save("${assets}/items/air_bladder.json",[model:[type:'minecraft:select',property:'minecraft:block_state',
+                block_state_property:'color',cases:itemCases,fallback:itemCases[0].model]])
+    }
+}
+sourceSets.main.resources.srcDir(bake)
+sourceSets.main.java.srcDir('../../common/src/bladder/vision/java')
+if (projectDir.name.startsWith('fabric-')) sourceSets.main.java.srcDir('../../common/src/bladder/fabric/java')
+if (modern) sourceSets.main.java.srcDir('../../common/src/bladder/modern/java')
+

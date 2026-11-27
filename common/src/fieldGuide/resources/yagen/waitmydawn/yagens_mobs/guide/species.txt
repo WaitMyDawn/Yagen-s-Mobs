@@ -7,3 +7,4 @@ lumen_butterfly
 salvage_ray
 snowcache_weasel
 kavat
+collector

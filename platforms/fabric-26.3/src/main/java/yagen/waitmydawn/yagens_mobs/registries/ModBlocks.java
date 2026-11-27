@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import java.util.function.Supplier;
 import java.util.function.Function;
@@ -10,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.world.level.block.Block;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,6 +26,9 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostBlock;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.VulturePostEntity;
 
 public final class ModBlocks {
+    public static final Supplier<VoidCloudBlock> VOID_CLOUD = block("void_cloud",
+            properties -> new VoidCloudBlock(properties.strength(-1.0F, 3_600_000.0F).sound(SoundType.WOOL)
+                    .noOcclusion().noLootTable().pushReaction(PushReaction.IMMOVEABLE)));
     public static final Supplier<VulturePostBlock> VULTURE_POST = block("vulture_post",
             properties -> new VulturePostBlock(properties.strength(2.0F).sound(SoundType.WOOD)
                     .noOcclusion().pushReaction(PushReaction.IMMOVEABLE)));
@@ -55,6 +60,9 @@ public final class ModBlocks {
             Identifier.fromNamespaceAndPath(ModIdentity.ID, "kavat_incubator"),
             new net.minecraft.world.inventory.MenuType<>(IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
     public static final Supplier<net.minecraft.world.inventory.MenuType<IncubatorMenu>> INCUBATOR_MENU = () -> MENU;
+
+    public static final Supplier<AirBladderBlock> AIR_BLADDER = block("air_bladder",
+            properties -> new AirBladderBlock(properties.noOcclusion().noCollision().strength(.25F).sound(SoundType.SLIME_BLOCK)));
 
     private ModBlocks() {}
 

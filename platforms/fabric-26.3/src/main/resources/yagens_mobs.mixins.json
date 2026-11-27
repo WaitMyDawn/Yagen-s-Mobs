@@ -4,6 +4,7 @@
   "package": "yagen.waitmydawn.yagens_mobs.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "MoltAnvil",
     "PetCombatOrder",
     "PlayerBubbleSalamanderMining",
     "KavatDamage",
@@ -16,6 +17,7 @@
     "ActiveTransportServerTick"
   ],
   "client": [
+    "client.MoltEquipmentTooltip",
     "client.BubbleSalamanderNightVision",
     "client.HumanoidRockSilkPose",
     "client.PlayerRockSilkOrientation",

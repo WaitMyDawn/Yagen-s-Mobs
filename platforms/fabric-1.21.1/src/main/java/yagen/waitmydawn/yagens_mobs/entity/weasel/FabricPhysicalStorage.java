@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.weasel;
 
+import net.minecraft.world.item.ItemStack;
 import anner.ironchest.blocks.blockentities.GenericChestEntity;
 import java.util.UUID;
 import net.minecraft.core.Direction;
@@ -26,6 +27,10 @@ final class FabricPhysicalStorage {
 
     static boolean iron(Object entity) { return ironLoaded() && entity instanceof GenericChestEntity; }
     private static boolean backpack(Object entity) { return backpackLoaded() && entity instanceof BackpackBlockEntity; }
+
+    static ItemStack backpackStack(BlockEntity entity) {
+        return backpack(entity) ? ((BackpackBlockEntity) entity).getBackpackWrapper().getBackpack() : ItemStack.EMPTY;
+    }
 
     static @Nullable WeaselChests.Site at(ServerLevel level, BlockEntity entity, ServerPlayer owner) {
         var pos = entity.getBlockPos();

@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.weasel;
 
+import net.minecraft.world.item.ItemStack;
 import com.progwml6.ironchest.common.block.regular.AbstractIronChestBlock;
 import com.progwml6.ironchest.common.block.regular.entity.AbstractIronChestBlockEntity;
 import java.util.UUID;
@@ -28,6 +29,10 @@ final class ForgePhysicalStorage {
 
     static boolean iron(Object entity) { return ironLoaded() && entity instanceof AbstractIronChestBlockEntity; }
     private static boolean backpack(Object entity) { return backpackLoaded() && entity instanceof BackpackBlockEntity; }
+
+    static ItemStack backpackStack(BlockEntity entity) {
+        return backpack(entity) ? ((BackpackBlockEntity) entity).getBackpackWrapper().getBackpack() : ItemStack.EMPTY;
+    }
 
     static @Nullable WeaselChests.Site at(ServerLevel level, BlockEntity entity, ServerPlayer owner) {
         var pos = entity.getBlockPos();

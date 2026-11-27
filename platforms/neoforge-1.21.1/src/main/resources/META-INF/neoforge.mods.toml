@@ -41,6 +41,9 @@ side="BOTH"
 config="yagens_mobs.mixins.json"
 
 [[mixins]]
+config="yagens_mobs.bladder.mixins.json"
+
+[[mixins]]
 config="yagens_mobs.lumen_butterfly.mixins.json"
 
 [[mixins]]

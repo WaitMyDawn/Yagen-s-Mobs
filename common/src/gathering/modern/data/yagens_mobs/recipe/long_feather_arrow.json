@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "F",
+    "S",
+    "P"
+  ],
+  "key": {
+    "F": "minecraft:flint",
+    "S": "minecraft:stick",
+    "P": "yagens_mobs:condroc_flight_feather"
+  },
+  "result": {
+    "id": "yagens_mobs:long_feather_arrow",
+    "count": 4
+  }
+}

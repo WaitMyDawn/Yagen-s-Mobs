@@ -1,0 +1,16 @@
+{
+  "entity.yagens_mobs.collector": "Collector",
+  "item.yagens_mobs.collector_spawn_egg": "Collector Spawn Egg",
+  "guide.yagens_mobs.collector.attributes": "Passive land creature with 20 health.",
+  "guide.yagens_mobs.collector.habitat": "Plains and meadows, deserts, underground cave biomes, snowy biomes, swamps and cherry groves.",
+  "guide.yagens_mobs.collector.loot": "No special drops.",
+  "guide.yagens_mobs.collector.taming": "Cannot be tamed.",
+  "guide.yagens_mobs.collector.breeding": "Cannot be bred.",
+  "guide.yagens_mobs.collector.behavior": "Drop an item pictured on a tag. It takes one and returns a surprise item. That tag returns after five minutes.",
+  "guide.yagens_mobs.variant.prairie": "Prairie",
+  "guide.yagens_mobs.variant.desert": "Desert",
+  "guide.yagens_mobs.variant.cave": "Cave",
+  "guide.yagens_mobs.variant.snow": "Snow",
+  "guide.yagens_mobs.variant.swamp": "Swamp",
+  "guide.yagens_mobs.variant.cherry": "Cherry"
+}

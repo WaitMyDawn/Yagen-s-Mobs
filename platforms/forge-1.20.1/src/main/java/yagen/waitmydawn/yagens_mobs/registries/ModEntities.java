@@ -1,4 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.registries;
+import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrow;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
 import net.minecraft.core.registries.Registries;
@@ -25,7 +27,7 @@ public final class ModEntities {
     private static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, ModIdentity.ID);
 
     public static final RegistryObject<EntityType<BubbleSalamander>> BUBBLE_SALAMANDER = TYPES.register(
-            "bubble_salamander", () -> EntityType.Builder.of(BubbleSalamander::new, MobCategory.WATER_CREATURE)
+            "bubble_salamander", () -> EntityType.Builder.<BubbleSalamander>of(yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.ShearableBubbleSalamander::new, MobCategory.WATER_CREATURE)
                     .sized(.95F, 1.10F).clientTrackingRange(8).updateInterval(2).build(ModIdentity.ID + ":bubble_salamander"));
     public static final RegistryObject<EntityType<DesertSkate>> DESERT_SKATE = TYPES.register("desert_skate",
             () -> EntityType.Builder.of(DesertSkate::new, MobCategory.MONSTER)
@@ -33,6 +35,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<SkateSpike>> SKATE_SPIKE = TYPES.register("skate_spike",
             () -> EntityType.Builder.<SkateSpike>of(SkateSpike::new, MobCategory.MISC)
                     .sized(0.15F, 0.15F).clientTrackingRange(4).updateInterval(1).noSave().build(ModIdentity.ID + ":skate_spike"));
+    public static final RegistryObject<EntityType<LongFeatherArrow>> LONG_FEATHER_ARROW = TYPES.register("long_feather_arrow",
+            () -> EntityType.Builder.<LongFeatherArrow>of(LongFeatherArrow::new, MobCategory.MISC)
+                    .sized(.5F, .5F).clientTrackingRange(8).updateInterval(2).build(ModIdentity.ID + ":long_feather_arrow"));
     public static final RegistryObject<EntityType<Vulture>> VULTURE = TYPES.register("condroc",
             () -> EntityType.Builder.of(Vulture::new, MobCategory.CREATURE)
                     .sized(.72F, 1.15F).clientTrackingRange(10).updateInterval(2).build(ModIdentity.ID + ":condroc"));
@@ -54,6 +59,8 @@ public final class ModEntities {
             () -> EntityType.Builder.of(Velocipod::new, MobCategory.CREATURE)
                     .sized(1.24F, 1.73F).clientTrackingRange(10).updateInterval(1).build(ModIdentity.ID + ":velocipod"));
 
+    public static final RegistryObject<EntityType<Collector>> COLLECTOR = TYPES.register("collector",
+            () -> EntityType.Builder.of(Collector::new, MobCategory.CREATURE).sized(1.05F,1.45F).clientTrackingRange(10).build(ModIdentity.ID + ":collector"));
     public static final RegistryObject<EntityType<Kavat>> KAVAT = TYPES.register("kavat",
             () -> EntityType.Builder.of(Kavat::new, MobCategory.CREATURE).sized(.62F,.95F).clientTrackingRange(10).build(ModIdentity.ID + ":kavat"));
     public static final RegistryObject<EntityType<Kavat>> KAVAT_DECOY = TYPES.register("kavat_decoy",
@@ -68,6 +75,7 @@ public final class ModEntities {
     }
 
     private static void attributes(EntityAttributeCreationEvent event) {
+        event.put(COLLECTOR.get(), Collector.attributes().build());
         event.put(KAVAT.get(), Kavat.attributes().build());
         event.put(KAVAT_DECOY.get(), Kavat.attributes().build());
         event.put(BUBBLE_SALAMANDER.get(), BubbleSalamander.createAttributes().build());
@@ -78,6 +86,7 @@ public final class ModEntities {
     }
 
     private static void placements(SpawnPlacementRegisterEvent event) {
+        event.register(COLLECTOR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Collector::placement, SpawnPlacementRegisterEvent.Operation.REPLACE);
         event.register(KAVAT.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, KavatSpawns::placement, SpawnPlacementRegisterEvent.Operation.REPLACE);
         event.register(VELOCIPOD.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Velocipod::checkSpawnPlacement, SpawnPlacementRegisterEvent.Operation.REPLACE);

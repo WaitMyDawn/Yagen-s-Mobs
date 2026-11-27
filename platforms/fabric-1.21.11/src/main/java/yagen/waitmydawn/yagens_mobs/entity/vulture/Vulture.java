@@ -56,6 +56,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import yagen.waitmydawn.yagens_mobs.config.ServerConfigs;
 import yagen.waitmydawn.yagens_mobs.registries.CreatureCue;
 import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
+import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModSounds;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.StationData;
@@ -139,8 +140,12 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
         BlockState support = level.getBlockState(floor);
         if (!support.getFluidState().isEmpty() || !(support.isFaceSturdy(level, floor, Direction.UP)
                 || support.is(net.minecraft.tags.BlockTags.LEAVES))) return false;
-        if (level.getBiome(pos).is(ModTags.VULTURE_HABITAT)) {
+        var biome = level.getBiome(pos);
+        if (biome.is(ModTags.VULTURE_HABITAT)) {
             return true;
+        }
+        if (biome.is(ModTags.VULTURE_RAVINE_EXCLUSIONS)) {
+            return false;
         }
         for (Direction.Axis axis : new Direction.Axis[]{Direction.Axis.X, Direction.Axis.Z}) {
             Direction side = axis == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
@@ -485,6 +490,9 @@ public final class Vulture extends PathfinderMob implements GeoEntity {
                 nextMeal = level.getGameTime() + PERCH_FEED_TICKS;
             } else if (!restingAfterDelivery && level.getGameTime() >= nextMeal && stations.spendFuel(station, 1)) {
                 finishMeal(level, new ItemStack(Items.ROTTEN_FLESH));
+                if (random.nextBoolean()) {
+                    spawnAtLocation(level, new ItemStack(ModItems.CONDROC_FLIGHT_FEATHER.get()));
+                }
                 nextMeal = level.getGameTime() + PERCH_FEED_TICKS;
                 if (stations.fuel(station) == 0) {
                     releaseSeat(stations);

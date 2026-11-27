@@ -141,7 +141,7 @@ public final class BubbleSalamanderRenderer extends GeckoLivingRenderer<BubbleSa
     private static final class Model extends GeoAppearance<BubbleSalamander> {
         @Override
         public Identifier selectModel(BubbleSalamander mob) {
-            return id("entity/bubble_salamander");
+            return id(mob.hasAirBladder() ? "entity/bubble_salamander" : "entity/bubble_salamander_sheared");
         }
 
         @Override

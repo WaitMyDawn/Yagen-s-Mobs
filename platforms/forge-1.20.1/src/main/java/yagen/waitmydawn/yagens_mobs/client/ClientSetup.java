@@ -1,4 +1,15 @@
 package yagen.waitmydawn.yagens_mobs.client;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.client.LongFeatherArrowRenderer;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderClient;
@@ -57,6 +68,12 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerMenus(FMLClientSetupEvent event) {
+        MinecraftForge.EVENT_BUS.addListener(ClientSetup::showMoltProtection);
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(BladderFluid.MEDIUM.get(), RenderType.translucent());
+            net.minecraft.client.renderer.item.ItemProperties.register(yagen.waitmydawn.yagens_mobs.registries.ModItems.AIR_BLADDER.get(), new net.minecraft.resources.ResourceLocation("yagens_mobs", "bladder_coat"),
+                    (stack, level, entity, seed) -> yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock.color(stack).ordinal() / 8F);
+        });
         event.enqueueWork(() -> {
             MenuScreens.register(ModBlocks.INCUBATOR_MENU.get(), IncubatorScreen::new);
             MenuScreens.register(MailBagMenu.TYPE.get(), MailBagScreen::new);
@@ -71,18 +88,27 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.COLLECTOR.get(), yagen.waitmydawn.yagens_mobs.entity.collector.client.CollectorRenderer::new);
         event.registerEntityRenderer(ModEntities.KAVAT.get(), KavatView::new);
         event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), KavatView::new);
         event.registerBlockEntityRenderer(ModBlocks.INCUBATOR_ENTITY.get(), IncubatorRenderer::new);
         event.registerEntityRenderer(ModEntities.DESERT_SKATE.get(), DesertSkateRenderer::new);
         event.registerEntityRenderer(ModEntities.SKATE_SPIKE.get(), SkateSpikeRenderer::new);
         event.registerEntityRenderer(ModEntities.VULTURE.get(), VultureRenderer::new);
+        event.registerEntityRenderer(ModEntities.LONG_FEATHER_ARROW.get(), LongFeatherArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_HANGER.get(), RockHangerRenderer::new);
         event.registerEntityRenderer(ModEntities.BUBBLE_SALAMANDER.get(), BubbleSalamanderRenderer::new);
         event.registerEntityRenderer(ModEntities.VELOCIPOD.get(), VelocipodRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_LINE.get(), RockSilkLineRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_GRIP.get(), NoopRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.VULTURE_POST_ENTITY.get(), VulturePostRenderer::new);
+    }
+
+    private static void showMoltProtection(ItemTooltipEvent event) {
+        if (Screen.hasShiftDown() && MoltVoidProtection.coated(event.getItemStack())) {
+            event.getToolTip().add(Component.translatable("item.yagens_mobs.salvage_ray_molt.coating")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
     }
 
     @SubscribeEvent

@@ -23,12 +23,18 @@ public final class ConfiguredMobSpawns {
     }
 
     public static void register() {
-        add("kavat", tagged("kavat_habitat").and(c -> !c.hasTag(BiomeTags.IS_NETHER)), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, 1);
+        add("collector", tagged("collector/habitats"), ModEntities.COLLECTOR.get(), ServerConfigs.COLLECTOR, 1);
+        add("kavat", tagged("kavat_habitat").and(tagged("kavat_adjusted_habitat").negate()),
+                ModEntities.KAVAT.get(), ServerConfigs.KAVAT, 1);
+        add("kavat_reduced", tagged("kavat_reduced_habitat"), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, .5);
+        add("kavat_desert", c -> c.getBiomeKey().equals(Biomes.DESERT), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, .3);
+        add("kavat_cherry_grove", c -> c.getBiomeKey().equals(Biomes.CHERRY_GROVE), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, .2);
         add("kavat_nether", c -> c.hasTag(BiomeTags.IS_NETHER), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, 2);
+        add("kavat_end", c -> c.hasTag(BiomeTags.IS_END), ModEntities.KAVAT.get(), ServerConfigs.KAVAT, .3);
         add("desert_skate", tagged("has_desert_skate"), ModEntities.DESERT_SKATE.get(), ServerConfigs.DESERT_SKATE, 1.5);
         add("condroc_savanna", tagged("condroc_savannas"), ModEntities.VULTURE.get(), ServerConfigs.VULTURE, 2);
         add("condroc_arid", tagged("condroc_arid"), ModEntities.VULTURE.get(), ServerConfigs.VULTURE, .4);
-        add("condroc_ravines", overworld().and(tagged("condroc_habitat").negate()),
+        add("condroc_ravines", overworld().and(tagged("condroc_ravine_exclusions").negate()),
                 ModEntities.VULTURE.get(), ServerConfigs.VULTURE, .13);
         add("rock_hanger_dripstone", context -> context.getBiomeKey().equals(Biomes.DRIPSTONE_CAVES),
                 ModEntities.ROCK_HANGER.get(), ServerConfigs.ROCK_HANGER, 1);

@@ -28,6 +28,7 @@ public final class ServerConfigs {
             .comment("Chance that a naturally spawned Condroc is a juvenile.")
             .defineInRange("spawns.condroc.juvenileChance", SpawnDefaults.CONDROC_JUVENILE_CHANCE, 0.0, 1.0);
     public static final Spawns SNOWCACHE_WEASEL = spawns(SpawnDefaults.SNOWCACHE_WEASEL);
+    public static final Spawns COLLECTOR = spawns(SpawnDefaults.COLLECTOR);
     public static final Spawns KAVAT = spawns(SpawnDefaults.KAVAT);
     public static final ModConfigSpec.IntValue KAVAT_MAIN_ISLAND_SPACING = BUILDER
             .comment("Minimum distance between naturally spawning wild Kavats on the central End island. Zero disables spacing.")

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.*;
+import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
 import yagen.waitmydawn.yagens_mobs.entity.butterfly.*;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRay;
@@ -36,6 +37,9 @@ public final class FieldNotes {
 
     public static List<String> variants(String species) {
         var result = new ArrayList<String>();
+        if (species.equals("collector")) {
+            return java.util.Arrays.stream(Collector.Coat.values()).map(coat -> coat.key).toList();
+        }
         if (species.equals("kavat")) {
             for (var breed : KavatGenes.BREEDS) for (var coat : KavatGenes.COATS)
                 for (var ear : KavatGenes.EARS) for (var tail : KavatGenes.TAILS)
@@ -67,6 +71,7 @@ public final class FieldNotes {
 
     private static List<String> observed(Mob mob) {
         String age = mob.isBaby() ? "young" : "adult";
+        if (mob instanceof Collector collector) return List.of(collector.coat());
         if (mob instanceof Kavat cat) {
             var g = cat.genes();
             return cat.decoy() ? List.of() : List.of(String.join("/", KavatGenes.BREEDS.get(g.breed()),

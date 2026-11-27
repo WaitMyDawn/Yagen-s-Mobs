@@ -2,7 +2,7 @@ package yagen.waitmydawn.yagens_mobs.entity.bubblesalamander;
 
 import net.minecraft.util.RandomSource;
 
-public enum BubbleSalamanderColor {
+public enum BubbleSalamanderColor implements net.minecraft.util.StringRepresentable {
     GREEN("green", 2), ALBINO("albino", 1), PINK("pink", 2), YELLOW("yellow", 2),
     BLACK("black", 2), BROWN("brown", 2), RED("red", 2), BLUE("blue", 2), MIXED("mixed", 1);
 
@@ -16,6 +16,9 @@ public enum BubbleSalamanderColor {
         this.id = id;
         this.weight = weight;
     }
+
+    @Override
+    public String getSerializedName() { return id; }
 
     public String id() {
         return id;

@@ -1,5 +1,6 @@
 package yagen.waitmydawn.yagens_mobs.entity.salvage;
 
+import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -159,6 +162,9 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         setHealth(fraction * getMaxHealth());
         if (!isBaby()) {
             parentId = null;
+            if (level() instanceof ServerLevel && isAlive()) {
+                spawnAtLocation(ModItems.SALVAGE_RAY_MOLT.get());
+            }
         }
     }
 
@@ -636,6 +642,7 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
         // The delivery must have been to a known box before this meal discovers new ones.
         boolean knownBox = box.id().equals(known.get(box.getBlockPos()));
         if (carried.eatFruit()) {
+            regenerateFromFruit();
             recognize(level, Vec3.atCenterOf(box.getBlockPos()));
             level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
         }
@@ -658,8 +665,13 @@ public final class SalvageRay extends AgeableMob implements GeoEntity, SilkLaunc
             return;
         }
         box.consumeChorusFruit();
+        regenerateFromFruit();
         breedReady = true;
         level.sendParticles(ParticleTypes.HEART, getX(), getY() + .5, getZ(), 4, .4, .2, .4, .02);
+    }
+
+    private void regenerateFromFruit() {
+        addEffect(new MobEffectInstance(MobEffects.REGENERATION, 8 * 20, 1));
     }
 
     private void recognize(ServerLevel level, Vec3 meal) {

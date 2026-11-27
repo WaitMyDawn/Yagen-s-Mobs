@@ -335,7 +335,7 @@
   "guide.yagens_mobs.desert_skate.behavior": "Follow its sand wake. It ambushes passing prey, then keeps its distance and fires tail spines. Its back resists most damage.",
   "guide.yagens_mobs.condroc.attributes": "Neutral bird with 16 health. Adults deal 8 damage on a dive.",
   "guide.yagens_mobs.condroc.habitat": "Most common in savannas. Also found in deserts, badlands and open ravines.",
-  "guide.yagens_mobs.condroc.loot": "Adults drop 1–2 flight feathers, increased by Looting. Chicks have no flight feathers.",
+  "guide.yagens_mobs.condroc.loot": "Adults drop 1–2 flight feathers on death, increased by Looting. Each rotten flesh meal at a post has a 50% chance to drop one feather.",
   "guide.yagens_mobs.condroc.taming": "Cannot be tamed. Stock a Vulture Post with rotten flesh to attract adults.",
   "guide.yagens_mobs.condroc.breeding": "Two adults fed rotten flesh build a nest with 1–3 eggs.",
   "guide.yagens_mobs.condroc.behavior": "Condrocs dive at zombies. Post flocks carry one block per bird, including filled containers. A feather crafts a Mailbag for return deliveries.",

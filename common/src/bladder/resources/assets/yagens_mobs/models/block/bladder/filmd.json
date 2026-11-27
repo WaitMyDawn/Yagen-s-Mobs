@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:translucent",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "yagens_mobs:block/bladder/filmd",
+    "film": "yagens_mobs:block/bladder/filmd"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "cullface": "north",
+          "texture": "#film",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

@@ -7,8 +7,12 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -20,6 +24,8 @@ import yagen.waitmydawn.yagens_mobs.entity.rockhanger.RockHangerSpawnEgg;
 import yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.SilkLauncher;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.CargoTongs;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBag;
+import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrowItem;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
 
 public final class ModItems {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModIdentity.ID);
@@ -39,6 +45,11 @@ public final class ModItems {
     public static final DeferredItem<CargoTongs> CARGO_TONGS = ITEMS.register("cargo_tongs",
             () -> new CargoTongs(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<Item> CONDROC_FLIGHT_FEATHER = ITEMS.registerSimpleItem("condroc_flight_feather");
+    public static final DeferredItem<LongFeatherArrowItem> LONG_FEATHER_ARROW = ITEMS.register("long_feather_arrow",
+            () -> new LongFeatherArrowItem(new Item.Properties()));
+    public static final DeferredItem<SnowcacheFur> SNOWCACHE_FUR = ITEMS.register("snowcache_fur",
+            () -> new SnowcacheFur(new Item.Properties()));
+    public static final DeferredItem<Item> SALVAGE_RAY_MOLT = ITEMS.registerSimpleItem("salvage_ray_molt");
     public static final DeferredItem<MailBag> MAIL_BAG = ITEMS.register("mail_bag",
             () -> new MailBag(new Item.Properties().stacksTo(1).fireResistant()));
     public static final DeferredItem<DeferredSpawnEggItem> VULTURE_SPAWN_EGG = ITEMS.register("condroc_spawn_egg",
@@ -75,12 +86,24 @@ public final class ModItems {
         }
     });
     public static final DeferredItem<Item> KAVAT_EXTRACTOR = ITEMS.registerSimpleItem("kavat_extractor");
+    public static final DeferredItem<DeferredSpawnEggItem> COLLECTOR_EGG = ITEMS.register("collector_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.COLLECTOR, 0x978883, 0x78904c, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> KAVAT_EGG = ITEMS.register("kavat_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
+    public static final DeferredItem<BlockItem> AIR_BLADDER = ITEMS.register("air_bladder",
+            () -> new BlockItem(ModBlocks.AIR_BLADDER.get(), new Item.Properties()) {
+                @Override
+                public boolean isFoil(net.minecraft.world.item.ItemStack stack) {
+                    return AirBladderBlock.color(stack) == BubbleSalamanderColor.MIXED || super.isFoil(stack);
+                }
+            });
+
     private ModItems() {
     }
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
         TABS.register(modBus);
+        modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(
+                () -> DispenserBlock.registerProjectileBehavior(LONG_FEATHER_ARROW.get())));
     }
 }

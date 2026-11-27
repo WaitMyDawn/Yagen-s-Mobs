@@ -1,0 +1,56 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+def baseline = layout.projectDirectory.dir('../neoforge-1.21.1/src/main/resources/data/yagens_mobs/tags/item/collector')
+def version = minecraft_version.toString()
+def catalog = layout.projectDirectory.file("../../gradle/collector-pools/${version}.json")
+def tagPath = "data/yagens_mobs/tags/${minecraft_version == '1.20.1' ? 'items' : 'item'}/collector"
+def local = layout.projectDirectory.dir("src/main/resources/${tagPath}")
+def generated = layout.buildDirectory.dir('generated/collectorPools')
+
+def stagePools = tasks.register('stageCollectorPools') {
+    inputs.dir(baseline)
+    inputs.files(fileTree(local) { include 'requests.json', 'rewards.json' })
+    inputs.property('minecraftVersion', minecraft_version)
+    if (version != '1.21.1') inputs.file(catalog)
+    outputs.dir(generated)
+    doLast {
+        def dest = generated.get().dir(tagPath).asFile
+        dest.mkdirs()
+        def rules = version == '1.21.1' ? null : new JsonSlurper().parse(catalog.asFile)
+        def excluded = rules?.exclude as Set
+        ['requests.json', 'rewards.json'].each { name ->
+            def out = new File(dest, name)
+            // A platform can override either pool independently once it has its own curated list.
+            if (local.file(name).asFile.isFile()) {
+                java.nio.file.Files.deleteIfExists(out.toPath())
+                return
+            }
+            def source = baseline.file(name).asFile
+            if (version == '1.21.1') {
+                out.bytes = source.bytes
+            } else {
+                def tag = new JsonSlurper().parse(source)
+                def seen = new HashSet<String>()
+                def values = []
+                // Each pool inherits its own baseline selection, including for items renamed between versions.
+                tag.values.each { entry ->
+                    def id = entry instanceof String ? entry : entry.id
+                    if (excluded.contains(id)) return
+                    def target = rules.rename.getOrDefault(id, id)
+                    if (!seen.add(target)) return
+                    if (entry instanceof Map) {
+                        values.add(entry + [id:target])
+                    } else {
+                        values.add(target.startsWith('minecraft:') ? [id:target, required:false] : target)
+                    }
+                }
+                rules.include.each { id -> if (seen.add(id)) values.add(id) }
+                tag.values = values
+                out.setText(JsonOutput.prettyPrint(JsonOutput.toJson(tag)) + '\n', 'UTF-8')
+            }
+        }
+    }
+}
+tasks.named('processResources') { from(stagePools) }
+

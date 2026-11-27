@@ -105,7 +105,7 @@ public final class BubbleSalamanderRenderer extends GeoEntityRenderer<BubbleSala
     private static final class Model extends GeoModel<BubbleSalamander> {
         @Override
         public ResourceLocation getModelResource(BubbleSalamander mob) {
-            return id("geo/entity/bubble_salamander.geo.json");
+            return id(mob.hasAirBladder() ? "geo/entity/bubble_salamander.geo.json" : "geo/entity/bubble_salamander_sheared.geo.json");
         }
 
         @Override

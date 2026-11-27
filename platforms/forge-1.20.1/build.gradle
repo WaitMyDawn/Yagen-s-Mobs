@@ -63,8 +63,16 @@ dependencies { compileOnly files(fileTree(layout.buildDirectory.dir('gecko-math'
 
 tasks.named('processResources') {
     from('../neoforge-1.21.1/src/main/resources') {
+        include 'data/yagens_mobs/tags/worldgen/biome/collector/**'
         include 'assets/**', 'data/yagens_mobs/worldgen/**/salvage_ray*.json', 'data/yagens_mobs/tags/worldgen/biome/salvage_ray_nests.json'
         include 'data/yagens_mobs/tags/worldgen/biome/snowcache_weasel_spawns.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_adjusted_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/kavat_reduced_habitat.json'
+        include 'data/yagens_mobs/tags/worldgen/biome/condroc_ravine_exclusions.json'
+    }
+    from('../neoforge-1.21.1/src/main/resources/data/yagens_mobs/tags/item') {
+        include 'kavat_raw_meat.json', 'kavat_cooked_meat.json'
+        into 'data/yagens_mobs/tags/items'
     }
 }
 
@@ -134,3 +142,7 @@ dependencies {
 }
 
 apply from: '../../gradle/field-guide.gradle'
+
+apply from: '../../gradle/bladder.gradle'
+apply from: '../../gradle/gathering.gradle'
+apply from: '../../gradle/collector-pools.gradle'

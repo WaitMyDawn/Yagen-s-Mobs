@@ -1,0 +1,6 @@
+{
+  "type": "yagens_mobs:configured_mob_spawns",
+  "biomes": "#minecraft:is_end",
+  "entity": "yagens_mobs:kavat",
+  "weight_factor": 0.3
+}

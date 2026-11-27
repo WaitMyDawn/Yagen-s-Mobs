@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,6 +42,14 @@ public final class BubbleSalamanderClient {
         if (DISENGAGE.consumeClick()) PetCommandControls.disengage(client);
         if (REMOVE.consumeClick() && client.screen == null && player != null && BubbleSalamander.wornBy(player) != null) {
             LegacyNetwork.sendToServer(BubbleSalamanderWear.Remove.INSTANCE);
+        }
+    }
+
+    @SubscribeEvent
+    public static void waterOverlay(RenderBlockScreenEffectEvent event) {
+        if (event.getOverlayType() == RenderBlockScreenEffectEvent.OverlayType.WATER
+                && BladderView.eyesInsideMembrane(event.getPlayer())) {
+            event.setCanceled(true);
         }
     }
 

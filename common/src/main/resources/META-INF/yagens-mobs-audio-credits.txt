@@ -74,6 +74,10 @@ Cat Meowing_Yowl_far_mono.wav — _stubb — https://freesound.org/s/406613/
 
 kavat.idle
 Cat trill 4 — MBPL — https://freesound.org/s/668825/
+Cat trills shortly (calm/quiet) — CatPhony — https://freesound.org/s/850104/ (low murmur)
+Cat Meow and Purr — mcroce — https://freesound.org/s/234333/ (short mew)
+Cat trilling — jsbarrett — https://freesound.org/s/200336/ (double trill)
+Chatter and Trill — CatPhony — https://freesound.org/s/850103/ (chirp)
 
 kavat.pounce
 Basic Melee Swing / Miss / Whoosh — SypherZent — https://freesound.org/s/420668/

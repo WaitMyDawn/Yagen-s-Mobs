@@ -1,5 +1,11 @@
 package yagen.waitmydawn.yagens_mobs.client;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
+
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderRenderer;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client.BubbleSalamanderTextures;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.KavatAnimations;
@@ -41,6 +47,14 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
+    public static void showMoltProtection(ItemTooltipEvent event) {
+        if (Screen.hasShiftDown() && MoltVoidProtection.coated(event.getItemStack())) {
+            event.getToolTip().add(Component.translatable("item.yagens_mobs.salvage_ray_molt.coating")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+    }
+
+    @SubscribeEvent
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(BubbleSalamanderTextures.INSTANCE);
         event.registerReloadListener(KavatAnimations.INSTANCE);
@@ -70,9 +84,12 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.DESERT_SKATE.get(), DesertSkateRenderer::new);
         event.registerEntityRenderer(ModEntities.SKATE_SPIKE.get(), SkateSpikeRenderer::new);
         event.registerEntityRenderer(ModEntities.VULTURE.get(), VultureRenderer::new);
+        event.registerEntityRenderer(ModEntities.LONG_FEATHER_ARROW.get(),
+                yagen.waitmydawn.yagens_mobs.entity.vulture.client.LongFeatherArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_HANGER.get(), RockHangerRenderer::new);
         event.registerEntityRenderer(ModEntities.BUBBLE_SALAMANDER.get(), BubbleSalamanderRenderer::new);
         event.registerEntityRenderer(ModEntities.VELOCIPOD.get(), VelocipodRenderer::new);
+        event.registerEntityRenderer(ModEntities.COLLECTOR.get(), yagen.waitmydawn.yagens_mobs.entity.collector.client.CollectorRenderer::new);
         event.registerEntityRenderer(ModEntities.KAVAT.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         event.registerEntityRenderer(ModEntities.KAVAT_DECOY.get(), yagen.waitmydawn.yagens_mobs.entity.kavat.KavatView::new);
         event.registerEntityRenderer(ModEntities.ROCK_SILK_LINE.get(), RockSilkLineRenderer::new);

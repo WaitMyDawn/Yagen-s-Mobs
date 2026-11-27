@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -41,6 +42,7 @@ final class WeaselWork {
     private long materialsRetryDeadline;
     private long nextSupplyPoll;
     private long supplyDeadline;
+    private boolean labelledStorage;
     private Action action;
 
     private enum Operation { SORT_PICK, SORT_STORE, UNLOAD, MATERIALS, CRAFT }
@@ -163,6 +165,7 @@ final class WeaselWork {
             return recipeAction(sites, level, owner, now);
         }
         var reachableSites = sites.stream().filter(site -> reachable(site.pos(), now)).toList();
+        labelledStorage = reachableSites.stream().anyMatch(site -> site.label() != null);
         if (!mob.cargo().isEmpty()) {
             BlockPos sourcePos = mob.lastPickup();
             var source = sourcePos == null ? null : WeaselChests.at(level, sourcePos, owner);
@@ -173,14 +176,13 @@ final class WeaselWork {
         for (var source : reachableSites) {
             var mode = source.mode(mob);
             if (!mode.take() || source.endpoint().kind() == WeaselChests.Kind.GRID) continue;
-            int first = source.first();
-            if (first < 0) continue;
-            ResourceLocation anchor = source.category();
-            for (int slot = mode == WeaselChests.Mode.TAKE ? first : first + 1; slot < source.items().size(); slot++) {
+            if (source.first() < 0) continue;
+            var sourceTab = source.category();
+            for (int slot = source.firstSortableSlot(mode); slot < source.items().size(); slot++) {
                 var stack = source.items().peek(slot);
                 if (stack.isEmpty() || source.items().take(slot, stack.getCount(), true).isEmpty()) continue;
                 var tab = WeaselTabs.of(stack);
-                if (mode != WeaselChests.Mode.TAKE && tab.equals(anchor)) continue;
+                if (mode != WeaselChests.Mode.TAKE && source.matchesPrimary(stack, sourceTab)) continue;
                 if (destination(destinations, source, stack, tab)) {
                     return new Action(source, Operation.SORT_PICK, tab, false);
                 }
@@ -305,6 +307,7 @@ final class WeaselWork {
 
     private final class Destinations {
         final Map<ResourceLocation, List<WeaselChests.Site>> boxes = new HashMap<>();
+        final Map<Item, List<WeaselChests.Site>> exact = new HashMap<>();
         final List<WeaselChests.Site> routed = new ArrayList<>();
         final List<WeaselChests.Site> all;
         final Map<Object, Integer> ranks;
@@ -314,7 +317,11 @@ final class WeaselWork {
             all = sites.stream().filter(site -> site.mode(mob).deposit()).toList();
             for (var site : all) {
                 if (site.routed()) routed.add(site);
-                else boxes.computeIfAbsent(site.category(), ignored -> new ArrayList<>()).add(site);
+                else if (site.label() != null && site.label().item() != null) {
+                    exact.computeIfAbsent(site.label().item(), ignored -> new ArrayList<>()).add(site);
+                } else {
+                    boxes.computeIfAbsent(site.category(), ignored -> new ArrayList<>()).add(site);
+                }
             }
         }
     }
@@ -326,7 +333,9 @@ final class WeaselWork {
             if ((!outlet || canForward(source, target, targets.ranks)) && !sameStorage(source, target)
                     && target.room(stack, true) > 0) return true;
         }
-        if (matching(targets.boxes.get(tab), source, stack) || matching(targets.boxes.get(null), source, stack)) return true;
+        if (matching(targets.exact.get(stack.getItem()), source, stack)
+                || matching(targets.boxes.get(tab), source, stack)
+                || matching(targets.boxes.get(null), source, stack)) return true;
         return !outlet && source.mode(mob) == WeaselChests.Mode.TAKE && targets.all.stream()
                 .anyMatch(target -> !sameStorage(source, target) && target.room(stack, true) > 0);
     }
@@ -372,15 +381,14 @@ final class WeaselWork {
             int candidateRank;
             if (site.routed()) {
                 candidateRank = cargo.stream().anyMatch(stack -> site.room(stack, true) > 0) ? 0 : Integer.MAX_VALUE;
-            } else if (!unload && (tab == null || desired.equals(tab))
-                    && cargo.stream().anyMatch(stack -> site.room(stack, false) > 0)) {
-                candidateRank = tab == null ? 2 : 1;
+            } else if (!unload && cargo.stream().anyMatch(stack -> site.matchesPrimary(stack, tab) && site.room(stack, false) > 0)) {
+                candidateRank = site.label() != null && site.label().item() != null ? 1 : tab != null ? 2 : 3;
             } else if (fromOutlet) {
                 continue;
             } else if (site.fitsAtEnd(cargo)) {
-                candidateRank = 3;
+                candidateRank = 4;
             } else {
-                candidateRank = cargo.stream().anyMatch(stack -> site.room(stack, true) > 0) ? 4 : Integer.MAX_VALUE;
+                candidateRank = cargo.stream().anyMatch(stack -> site.room(stack, true) > 0) ? 5 : Integer.MAX_VALUE;
             }
             if (candidateRank != Integer.MAX_VALUE && (candidatePriority < priority || candidateRank < rank)) {
                 priority = candidatePriority;
@@ -388,7 +396,7 @@ final class WeaselWork {
                 best = site;
             }
         }
-        if (best != null) return new Action(best, op, desired, rank == 0 || rank >= 3);
+        if (best != null) return new Action(best, op, desired, rank == 0 || rank >= 4);
         if (!fromOutlet && source != null && source.mode(mob).deposit()
                 && sites.stream().anyMatch(site -> source.pos().equals(site.pos())) && source.fitsAtEnd(cargo)) {
             return new Action(source, op, desired, true);
@@ -492,20 +500,18 @@ final class WeaselWork {
         switch (task.op()) {
             case SORT_PICK -> {
                 if (mode.take() && mob.cargo().isEmpty()) {
-                    int first = site.first();
-                    if (mode != WeaselChests.Mode.TAKE && Objects.equals(site.category(), task.tab())) {
-                        return false;
-                    }
+                    var sourceTab = site.category();
                     Destinations targets = null;
-                    if (site.routed()) {
+                    if (site.routed() || site.label() != null || labelledStorage) {
                         var sites = WeaselChests.resolve(level, positions, owner);
                         var available = sites.stream().filter(target -> reachable(target.pos(), level.getGameTime())).toList();
                         targets = new Destinations(available, routingRanks(sites));
                     }
-                    for (int slot = Math.max(0, first + (mode == WeaselChests.Mode.TAKE ? 0 : 1));
+                    for (int slot = site.firstSortableSlot(mode);
                          slot < site.items().size() && mob.cargo().size() < 9; slot++) {
                         var stack = site.items().peek(slot);
                         if (!stack.isEmpty() && WeaselTabs.of(stack).equals(task.tab())
+                                && (mode == WeaselChests.Mode.TAKE || !site.matchesPrimary(stack, sourceTab))
                                 && (targets == null || destination(targets, site, stack, task.tab()))) {
                             var taken = site.items().take(slot, stack.getCount(), false);
                             if (!taken.isEmpty()) mob.cargo().add(taken);
@@ -514,16 +520,18 @@ final class WeaselWork {
                     if (!mob.cargo().isEmpty()) {
                         mob.setLastPickup(site.pos(), site.routed());
                         mob.refreshCarried();
+                        WeaselChests.worked(mob, site);
                         return true;
                     }
                 }
             }
             case SORT_STORE, UNLOAD -> {
-                if (mode.deposit() && (task.fallback() || site.category() == null || site.category().equals(task.tab()))) {
+                if (mode.deposit()) {
                     boolean unloading = task.op() == Operation.UNLOAD;
                     var cargo = unloading ? mob.pendingUnload().preview(Math.max(9, Math.min(55, site.items().size()))) : mob.cargo();
                     boolean changed = false;
                     for (var stack : cargo) {
+                        if (!task.fallback() && !site.matchesPrimary(stack)) continue;
                         var key = unloading ? stack.copyWithCount(1) : ItemStack.EMPTY;
                         int inserted = site.deposit(stack, task.fallback());
                         if (unloading && inserted > 0) mob.pendingUnload().remove(key, inserted);
@@ -531,6 +539,7 @@ final class WeaselWork {
                     }
                     if (!unloading) cargo.removeIf(ItemStack::isEmpty);
                     mob.refreshCarried();
+                    if (changed) WeaselChests.worked(mob, site);
                     return changed;
                 }
             }
@@ -538,6 +547,7 @@ final class WeaselWork {
                 if (mode.take() && mob.recipeJob() != null) {
                     boolean changed = mob.recipeJob().collect(site);
                     mob.refreshCarried();
+                    if (changed) WeaselChests.worked(mob, site);
                     return changed;
                 }
             }

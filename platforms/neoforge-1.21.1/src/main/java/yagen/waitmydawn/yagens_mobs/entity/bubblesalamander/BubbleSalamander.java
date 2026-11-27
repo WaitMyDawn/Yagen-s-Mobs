@@ -64,7 +64,7 @@ import yagen.waitmydawn.yagens_mobs.registries.ModEntities;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 import yagen.waitmydawn.yagens_mobs.registries.ModTags;
 
-public final class BubbleSalamander extends TamableAnimal implements Bucketable, GeoEntity {
+public class BubbleSalamander extends TamableAnimal implements Bucketable, GeoEntity {
     @Override
     public void move(MoverType kind, Vec3 motion) {
         if (kind == MoverType.SELF && level() instanceof ServerLevel
@@ -110,6 +110,10 @@ public final class BubbleSalamander extends TamableAnimal implements Bucketable,
         super(type, level);
         this.moveControl = new WaterSteering();
         setPathfindingMalus(PathType.WATER, 0);
+    }
+
+    public boolean hasAirBladder() {
+        return true;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -335,6 +339,8 @@ public final class BubbleSalamander extends TamableAnimal implements Bucketable,
                         ? "message.yagens_mobs.bubble_salamander.wait" : "message.yagens_mobs.bubble_salamander.follow"), true);
             } else if (isBaby()) {
                 player.displayClientMessage(Component.translatable("message.yagens_mobs.bubble_salamander.baby"), true);
+            } else if (!hasAirBladder()) {
+                player.displayClientMessage(Component.translatable("message.yagens_mobs.bubble_salamander.regrowing"), true);
             } else if (eyeInWater(player) && isInWater() && player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()
                     && !isWorn() && wornBy(player) == null) {
                 attach(player);

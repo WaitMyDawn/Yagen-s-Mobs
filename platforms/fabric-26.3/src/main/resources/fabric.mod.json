@@ -27,7 +27,7 @@
     "geckolib": ">=${geckolib_version} <6"
   },
   "mixins": [
-    "yagens_mobs.mixins.json",
+    "yagens_mobs.bladder.mixins.json", "yagens_mobs.mixins.json",
     "yagens_mobs.lumen_butterfly.mixins.json",
     "yagens_mobs.salvage.mixins.json",
     "yagens_mobs.weasel.mixins.json"

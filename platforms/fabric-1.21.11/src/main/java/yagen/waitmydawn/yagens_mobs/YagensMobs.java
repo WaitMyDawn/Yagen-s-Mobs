@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs;
 
+import yagen.waitmydawn.yagens_mobs.entity.salvage.MoltVoidProtection;
+import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
 import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import yagen.waitmydawn.yagens_mobs.entity.command.PetRecall;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
@@ -43,10 +45,13 @@ public final class YagensMobs implements ModInitializer {
         yagen.waitmydawn.yagens_mobs.entity.rockhanger.silk.RockSilkLine.registerGeometrySerializer();
         StationData.register();
         ModEntities.register();
+        yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid.register();
         ModBlocks.register();
         yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRays.register();
         yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheWeasels.register();
         ModItems.register();
+        SnowcacheFur.install();
+        ServerTickEvents.END_WORLD_TICK.register(level -> level.players().forEach(MoltVoidProtection::tick));
         if (FieldGuide.isAvailable()) FieldGuide.register();
         LumenButterflies.register();
         yagen.waitmydawn.yagens_mobs.entity.kavat.KavatMemories.register();
@@ -78,6 +83,7 @@ public final class YagensMobs implements ModInitializer {
             if (result.consumesAction() || player.isSpectator()) return result;
             var stack = player.getItemInHand(hand);
             var context = new UseOnContext(player, hand, hit);
+            if (stack.getItem() instanceof SnowcacheFur fur) return fur.onItemUseFirst(stack, context);
             if (stack.getItem() instanceof CargoTongs tongs) return tongs.onItemUseFirst(stack, context);
             if (stack.getItem() instanceof SilkLauncher launcher) return launcher.onItemUseFirst(stack, context);
             return InteractionResult.PASS;

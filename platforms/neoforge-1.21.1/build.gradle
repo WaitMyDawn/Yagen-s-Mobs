@@ -82,6 +82,9 @@ runs {
     server { argument '--nogui' }
 }
 
+sourceSets.main.java.srcDir('../../common/src/bladder/vision/java')
+sourceSets.main.resources.srcDir('../../common/src/bladder/resources')
+
 apply from: 'field-guide.gradle'
 
 tasks.withType(ClasspathSerializer).configureEach { serializer ->

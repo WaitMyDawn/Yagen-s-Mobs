@@ -98,6 +98,22 @@ def verify_jar(project, target, jar):
         gecko_version = local["geckolib_version"]
         gecko_major = int(gecko_version.split(".", 1)[0])
         model_folder = "geckolib/models" if gecko_major >= 5 else "geo"
+        bladder = project / "common/src/bladder/resources"
+        sheared = "entity/bubble_salamander_sheared.geo.json"
+        require(archive.read(f"{assets}/{model_folder}/{sheared}") == (bladder / assets / "geo" / sheared).read_bytes(),
+                f"{target} sheared salamander geometry differs")
+        for file in (bladder / assets / "textures/block/bladder").glob("rainbow*"):
+            require(archive.read(file.relative_to(bladder).as_posix()) == file.read_bytes(),
+                    f"{target} animated membrane asset differs: {file.name}")
+        legacy = minecraft == "1.20.1"
+        fluid_tag = "fluids" if legacy else "fluid"
+        water = json.loads(archive.read(f"data/minecraft/tags/{fluid_tag}/water.json"))
+        require(f"{shared['mod_id']}:bladder_medium" in water["values"], f"{target} missing swimming medium")
+        loot = "loot_tables" if legacy else "loot_table"
+        bladder_loot = f"data/{shared['mod_id']}/{loot}/blocks/air_bladder.json"
+        source_loot = bladder / f"data/{shared['mod_id']}/loot_table/blocks/air_bladder.json"
+        require(json.loads(archive.read(bladder_loot)) == json.loads(source_loot.read_bytes()),
+                f"{target} air bladder loot differs")
         animation_folder = "geckolib/animations" if gecko_major >= 5 else "animations"
         index_path = f"{assets}/kavat/animation_index.json"
         reference = project / "platforms/neoforge-1.21.1/src/main/resources"
