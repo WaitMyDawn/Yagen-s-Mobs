@@ -1,7 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.guide;
 
 import net.minecraft.nbt.CompoundTag;
-import java.util.List;
+import java.util.Map;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -43,6 +43,19 @@ public final class FieldGuide extends Item {
         player.setAttached(NOTES, notes);
     }
 
+
+    static net.minecraft.server.level.ServerLevel level(ServerPlayer player) {
+        return player.level();
+    }
+
+    static java.util.Set<String> noteKeys(CompoundTag notes) {
+        return notes.keySet();
+    }
+
+    static long recordedDay(CompoundTag notes, String key) {
+        return notes.get(key) instanceof net.minecraft.nbt.LongTag ? notes.getLongOr(key, -1L) : -1L;
+    }
+
     static boolean canRead(ServerPlayer player) {
         return ServerPlayNetworking.canSend(player, Open.TYPE);
     }
@@ -65,20 +78,21 @@ public final class FieldGuide extends Item {
         if (!isAvailable()) return InteractionResult.PASS;
         if (player instanceof ServerPlayer server) {
             if (!canRead(server)) return InteractionResult.PASS;
-            ServerPlayNetworking.send(server, new Open(List.copyOf(notes(player).keySet())));
+            ServerPlayNetworking.send(server, new Open(FieldNotes.entries(server)));
         }
         return InteractionResult.SUCCESS;
     }
 
-    public record Open(List<String> known) implements CustomPacketPayload {
+    public record Open(Map<String, Long> known) implements CustomPacketPayload {
         static final Type<Open> TYPE = new Type<>(Identifier.fromNamespaceAndPath("yagens_mobs","field_guide"));
         static final StreamCodec<RegistryFriendlyByteBuf, Open> CODEC = StreamCodec.of(
-                (b, v) -> b.writeCollection(v.known(), (buf, key) -> buf.writeUtf(key, 128)),
-                b -> new Open(b.readList(buf -> buf.readUtf(128))));
+                (b, v) -> b.writeMap(v.known(), (buf, key) -> buf.writeUtf(key, 128), (buf, time) -> buf.writeLong(time)),
+                b -> new Open(b.readMap(buf -> buf.readUtf(128), buf -> buf.readLong())));
         @Override public Type<Open> type() { return TYPE; }
     }
 
     public static void register() {
+        FieldPhotos.register();
         PayloadTypeRegistry.playS2C().register(Open.TYPE, Open.CODEC);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onLogin(handler.player));
         net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) -> {

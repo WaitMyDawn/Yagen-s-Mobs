@@ -1,9 +1,12 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import java.util.Map;
+import java.util.EnumMap;
 import net.minecraft.world.level.block.DispenserBlock;
 import yagen.waitmydawn.yagens_mobs.entity.vulture.LongFeatherArrowItem;
 import yagen.waitmydawn.yagens_mobs.entity.weasel.SnowcacheFur;
-import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderItem;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderVariants;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import java.util.Comparator;
@@ -65,12 +68,18 @@ public final class ModItems {
             () -> new SpawnEggItem(LumenButterflies.TYPE.get(), 0x80542F, 0xEBDD76, new Item.Properties()));
 
     public static final Supplier<net.minecraft.world.item.BlockItem> KAVAT_INCUBATOR = item("kavat_incubator", () -> new net.minecraft.world.item.BlockItem(ModBlocks.INCUBATOR.get(), new Item.Properties()));
-    public static final Supplier<net.minecraft.world.item.BlockItem> AIR_BLADDER = item("air_bladder", () -> new net.minecraft.world.item.BlockItem(ModBlocks.AIR_BLADDER.get(), new Item.Properties()) {
-        @Override
-        public boolean isFoil(net.minecraft.world.item.ItemStack stack) {
-            return AirBladderBlock.color(stack) == BubbleSalamanderColor.MIXED || super.isFoil(stack);
+    public static final Supplier<net.minecraft.world.item.BlockItem> AIR_BLADDER = item("air_bladder",
+            () -> new AirBladderItem(ModBlocks.AIR_BLADDER.get(), new Item.Properties()));
+    public static final Map<BubbleSalamanderColor, Supplier<BlockItem>> AIR_BLADDERS = registerBladders();
+
+    private static Map<BubbleSalamanderColor, Supplier<BlockItem>> registerBladders() {
+        var variants = new EnumMap<BubbleSalamanderColor, Supplier<BlockItem>>(BubbleSalamanderColor.class);
+        for (var color : BubbleSalamanderColor.values()) {
+            variants.put(color, item(AirBladderVariants.path(color),
+                    () -> new AirBladderItem(ModBlocks.AIR_BLADDERS.get(color).get(), new Item.Properties())));
         }
-    });
+        return java.util.Collections.unmodifiableMap(variants);
+    }
     public static final Supplier<Item> KAVAT_CODE = item("kavat_genetic_code", () -> new Item(new Item.Properties()));
     public static final Supplier<Item> KAVAT_TEMPLATE = item("kavat_imprint", () -> new Item(new Item.Properties()) {
         @Override public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
@@ -104,6 +113,7 @@ public final class ModItems {
                         .title(Component.translatable("itemGroup.yagens_mobs"))
                         .icon(() -> COOKED_DESERT_SKATE.get().getDefaultInstance())
                         .displayItems((parameters, output) -> ENTRIES.stream()
+                                .filter(item -> item != AIR_BLADDER.get())
                                 .filter(item -> item != FIELD_GUIDE.get() || FieldGuide.isAvailable())
                                 .sorted(Comparator.comparing(item -> item instanceof SpawnEggItem))
                                 .forEach(output::accept))

@@ -1,12 +1,9 @@
 package yagen.waitmydawn.yagens_mobs.guide.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -21,21 +18,23 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import org.joml.Quaternionf;
+import yagen.waitmydawn.yagens_mobs.guide.FieldGuide;
 import yagen.waitmydawn.yagens_mobs.guide.FieldNotes;
 
 @EventBusSubscriber(modid = "yagens_mobs", value = Dist.CLIENT)
 public final class GuidePlates {
-    static final int WIDTH = 116, PER_PAGE = 4;
+    static final int WIDTH = 116;
     static final int INK = 0xff463527, ACCENT = 0xff835137, RULE = 0xffbca47f;
     private static final Map<String, Mob> models = new HashMap<>();
     private static ClientLevel modelLevel;
-    private static Set<String> notes = Set.of();
 
-    static void setNotes(List<String> known) { notes = Set.copyOf(known); }
+    static void setNotes(Map<String, Long> known) { SpecimenPages.open(known); }
 
     @SubscribeEvent
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
-        notes = Set.of();
+        if (!FieldGuide.isAvailable()) return;
+        SpecimenPages.open(Map.of());
+        PortraitTextures.clear();
         models.clear();
         modelLevel = null;
     }
@@ -122,37 +121,6 @@ public final class GuidePlates {
         } else centered(g, caption.getString(), x+w/2, y+h-14, w-1, INK);
     }
 
-    static void sightings(GuiGraphics g, String species, int offset) {
-        var mc = Minecraft.getInstance();
-        var variants = FieldNotes.variants(species);
-        boolean firstPage = offset == 0;
-        var title = firstPage ? name(species).copy().append(" · ").append(label("variants")) : label("variants");
-        heading(g, title);
-        if (firstPage) {
-            g.drawWordWrap(mc.font, label("observe"), 2, 17, WIDTH-4, INK);
-        } else {
-            long recorded = variants.stream().filter(v -> notes.contains(species+"/"+v)).count();
-            var tally = Component.translatable("guide.yagens_mobs.recorded_count", recorded, variants.size());
-            centered(g, tally.getString(), WIDTH/2, 20, WIDTH-4, INK);
-        }
-        int start = 21 + mc.font.wordWrapHeight(label("observe").getString(), WIDTH-4);
-        int height = (145-start)/2;
-        for (int i=0; i<PER_PAGE && offset+i<variants.size(); i++) {
-            String v=variants.get(offset+i);
-            int x=2+(i%2)*57, y=start+(i/2)*height;
-            int photoWidth=Math.min(51,(height-12)*4/3), photoHeight=photoWidth*3/4;
-            int px=x+(54-photoWidth)/2;
-            g.fill(px-1,y,px+photoWidth+1,y+photoHeight+2,RULE);
-            if (notes.contains(species+"/"+v)) {
-                g.blit(id("textures/gui/field_guide/"+species+"/"+v+".png"),px,y+1,photoWidth,photoHeight,0,0,128,96,128,96);
-                String caption=Arrays.stream(v.split("/")).map(k->(species.equals("kavat")?Component.translatable("kavat.trait."+k):label("variant."+k)).getString()).collect(Collectors.joining(" · "));
-                centered(g,caption,x+27,y+photoHeight+4,53,INK);
-            } else {
-                g.fill(px,y+1,px+photoWidth,y+photoHeight+1,0xffe6d8bc);
-                centered(g,"?",x+27,y+photoHeight/2-3,20,ACCENT);
-            }
-        }
-    }
 
     private GuidePlates() {}
 }

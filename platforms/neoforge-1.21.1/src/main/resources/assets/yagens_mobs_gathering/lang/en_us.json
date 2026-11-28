@@ -5,7 +5,7 @@
   "item.yagens_mobs.salvage_ray_molt": "Salvage Ray Molt",
   "item.yagens_mobs.salvage_ray_molt.coating": "Void Protection",
   "block.yagens_mobs.void_cloud": "Void Cloud",
-  "message.yagens_mobs.snowcache_fur.hint": "Hold a sample in your other hand. Use on a container to pin the item, or sneak-use to pin its creative tab. Sneak-use without a sample to clear the label.",
+  "message.yagens_mobs.snowcache_fur.hint": "Hold the fur in your main hand and a sample in your offhand. Use on a container to pin the item, or sneak-use to pin its creative tab. With an empty offhand, use to view the label or sneak-use to clear it.",
   "message.yagens_mobs.snowcache_fur.set": "Pinned category · %s",
   "message.yagens_mobs.snowcache_fur.cleared": "Pinned category cleared",
   "message.yagens_mobs.snowcache_fur.unavailable": "This container cannot be labelled right now",

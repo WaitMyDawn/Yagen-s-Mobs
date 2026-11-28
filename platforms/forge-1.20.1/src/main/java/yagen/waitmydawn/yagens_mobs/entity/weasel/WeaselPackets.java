@@ -19,7 +19,9 @@ public final class WeaselPackets {
 
     public static void handle(Request request, ServerPlayer owner) {
         if (owner != null && request.tag() != null && !owner.isSpectator() && owner.isAlive()) {
-            if (request.tag().getBoolean("Storage")) WeaselPortPackets.update(owner, request.tag());
+            if (request.tag().get(WeaselWorkPreview.KEY) instanceof net.minecraft.nbt.LongArrayTag preview) {
+                WeaselWorkPreview.respond(owner, owner.serverLevel(), preview, tag -> LegacyNetwork.sendToPlayer(owner, new Opening(tag)));
+            } else if (request.tag().getBoolean("Storage")) WeaselPortPackets.update(owner, request.tag());
             else if (SnowcacheWeasels.blueprintsEnabled()) handle(owner, request.tag());
         }
     }

@@ -1,6 +1,5 @@
 package yagen.waitmydawn.yagens_mobs.guide;
 
-import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +14,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.*;
+import yagen.waitmydawn.yagens_mobs.entity.collector.Collector;
 import yagen.waitmydawn.yagens_mobs.entity.butterfly.*;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import yagen.waitmydawn.yagens_mobs.entity.salvage.SalvageRay;
@@ -36,10 +36,14 @@ public final class FieldNotes {
     private FieldNotes() {}
 
     public static List<String> variants(String species) {
-        if (species.equals("collector")) return java.util.Arrays.stream(Collector.Coat.values()).map(coat -> coat.key).toList();
         var result = new ArrayList<String>();
+        if (species.equals("collector")) {
+            return java.util.Arrays.stream(Collector.Coat.values()).map(coat -> coat.key).toList();
+        }
         if (species.equals("kavat")) {
-            for (var group : List.of(KavatGenes.BREEDS, KavatGenes.EARS, KavatGenes.TAILS, KavatGenes.COATS)) result.addAll(group);
+            for (var breed : KavatGenes.BREEDS) for (var coat : KavatGenes.COATS)
+                for (var ear : KavatGenes.EARS) for (var tail : KavatGenes.TAILS)
+                    result.add(String.join("/", breed, coat, ear, tail));
         } else if (species.equals("rock_hanger")) result.add("shale");
         else for (String age : List.of("adult", "young")) {
             switch (species) {
@@ -66,12 +70,12 @@ public final class FieldNotes {
     }
 
     private static List<String> observed(Mob mob) {
-        if (mob instanceof Collector collector) return List.of(collector.coat());
         String age = mob.isBaby() ? "young" : "adult";
+        if (mob instanceof Collector collector) return List.of(collector.coat());
         if (mob instanceof Kavat cat) {
             var g = cat.genes();
-            return cat.decoy() ? List.of() : List.of(KavatGenes.BREEDS.get(g.breed()), KavatGenes.EARS.get(g.ear()),
-                    KavatGenes.TAILS.get(g.tail()), KavatGenes.COATS.get(g.coat()));
+            return cat.decoy() ? List.of() : List.of(String.join("/", KavatGenes.BREEDS.get(g.breed()),
+                    KavatGenes.COATS.get(g.coat()), KavatGenes.EARS.get(g.ear()), KavatGenes.TAILS.get(g.tail())));
         }
         if (mob instanceof BubbleSalamander s) return List.of(age + "/" + s.color().id() + "/" + (s.isFemale() ? "female" : "male"));
         if (mob instanceof LumenButterfly b) return List.of(age + "/" + (b.isRainbow() ? "rainbow" : b.color().id()));
@@ -84,7 +88,7 @@ public final class FieldNotes {
     public static void observe(ServerPlayer player) {
         if (!player.isScoping() || player.tickCount % 4 != 0) return;
         if (!FieldGuide.canRead(player)) return;
-        var level = player.serverLevel();
+        var level = FieldGuide.level(player);
         var eye = player.getEyePosition();
         var end = eye.add(player.getLookAngle().scale(64));
         var stop = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)).getLocation();
@@ -100,12 +104,29 @@ public final class FieldNotes {
         if (!(target instanceof Mob mob) || mob.isInvisibleTo(player)) return;
         var id = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType());
         if (!id.getNamespace().equals("yagens_mobs") || !SPECIES.contains(id.getPath())) return;
-        var notes = FieldGuide.notes(player).copy();
+        recordSighting(player, mob, id.getPath());
+    }
+
+
+    static java.util.Map<String, Long> entries(ServerPlayer player) {
+        var notes = FieldGuide.notes(player);
+        var entries = new java.util.HashMap<String, Long>();
+        for (var key : FieldGuide.noteKeys(notes)) {
+            // Unambiguous legacy sightings retain their cards, with an unknown date.
+            if (PortraitStore.valid(key)) entries.put(key, FieldGuide.recordedDay(notes, key));
+        }
+        return entries;
+    }
+
+    static void recordSighting(ServerPlayer player, Mob mob, String species) {
+        var notes = FieldGuide.notes(player);
         boolean changed = false;
         for (var v : observed(mob)) {
-            String key = id.getPath() + "/" + v;
-            if (!notes.getBoolean(key)) {
-                notes.putBoolean(key, true);
+            String key = species + "/" + v;
+            if (FieldGuide.recordedDay(notes, key) == -1L) {
+                var server = FieldGuide.level(player).getServer();
+                notes.putLong(key, server.overworld().getDayTime());
+                PortraitStore.prepare(server, key);
                 changed = true;
             }
         }

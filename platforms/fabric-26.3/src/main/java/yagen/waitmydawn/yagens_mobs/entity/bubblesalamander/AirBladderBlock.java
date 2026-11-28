@@ -1,6 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.entity.bubblesalamander;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlockItemStateProperties;
@@ -14,20 +15,23 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import yagen.waitmydawn.yagens_mobs.registries.ModItems;
 
-public final class AirBladderBlock extends TransparentBlock {
+public class AirBladderBlock extends TransparentBlock {
     public static final EnumProperty<BubbleSalamanderColor> COLOR =
             EnumProperty.create("color", BubbleSalamanderColor.class);
 
-    public AirBladderBlock(Properties properties) {
+    private final BubbleSalamanderColor coat;
+
+    public AirBladderBlock(Properties properties, BubbleSalamanderColor coat) {
         super(properties);
-        var state = defaultBlockState().setValue(COLOR, BubbleSalamanderColor.GREEN);
+        this.coat = coat;
+        var state = defaultBlockState();
+        if (state.hasProperty(COLOR)) state = state.setValue(COLOR, coat);
         for (var property : PipeBlock.PROPERTY_BY_DIRECTION.values()) state = state.setValue(property, false);
         registerDefaultState(state);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(COLOR);
         PipeBlock.PROPERTY_BY_DIRECTION.values().forEach(property -> builder.add(property));
     }
 
@@ -39,32 +43,60 @@ public final class AirBladderBlock extends TransparentBlock {
     @Override
     public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
         var state = defaultBlockState();
-        for (var side : net.minecraft.core.Direction.values()) {
+        for (var side : Direction.values()) {
             state = state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(side),
-                    context.getLevel().getBlockState(context.getClickedPos().relative(side)).is(this));
+                    connects(context.getLevel().getBlockState(context.getClickedPos().relative(side))));
         }
         return state;
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, net.minecraft.world.level.ScheduledTickAccess ticks, BlockPos pos,
-                                     net.minecraft.core.Direction side, BlockPos neighborPos, BlockState neighbor, net.minecraft.util.RandomSource random) {
-        return state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(side), neighbor.is(this));
+                                     Direction side, BlockPos neighborPos, BlockState neighbor, net.minecraft.util.RandomSource random) {
+        return state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(side), connects(neighbor));
+    }
+
+    public static boolean connects(BlockState state) {
+        return state.getBlock() instanceof AirBladderBlock;
+    }
+
+    @Override
+    public boolean skipRendering(BlockState state, BlockState neighbor, Direction side) {
+        return connects(neighbor) || super.skipRendering(state, neighbor, side);
+    }
+
+    public static BubbleSalamanderColor color(BlockState state) {
+        return state.hasProperty(COLOR) ? state.getValue(COLOR) : ((AirBladderBlock) state.getBlock()).coat;
     }
 
     public static ItemStack stack(BubbleSalamanderColor color) {
-        ItemStack stack = new ItemStack(ModItems.AIR_BLADDER.get());
-        stack.set(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY.with(COLOR, color));
-        return stack;
+        return new ItemStack(ModItems.AIR_BLADDERS.get(color).get());
     }
 
     public static BubbleSalamanderColor color(ItemStack stack) {
+        if (stack.getItem() instanceof net.minecraft.world.item.BlockItem item
+                && item.getBlock() instanceof AirBladderBlock bladder && !(bladder instanceof Legacy)) {
+            return bladder.coat;
+        }
         var color = stack.getOrDefault(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY).get(COLOR);
         return color == null ? BubbleSalamanderColor.GREEN : color;
     }
 
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
-        return stack(state.getValue(COLOR));
+        return stack(color(state));
+    }
+
+    // The old ID retains its state property so existing chunk palettes can load losslessly.
+    public static final class Legacy extends AirBladderBlock {
+        public Legacy(Properties properties) {
+            super(properties, BubbleSalamanderColor.GREEN);
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            super.createBlockStateDefinition(builder);
+            builder.add(COLOR);
+        }
     }
 }

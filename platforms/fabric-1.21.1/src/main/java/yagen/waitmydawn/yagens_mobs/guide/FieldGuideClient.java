@@ -7,6 +7,8 @@ import yagen.waitmydawn.yagens_mobs.guide.client.PatchouliReader;
 
 public final class FieldGuideClient {
     public static void register() {
+        ClientPlayNetworking.registerGlobalReceiver(FieldPhotos.Picture.TYPE, (packet, context) ->
+                yagen.waitmydawn.yagens_mobs.guide.client.PortraitTextures.accept(packet.key(), packet.png()));
         ClientPlayNetworking.registerGlobalReceiver(FieldGuide.Open.TYPE, (packet, context) -> PatchouliReader.open(packet.known()));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> GuidePlates.clear());
     }

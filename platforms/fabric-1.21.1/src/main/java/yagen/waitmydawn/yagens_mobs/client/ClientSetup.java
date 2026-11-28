@@ -75,6 +75,8 @@ public final class ClientSetup implements ClientModInitializer {
             }
         });
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.AIR_BLADDER.get(), net.minecraft.client.renderer.RenderType.translucent());
+        ModBlocks.AIR_BLADDERS.values().forEach(block ->
+            net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(block.get(), net.minecraft.client.renderer.RenderType.translucent()));
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.VOID_CLOUD.get(), net.minecraft.client.renderer.RenderType.translucent());
         net.minecraft.client.renderer.item.ItemProperties.register(yagen.waitmydawn.yagens_mobs.registries.ModItems.AIR_BLADDER.get(), net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("yagens_mobs", "bladder_coat"),
                     (stack, level, entity, seed) -> yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock.color(stack).ordinal() / 8F);

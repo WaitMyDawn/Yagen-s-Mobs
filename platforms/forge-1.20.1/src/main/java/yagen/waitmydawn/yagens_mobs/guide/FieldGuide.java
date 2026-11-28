@@ -1,6 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.guide;
 
-import java.util.List;
+import java.util.Map;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkDirection;
@@ -24,13 +25,26 @@ public final class FieldGuide extends Item {
 
     private static final class ReaderChannel {
         static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation("yagens_mobs", "field_guide"),
-                () -> "1", NetworkRegistry.acceptMissingOr("1"), NetworkRegistry.acceptMissingOr("1"));
+                () -> "2", NetworkRegistry.acceptMissingOr("2"), NetworkRegistry.acceptMissingOr("2"));
     }
 
     public FieldGuide() { super(new Properties().stacksTo(1)); }
 
     public static boolean isAvailable() {
         return ModList.get().isLoaded("patchouli");
+    }
+
+
+    static net.minecraft.server.level.ServerLevel level(ServerPlayer player) {
+        return player.serverLevel();
+    }
+
+    static java.util.Set<String> noteKeys(CompoundTag notes) {
+        return notes.getAllKeys();
+    }
+
+    static long recordedDay(CompoundTag notes, String key) {
+        return notes.contains(key, net.minecraft.nbt.Tag.TAG_LONG) ? notes.getLong(key) : -1L;
     }
 
     static boolean canRead(ServerPlayer player) {
@@ -56,17 +70,39 @@ public final class FieldGuide extends Item {
         if (!isAvailable()) return InteractionResultHolder.pass(player.getItemInHand(hand));
         if (player instanceof ServerPlayer server) {
             if (!canRead(server)) return InteractionResultHolder.pass(player.getItemInHand(hand));
-            ReaderChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> server), new Open(List.copyOf(FieldNotes.notes(player).getAllKeys())));
+            ReaderChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> server), new Open(FieldNotes.entries(server)));
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 
-    private record Open(List<String> known) {}
+    private record Open(Map<String, Long> known) {}
+
+
+    static CompoundTag notes(Player player) {
+        return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getCompound("yagens_mobs_field_notes");
+    }
+
+    static void saveNotes(Player player, CompoundTag notes) {
+        var data = player.getPersistentData();
+        var persisted = data.getCompound(Player.PERSISTED_NBT_TAG);
+        persisted.put("yagens_mobs_field_notes", notes);
+        data.put(Player.PERSISTED_NBT_TAG, persisted);
+    }
+
+    static SimpleChannel channel() {
+        return ReaderChannel.INSTANCE;
+    }
+
+    public static void observe(net.minecraftforge.event.TickEvent.PlayerTickEvent event) {
+        if (event.phase == net.minecraftforge.event.TickEvent.Phase.END && event.player instanceof ServerPlayer player)
+            FieldNotes.observe(player);
+    }
 
     public static void register() {
+        FieldPhotos.register();
         ReaderChannel.INSTANCE.messageBuilder(Open.class, 0, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder((message, buf) -> buf.writeCollection(message.known(), (buffer, key) -> buffer.writeUtf(key, 128)))
-                .decoder(buf -> new Open(buf.readList(buffer -> buffer.readUtf(128))))
+                .encoder((message, buf) -> buf.writeMap(message.known(), (buffer, key) -> buffer.writeUtf(key, 128), (buffer, time) -> buffer.writeLong(time)))
+                .decoder(buf -> new Open(buf.readMap(buffer -> buffer.readUtf(128), buffer -> buffer.readLong())))
                 .consumerMainThread((message, context) -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                         () -> () -> yagen.waitmydawn.yagens_mobs.guide.client.PatchouliReader.open(message.known())))
                 .add();

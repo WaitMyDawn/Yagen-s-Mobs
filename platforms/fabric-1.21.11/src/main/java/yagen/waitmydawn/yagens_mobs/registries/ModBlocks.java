@@ -1,5 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import java.util.Map;
+import java.util.EnumMap;
 import yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 import java.util.function.Supplier;
@@ -11,6 +13,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.world.level.block.Block;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderVariants;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -62,7 +66,17 @@ public final class ModBlocks {
     public static final Supplier<net.minecraft.world.inventory.MenuType<IncubatorMenu>> INCUBATOR_MENU = () -> MENU;
 
     public static final Supplier<AirBladderBlock> AIR_BLADDER = block("air_bladder",
-            properties -> new AirBladderBlock(properties.noOcclusion().noCollision().strength(.25F).sound(SoundType.SLIME_BLOCK)));
+            properties -> new AirBladderBlock.Legacy(properties.noOcclusion().noCollision().strength(.25F).sound(SoundType.SLIME_BLOCK)));
+    public static final Map<BubbleSalamanderColor, Supplier<AirBladderBlock>> AIR_BLADDERS = registerBladders();
+
+    private static Map<BubbleSalamanderColor, Supplier<AirBladderBlock>> registerBladders() {
+        var variants = new EnumMap<BubbleSalamanderColor, Supplier<AirBladderBlock>>(BubbleSalamanderColor.class);
+        for (var color : BubbleSalamanderColor.values()) {
+            variants.put(color, block(AirBladderVariants.path(color),
+                    properties -> new AirBladderBlock(properties.noOcclusion().noCollision().strength(.25F).sound(SoundType.SLIME_BLOCK), color)));
+        }
+        return java.util.Collections.unmodifiableMap(variants);
+    }
 
     private ModBlocks() {}
 

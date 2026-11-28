@@ -1,10 +1,10 @@
 package yagen.waitmydawn.yagens_mobs.guide.client;
 
-import java.util.List;
+import java.util.Map;
 import vazkii.patchouli.api.PatchouliAPI;
 
 public final class PatchouliReader {
-    public static void open(java.util.Map<String,Long> known) {
+    public static void open(Map<String, Long> known) {
         GuidePlates.setNotes(known);
         PatchouliAPI.get().openBookEntry(GuidePlates.id("field_guide"), GuidePlates.id("catalog"), 0);
     }

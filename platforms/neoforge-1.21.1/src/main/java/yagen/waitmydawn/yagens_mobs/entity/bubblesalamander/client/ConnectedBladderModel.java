@@ -1,6 +1,7 @@
 package yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client;
 
-import yagen.waitmydawn.yagens_mobs.registries.ModBlocks;
+import net.minecraft.world.level.block.Block;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
 import net.minecraft.client.resources.model.MultiPartBakedModel;
 import java.util.List;
 import net.minecraft.client.renderer.RenderType;
@@ -19,12 +20,11 @@ import net.neoforged.neoforge.client.model.data.ModelProperty;
 final class ConnectedBladderModel extends BakedModelWrapper<BakedModel> {
     private static final ModelProperty<BlockState> CONNECTED = new ModelProperty<>();
 
-    ConnectedBladderModel(BakedModel model) {
+    ConnectedBladderModel(BakedModel model, Block block) {
         super(model);
         // Chunk mesh workers share this multipart model. Populate its non-concurrent
         // selector cache before any worker requests a virtual connection state.
         if (model instanceof MultiPartBakedModel multipart) {
-            var block = ModBlocks.AIR_BLADDER.get();
             block.getStateDefinition().getPossibleStates().forEach(multipart::getSelectors);
         }
     }
@@ -34,7 +34,7 @@ final class ConnectedBladderModel extends BakedModelWrapper<BakedModel> {
         // Old saves and structure placements can lack the directional properties.
         for (Direction side : Direction.values()) {
             state = state.setValue(PipeBlock.PROPERTY_BY_DIRECTION.get(side),
-                    level.getBlockState(pos.relative(side)).is(state.getBlock()));
+                    AirBladderBlock.connects(level.getBlockState(pos.relative(side))));
         }
         return super.getModelData(level, pos, state, data).derive().with(CONNECTED, state).build();
     }

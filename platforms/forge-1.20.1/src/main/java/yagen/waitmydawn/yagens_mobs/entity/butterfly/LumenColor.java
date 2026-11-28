@@ -36,7 +36,7 @@ public enum LumenColor {
         return id;
     }
 
-    Block plant() {
+    public Block plant() {
         return plant;
     }
 

@@ -27,6 +27,7 @@ public final class GuideTemplate implements ICustomComponent {
 
     @Override
     public void onDisplayed(IComponentRenderContext context) {
+        if (!species.equals("catalog")) SpecimenPages.controls(context, species, offset, page);
         for (var card : cards) {
             // Patchouli positions widgets relative to the top of the cover and renders page content below its margin.
             var button = new Button(card.x(), card.y()+18, card.w(), card.h(), GuidePlates.name(card.species()),
@@ -42,7 +43,7 @@ public final class GuideTemplate implements ICustomComponent {
     @Override
     public void render(GuiGraphics graphics, IComponentRenderContext context, float partial, int mx, int my) {
         if (!species.equals("catalog")) {
-            GuidePlates.sightings(graphics, species, offset);
+            SpecimenPages.render(graphics, context, species, offset, mx, my);
             return;
         }
         GuidePlates.catalogFooter(graphics, offset);

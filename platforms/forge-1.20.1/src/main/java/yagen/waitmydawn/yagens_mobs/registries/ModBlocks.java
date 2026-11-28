@@ -2,8 +2,13 @@ package yagen.waitmydawn.yagens_mobs.registries;
 import yagen.waitmydawn.yagens_mobs.entity.salvage.VoidCloudBlock;
 import yagen.waitmydawn.yagens_mobs.entity.kavat.*;
 
+import java.util.function.Supplier;
+import java.util.Map;
+import java.util.EnumMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderVariants;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BladderFluid;
 import net.minecraft.world.level.block.SoundType;
@@ -61,7 +66,17 @@ public final class ModBlocks {
     public static final RegistryObject<net.minecraft.world.inventory.MenuType<yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu>> INCUBATOR_MENU =
             MENUS.register("kavat_incubator", () -> new net.minecraft.world.inventory.MenuType<>(yagen.waitmydawn.yagens_mobs.entity.kavat.IncubatorMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
     public static final RegistryObject<AirBladderBlock> AIR_BLADDER = BLOCKS.register("air_bladder",
-            () -> new AirBladderBlock(BlockBehaviour.Properties.of().noOcclusion().noCollission().strength(.25F).sound(SoundType.SLIME_BLOCK)));
+            () -> new AirBladderBlock.Legacy(BlockBehaviour.Properties.of().noOcclusion().noCollission().strength(.25F).sound(SoundType.SLIME_BLOCK)));
+    public static final Map<BubbleSalamanderColor, Supplier<AirBladderBlock>> AIR_BLADDERS = registerBladders();
+
+    private static Map<BubbleSalamanderColor, Supplier<AirBladderBlock>> registerBladders() {
+        var variants = new EnumMap<BubbleSalamanderColor, Supplier<AirBladderBlock>>(BubbleSalamanderColor.class);
+        for (var color : BubbleSalamanderColor.values()) {
+            variants.put(color, BLOCKS.register(AirBladderVariants.path(color),
+                    () -> new AirBladderBlock(BlockBehaviour.Properties.of().noOcclusion().noCollission().strength(.25F).sound(SoundType.SLIME_BLOCK), color)));
+        }
+        return java.util.Collections.unmodifiableMap(variants);
+    }
 
     private ModBlocks() {}
 

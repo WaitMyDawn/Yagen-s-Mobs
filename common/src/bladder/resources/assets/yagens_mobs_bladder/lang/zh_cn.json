@@ -1,4 +1,13 @@
 {
   "block.yagens_mobs.air_bladder": "泡囊",
-  "message.yagens_mobs.bubble_salamander.regrowing": "泡囊还在生长，暂时无法佩戴"
+  "message.yagens_mobs.bubble_salamander.regrowing": "泡囊还在生长，暂时无法佩戴",
+  "block.yagens_mobs.green_air_bladder": "绿色泡囊",
+  "block.yagens_mobs.white_air_bladder": "白色泡囊",
+  "block.yagens_mobs.pink_air_bladder": "粉色泡囊",
+  "block.yagens_mobs.yellow_air_bladder": "黄色泡囊",
+  "block.yagens_mobs.black_air_bladder": "黑色泡囊",
+  "block.yagens_mobs.brown_air_bladder": "褐色泡囊",
+  "block.yagens_mobs.red_air_bladder": "红色泡囊",
+  "block.yagens_mobs.blue_air_bladder": "蓝色泡囊",
+  "block.yagens_mobs.rainbow_air_bladder": "彩色泡囊"
 }

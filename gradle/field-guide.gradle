@@ -1,20 +1,40 @@
-sourceSets.main.resources.srcDir('../../common/src/fieldGuide/resources')
-
-// Bake Patchouli's page array from the same ordered list that supplies the model cards.
-def guideSpecies = layout.projectDirectory.file('../../common/src/fieldGuide/resources/yagen/waitmydawn/yagens_mobs/guide/species.txt')
-def catalogPages = providers.fileContents(guideSpecies).asText.map { contents ->
-    def species = contents.readLines().findAll { !it.isBlank() }
-    def pages = species.collate(6).withIndex().collect { group, page ->
-        [type: 'yagens_mobs:field_plates', species: 'catalog', offset: page]
+def shared = file('../../common/src/fieldGuide/resources')
+def catalog = new File(shared, 'yagen/waitmydawn/yagens_mobs/guide/species.txt')
+def legacyUi = projectDir.name != 'fabric-1.21.11'
+sourceSets.main.java.srcDir('../../common/src/fieldGuide/java')
+if (legacyUi) {
+    sourceSets.main.java.srcDir('../../common/src/fieldGuide/legacyUi')
+}
+def entries = 'assets/yagens_mobs/patchouli_books/field_guide/en_us/entries'
+def generated = layout.buildDirectory.dir('generated/specimenBook')
+def book = tasks.register('generateSpecimenBook') {
+    inputs.file(catalog)
+    outputs.dir(generated)
+    doLast {
+        def output = generated.get().dir(entries).asFile
+        def species = catalog.readLines('UTF-8').findAll { !it.isBlank() }
+        def expected = (species + 'catalog').collect { it + '.json' }.toSet()
+        output.listFiles()?.findAll { it.name.endsWith('.json') && !expected.contains(it.name) }?.each {
+            java.nio.file.Files.delete(it.toPath())
+        }
+        output.mkdirs()
+        def writeEntry = { id, title, icon, pages ->
+            new File(output, id + '.json').text = groovy.json.JsonOutput.toJson([
+                name:title, icon:'yagens_mobs:'+icon, category:'yagens_mobs:wildlife', pages:pages])
+        }
+        def page = { name, number -> [type:'yagens_mobs:field_plates',species:name,offset:number] }
+        writeEntry('catalog','guide.yagens_mobs.catalog','field_guide',
+            species.collate(6).withIndex().collect { group,index -> page('catalog',index) })
+        species.each { id -> writeEntry(id,'entity.yagens_mobs.'+id,id+'_spawn_egg',[page(id,0),page(id,1)]) }
     }
-    groovy.json.JsonOutput.toJson(pages)
 }
 tasks.named('processResources') {
-    inputs.property('fieldGuideCatalogPages', catalogPages)
-    from('../../common/src/fieldGuide/templates') {
-        include 'catalog.json.template'
-        into 'assets/yagens_mobs/patchouli_books/field_guide/en_us/entries'
-        rename { 'catalog.json' }
-        expand(catalogPages: catalogPages.get())
+    from(shared) {
+        exclude 'assets/yagens_mobs/textures/gui/field_guide/**'
+        exclude 'assets/yagens_mobs/patchouli_books/field_guide/en_us/entries/**'
     }
+    if (!legacyUi) {
+        from('../../common/src/fieldGuide/modernResources')
+    }
+    from(book)
 }

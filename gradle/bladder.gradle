@@ -4,13 +4,25 @@ import javax.imageio.ImageIO
 
 // Bake coat colours for loaders with different block and inventory tint APIs.
 def source = file('../../common/src/bladder/resources')
+def neo = projectDir.name.startsWith('neoforge-')
 def legacy = minecraft_version == '1.20.1'
 def modern = minecraft_version in ['1.21.11', '26.3']
 def materials = minecraft_version == '26.3'
-def generated = layout.buildDirectory.dir('generated/bladder-assets')
+def staged = tasks.register('stageBladderTemplates', Sync) {
+    from(source) {
+        if (!neo) exclude 'assets/yagens_mobs/models/**', 'assets/yagens_mobs/blockstates/**', '**/textures/block/bladder/film*.png'
+        eachFile { f ->
+            if (legacy) f.path = f.path.replace('/loot_table/', '/loot_tables/').replace('/tags/fluid/', '/tags/fluids/')
+            if (modern) f.path = f.path.replace('/geo/entity/', '/geckolib/models/entity/')
+        }
+    }
+    into layout.buildDirectory.dir('generated/bladder-templates')
+}
+def generated = layout.buildDirectory.dir('generated/bladder-models-and-loot')
 def bake = tasks.register('generateBladderAssets') {
     inputs.dir(source)
     inputs.property('gameVersion', minecraft_version)
+    inputs.property('usesTintedMultipart', neo)
     outputs.dir(generated)
     doLast {
         def out = generated.get().asFile
@@ -23,15 +35,41 @@ def bake = tasks.register('generateBladderAssets') {
             f.parentFile.mkdirs()
             f.setText(JsonOutput.toJson(data),'UTF-8')
         }
-        project.copy {
-            from source
-            into out
-            exclude 'assets/yagens_mobs/models/**', 'assets/yagens_mobs/blockstates/**', '**/textures/block/bladder/film*.png'
-            eachFile { f ->
-                if (legacy) f.path = f.path.replace('/loot_table/', '/loot_tables/').replace('/tags/fluid/', '/tags/fluids/')
-                if (modern) f.path = f.path.replace('/geo/entity/', '/geckolib/models/entity/')
-            }
+        def blockName = { tone -> (([albino:'white', mixed:'rainbow'][tone]) ?: tone) + '_air_bladder' }
+        def lootPath = legacy ? 'loot_tables' : 'loot_table'
+        def loot = { name, entry ->
+            save("data/yagens_mobs/${lootPath}/blocks/${name}.json", [type:'minecraft:block',
+                    pools:[[rolls:1,entries:[entry],conditions:[[condition:'minecraft:survives_explosion']]]]])
         }
+        colors.keySet().each { tone ->
+            def name = blockName(tone)
+            loot(name, [type:'minecraft:item',name:"yagens_mobs:${name}"])
+        }
+        loot('air_bladder', [type:'minecraft:alternatives',children:colors.keySet().collect { tone ->
+            [type:'minecraft:item',name:"yagens_mobs:${blockName(tone)}",conditions:[
+                    [condition:'minecraft:block_state_property',block:'yagens_mobs:air_bladder',properties:[color:tone]]]]
+        }])
+
+        if (neo) {
+            def parts = read("${assets}/blockstates/air_bladder.json").multipart
+            colors.keySet().each { tone ->
+                def name = blockName(tone)
+                def colorCondition = tone == 'mixed' ? 'mixed' : '!mixed'
+                def ownParts = parts.findAll { it.when.color == colorCondition }.collect { part ->
+                    [when:part.when.findAll { property, value -> property != 'color' }, apply:part.apply]
+                }
+                save("${assets}/blockstates/${name}.json",[multipart:ownParts])
+                if (tone == 'mixed') {
+                    def item = read("${assets}/models/block/air_bladder.json")
+                    item.textures.replaceAll { key, value -> 'yagens_mobs:block/bladder/rainbowf' }
+                    save("${assets}/models/item/${name}.json",item)
+                } else {
+                    save("${assets}/models/item/${name}.json",[parent:'yagens_mobs:block/air_bladder'])
+                }
+            }
+            return
+        }
+
         def variants = [:]
         // Texture-space left, right, top and bottom on each unrotated cube face.
         def edges = [north:['east','west','up','down'], south:['west','east','up','down'],
@@ -46,12 +84,13 @@ def bake = tasks.register('generateBladderAssets') {
             save("${assets}/models/block/${name}.json",obj)
         }
         colors.eachWithIndex { tone, rgb, index ->
+            def name = blockName(tone)
+            def fixedVariants = [:]
             def mixed = tone == 'mixed'
             (0..<16).each { mask ->
                 def suffix = Integer.toHexString(mask)
                 def template = "bladder/${mixed ? 'rainbow' : 'film'}${suffix}"
-                def name = "bladder/${tone}_${suffix}"
-                def sprite = mixed ? template : name
+                def sprite = mixed ? template : "bladder/${tone}_${suffix}"
                 if (!mixed) {
                     def img = ImageIO.read(new File(source,"${assets}/textures/block/${template}.png"))
                     for (int y=0; y<img.height; y++) for (int x=0; x<img.width; x++) {
@@ -82,10 +121,14 @@ def bake = tasks.register('generateBladderAssets') {
                 }
                 def path = "block/bladder/shape/${tone}_${neighbors}"
                 save("${assets}/models/${path}.json",obj)
+                fixedVariants[connected.collect { k,v -> "${k}=${v}" }.join(',')] = [model:"yagens_mobs:${path}"]
                 def properties = connected + [color:tone]
                 variants[properties.collect { k,v -> "${k}=${v}" }.join(',')] = [model:"yagens_mobs:${path}"]
             }
             def itemModel = "yagens_mobs:block/bladder/item_${tone}"
+            save("${assets}/blockstates/${name}.json",[variants:fixedVariants])
+            save("${assets}/models/item/${name}.json",[parent:itemModel])
+            if (modern) save("${assets}/items/${name}.json",[model:[type:'minecraft:model',model:"yagens_mobs:item/${name}"]])
             itemCases << ['when':tone, model:[type:'minecraft:model',model:itemModel]]
             if (index) overrides << [predicate:['yagens_mobs:bladder_coat':index / 8.0],model:itemModel]
         }
@@ -95,6 +138,7 @@ def bake = tasks.register('generateBladderAssets') {
                 block_state_property:'color',cases:itemCases,fallback:itemCases[0].model]])
     }
 }
+sourceSets.main.resources.srcDir(staged)
 sourceSets.main.resources.srcDir(bake)
 sourceSets.main.java.srcDir('../../common/src/bladder/vision/java')
 if (projectDir.name.startsWith('fabric-')) sourceSets.main.java.srcDir('../../common/src/bladder/fabric/java')

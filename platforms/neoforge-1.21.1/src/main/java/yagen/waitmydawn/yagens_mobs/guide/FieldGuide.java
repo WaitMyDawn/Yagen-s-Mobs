@@ -41,6 +41,19 @@ public final class FieldGuide extends Item {
         data.put(Player.PERSISTED_NBT_TAG, persisted);
     }
 
+
+    static net.minecraft.server.level.ServerLevel level(ServerPlayer player) {
+        return player.serverLevel();
+    }
+
+    static java.util.Set<String> noteKeys(CompoundTag notes) {
+        return notes.getAllKeys();
+    }
+
+    static long recordedDay(CompoundTag notes, String key) {
+        return notes.contains(key, net.minecraft.nbt.Tag.TAG_LONG) ? notes.getLong(key) : -1L;
+    }
+
     static boolean canRead(ServerPlayer player) {
         return NetworkRegistry.hasChannel(player.connection, Open.TYPE.id());
     }
@@ -64,13 +77,7 @@ public final class FieldGuide extends Item {
         if (!isAvailable()) return InteractionResultHolder.pass(player.getItemInHand(hand));
         if (player instanceof ServerPlayer server) {
             if (!canRead(server)) return InteractionResultHolder.pass(player.getItemInHand(hand));
-            var entries = new java.util.HashMap<String, Long>();
-            var notes = notes(player);
-            for (var key : notes.getAllKeys()) if (FieldPhotos.valid(key)) {
-                // Earlier notebooks stored a boolean without a discovery date.
-                entries.put(key, notes.contains(key, net.minecraft.nbt.Tag.TAG_LONG) ? notes.getLong(key) : -1L);
-            }
-            PacketDistributor.sendToPlayer(server, new Open(entries));
+            PacketDistributor.sendToPlayer(server, new Open(FieldNotes.entries(server)));
         }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }

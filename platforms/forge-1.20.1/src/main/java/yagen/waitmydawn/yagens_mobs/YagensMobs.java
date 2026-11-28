@@ -61,7 +61,7 @@ public final class YagensMobs {
         if (yagen.waitmydawn.yagens_mobs.guide.FieldGuide.isAvailable()) {
             yagen.waitmydawn.yagens_mobs.guide.FieldGuide.register();
             MinecraftForge.EVENT_BUS.addListener(yagen.waitmydawn.yagens_mobs.guide.FieldGuide::onLogin);
-            MinecraftForge.EVENT_BUS.addListener(yagen.waitmydawn.yagens_mobs.guide.FieldNotes::observe);
+            MinecraftForge.EVENT_BUS.addListener(yagen.waitmydawn.yagens_mobs.guide.FieldGuide::observe);
         }
         LegacyNetwork.register();
         StationData.registerTickets();

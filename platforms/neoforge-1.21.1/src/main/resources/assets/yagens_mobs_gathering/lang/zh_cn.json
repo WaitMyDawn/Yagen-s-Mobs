@@ -5,7 +5,7 @@
   "item.yagens_mobs.salvage_ray_molt": "拾遗鳐蜕膜",
   "item.yagens_mobs.salvage_ray_molt.coating": "虚空保护",
   "block.yagens_mobs.void_cloud": "虚空云雾",
-  "message.yagens_mobs.snowcache_fur.hint": "另一只手拿样品，右键按物品分类，潜行右键按其创造标签分类。空手样品位时潜行右键清除分类。",
+  "message.yagens_mobs.snowcache_fur.hint": "副手拿样品，主手持绒毛右键按物品分类，潜行右键按创造模式标签分类。副手留空时，右键查看分类，潜行右键清除分类。",
   "message.yagens_mobs.snowcache_fur.set": "固定分类 · %s",
   "message.yagens_mobs.snowcache_fur.cleared": "已清除固定分类",
   "message.yagens_mobs.snowcache_fur.unavailable": "现在无法给这个容器设置分类",

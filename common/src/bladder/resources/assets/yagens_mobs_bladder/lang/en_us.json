@@ -1,4 +1,13 @@
 {
   "block.yagens_mobs.air_bladder": "Air Bladder",
-  "message.yagens_mobs.bubble_salamander.regrowing": "The air bladder is still growing back."
+  "message.yagens_mobs.bubble_salamander.regrowing": "The air bladder is still growing back.",
+  "block.yagens_mobs.green_air_bladder": "Green Air Bladder",
+  "block.yagens_mobs.white_air_bladder": "White Air Bladder",
+  "block.yagens_mobs.pink_air_bladder": "Pink Air Bladder",
+  "block.yagens_mobs.yellow_air_bladder": "Yellow Air Bladder",
+  "block.yagens_mobs.black_air_bladder": "Black Air Bladder",
+  "block.yagens_mobs.brown_air_bladder": "Brown Air Bladder",
+  "block.yagens_mobs.red_air_bladder": "Red Air Bladder",
+  "block.yagens_mobs.blue_air_bladder": "Blue Air Bladder",
+  "block.yagens_mobs.rainbow_air_bladder": "Rainbow Air Bladder"
 }

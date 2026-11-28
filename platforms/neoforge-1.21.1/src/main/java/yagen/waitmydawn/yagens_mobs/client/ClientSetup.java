@@ -40,7 +40,8 @@ import yagen.waitmydawn.yagens_mobs.entity.vulture.transport.MailBagMenu;
 public final class ClientSetup {
     @net.neoforged.bus.api.SubscribeEvent
     public static void clearGuide(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
-        yagen.waitmydawn.yagens_mobs.guide.client.GuidePlates.clear();
+        if (yagen.waitmydawn.yagens_mobs.guide.FieldGuide.isAvailable())
+            yagen.waitmydawn.yagens_mobs.guide.client.GuidePlates.clear();
     }
 
     private ClientSetup() {

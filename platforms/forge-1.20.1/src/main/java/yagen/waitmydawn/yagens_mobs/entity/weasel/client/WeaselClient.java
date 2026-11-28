@@ -13,6 +13,7 @@ public final class WeaselClient {
     }
 
     public static void open(CompoundTag payload) {
+        if (WorkPreviewClient.accept(Minecraft.getInstance(), payload)) return;
         if (payload != null && payload.getBoolean("Storage")) {
             WeaselPortScreen.open(payload);
             return;

@@ -73,6 +73,8 @@ public final class ClientSetup implements ClientModInitializer {
             }
         });
         net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap.putBlock(ModBlocks.AIR_BLADDER.get(), net.minecraft.client.renderer.chunk.ChunkSectionLayer.TRANSLUCENT);
+        ModBlocks.AIR_BLADDERS.values().forEach(block ->
+            net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap.putBlock(block.get(), net.minecraft.client.renderer.chunk.ChunkSectionLayer.TRANSLUCENT));
         net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap.putBlock(ModBlocks.VOID_CLOUD.get(), net.minecraft.client.renderer.chunk.ChunkSectionLayer.TRANSLUCENT);
         FluidRenderHandlerRegistry.INSTANCE.register(BladderFluid.MEDIUM, new FluidRenderHandler() {
             @Override public TextureAtlasSprite[] getFluidSprites(BlockAndTintGetter level, BlockPos pos, FluidState fluid) {

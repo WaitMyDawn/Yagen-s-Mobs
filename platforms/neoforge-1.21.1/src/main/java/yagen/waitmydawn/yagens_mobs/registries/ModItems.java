@@ -1,5 +1,8 @@
 package yagen.waitmydawn.yagens_mobs.registries;
 
+import java.util.function.Supplier;
+import java.util.Map;
+import java.util.EnumMap;
 import java.util.Comparator;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -7,7 +10,8 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
-import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderBlock;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderItem;
+import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.AirBladderVariants;
 import yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.BubbleSalamanderColor;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -71,6 +75,7 @@ public final class ModItems {
                     .title(Component.translatable("itemGroup.yagens_mobs"))
                     .icon(() -> COOKED_DESERT_SKATE.get().getDefaultInstance())
                     .displayItems((parameters, output) -> ITEMS.getEntries().stream()
+                            .filter(entry -> entry != ModItems.AIR_BLADDER)
                             .filter(entry -> entry != FIELD_GUIDE || FieldGuide.isAvailable())
                             .map(DeferredHolder::get)
                             .sorted(Comparator.comparing(item -> item instanceof SpawnEggItem))
@@ -91,12 +96,17 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> KAVAT_EGG = ITEMS.register("kavat_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.KAVAT, 0x435563, 0xa6d7da, new Item.Properties()));
     public static final DeferredItem<BlockItem> AIR_BLADDER = ITEMS.register("air_bladder",
-            () -> new BlockItem(ModBlocks.AIR_BLADDER.get(), new Item.Properties()) {
-                @Override
-                public boolean isFoil(net.minecraft.world.item.ItemStack stack) {
-                    return AirBladderBlock.color(stack) == BubbleSalamanderColor.MIXED || super.isFoil(stack);
-                }
-            });
+            () -> new AirBladderItem(ModBlocks.AIR_BLADDER.get(), new Item.Properties()));
+    public static final Map<BubbleSalamanderColor, Supplier<BlockItem>> AIR_BLADDERS = registerBladders();
+
+    private static Map<BubbleSalamanderColor, Supplier<BlockItem>> registerBladders() {
+        var variants = new EnumMap<BubbleSalamanderColor, Supplier<BlockItem>>(BubbleSalamanderColor.class);
+        for (var color : BubbleSalamanderColor.values()) {
+            variants.put(color, ITEMS.register(AirBladderVariants.path(color),
+                    () -> new AirBladderItem(ModBlocks.AIR_BLADDERS.get(color).get(), new Item.Properties())));
+        }
+        return java.util.Collections.unmodifiableMap(variants);
+    }
 
     private ModItems() {
     }

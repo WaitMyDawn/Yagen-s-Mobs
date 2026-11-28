@@ -22,6 +22,12 @@ final class SpecimenPortrait {
             throw new FileNotFoundException(path);
         return stream;
     }
+    private static InputStream geometry(String model) throws IOException {
+        String name = "entity/" + model + ".geo.json";
+        var modern = SpecimenPortrait.class.getResourceAsStream("/assets/yagens_mobs/geckolib/models/" + name);
+        return modern == null ? asset("geo/" + name) : modern;
+    }
+
     static byte[] render(String key) throws IOException {
         String[] v = key.split("/");
         boolean young = v[1].equals("young");
@@ -64,7 +70,7 @@ final class SpecimenPortrait {
             }
             default -> throw new IOException("Missing portrait model for " + species);
         }
-        try (var geo = asset("geo/entity/" + model + ".geo.json");
+        try (var geo = geometry(model);
                 var png = asset("textures/entity/" + texture + ".png")) {
             var object = JsonParser.parseReader(new InputStreamReader(geo, StandardCharsets.UTF_8))
                                  .getAsJsonObject()
@@ -189,8 +195,8 @@ final class SpecimenPortrait {
                 int idx = y * W + x;
                 if (z < depth[idx])
                     continue;
-                int argb = tex.getRGB(Math.clamp((int) Math.floor(s.u + u * s.du), 0, tex.getWidth() - 1),
-                        Math.clamp((int) Math.floor(s.v + v * s.dv), 0, tex.getHeight() - 1));
+                int argb = tex.getRGB(Math.max(0, Math.min((int) Math.floor(s.u + u * s.du), tex.getWidth() - 1)),
+                        Math.max(0, Math.min((int) Math.floor(s.v + v * s.dv), tex.getHeight() - 1)));
                 if ((argb >>> 24) < 32)
                     continue;
                 depth[idx] = z;

@@ -4,25 +4,35 @@ import java.util.*;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.ItemStack;
 import vazkii.patchouli.api.IComponentRenderContext;
 import yagen.waitmydawn.yagens_mobs.config.ClientConfigs;
+import yagen.waitmydawn.yagens_mobs.entity.butterfly.LumenColor;
 import yagen.waitmydawn.yagens_mobs.guide.FieldNotes;
 
 final class SpecimenPages {
     private static final List<String> SECTIONS =
             List.of("attributes", "habitat", "loot", "taming", "breeding", "behavior");
     private static final List<String> AXES = List.of("breed", "coat", "ear", "tail");
+    private static final int PAGE_CONTENT_HEIGHT = 134;
+    private static final int PLANT_COLUMNS = 3;
+    private static final int PLANT_COLUMN_WIDTH = 38;
+    private static final int PLANT_ROW_HEIGHT = 27;
+    private static final List<LumenColor> TAMING_COLORS = List.of(LumenColor.values());
     private static Map<String, Long> notes = Map.of();
     private static final Map<String, Layout> layouts = new HashMap<>();
     private static final Map<String, Integer> spreads = new HashMap<>();
     private static int sort;
     private record Line(FormattedCharSequence text, int y, int color) {}
-    private record Layout(List<List<Line>> text, List<String> keys, int total) {
+    private record PlantGrid(int page, int y) {
+        private static final int HEIGHT =
+                ((TAMING_COLORS.size() + PLANT_COLUMNS - 1) / PLANT_COLUMNS) * PLANT_ROW_HEIGHT;
+    }
+    private record Layout(List<List<Line>> text, List<String> keys, int total, PlantGrid plants) {
         int pages() {
-            return text.size() + Math.max(1, Math.ceilDiv(keys.size(), 4));
+            return text.size() + Math.max(1, (keys.size() + 3) / 4);
         }
     }
     static void open(Map<String, Long> known) {
@@ -37,22 +47,37 @@ final class SpecimenPages {
             List<Line> lines = new ArrayList<>();
             pages.add(lines);
             int y = 0;
+            PlantGrid plants = null;
             for (String section : SECTIONS) {
-                if (y + 23 > 134) {
+                var description = font.split(GuidePlates.label(s + "." + section), 110);
+                boolean showsTamingPlants = s.equals("lumen_butterfly") && section.equals("taming");
+                int required = showsTamingPlants
+                        ? Math.min(PAGE_CONTENT_HEIGHT, 15 + description.size() * 10 + PlantGrid.HEIGHT)
+                        : 12 + Math.min(2, description.size()) * 10;
+                if (y + required > PAGE_CONTENT_HEIGHT) {
                     lines = new ArrayList<>();
                     pages.add(lines);
                     y = 0;
                 }
                 lines.add(new Line(GuidePlates.label(section).getVisualOrderText(), y, GuidePlates.ACCENT));
                 y += 12;
-                for (var line : font.split(GuidePlates.label(s + "." + section), 110)) {
-                    if (y + 9 > 134) {
+                for (var line : description) {
+                    if (y + 9 > PAGE_CONTENT_HEIGHT) {
                         lines = new ArrayList<>();
                         pages.add(lines);
                         y = 0;
                     }
                     lines.add(new Line(line, y, GuidePlates.INK));
                     y += 10;
+                }
+                if (showsTamingPlants) {
+                    if (y + 3 + PlantGrid.HEIGHT > PAGE_CONTENT_HEIGHT) {
+                        lines = new ArrayList<>();
+                        pages.add(lines);
+                        y = 0;
+                    }
+                    plants = new PlantGrid(pages.size() - 1, y + 3);
+                    y += 3 + PlantGrid.HEIGHT;
                 }
                 y += 4;
             }
@@ -78,7 +103,7 @@ final class SpecimenPages {
                 Comparator<String> cmp = Comparator.comparingLong(v -> notes.get(s + "/" + v));
                 found.sort((sort == 0 ? cmp : cmp.reversed()).thenComparing(dictionary));
             }
-            return new Layout(pages, found, variants.size());
+            return new Layout(pages, found, variants.size(), plants);
         });
     }
     private static int index(String s, int side) {
@@ -87,7 +112,7 @@ final class SpecimenPages {
     static void controls(IComponentRenderContext ctx, String s, int side, int page) {
         button(ctx, page, side == 0 ? 0 : 95, 139, 21, side == 0 ? "◀" : "▶", () -> {
             int max = (layout(s).pages() - 1) / 2;
-            spreads.compute(s, (k, v) -> Math.clamp((v == null ? 0 : v) + (side == 0 ? -1 : 1), 0, max));
+            spreads.compute(s, (k, v) -> Math.max(0, Math.min((v == null ? 0 : v) + (side == 0 ? -1 : 1), max)));
         }, () -> side == 0 ? index(s, side) > 0 : index(s, side) + 1 < layout(s).pages());
         button(ctx, page, 7, 0, 16, "↕", () -> {
             sort = (sort + 1) % 3;
@@ -96,23 +121,8 @@ final class SpecimenPages {
     }
     private static void button(IComponentRenderContext ctx, int page, int x, int y, int w, String label,
             Runnable action, java.util.function.BooleanSupplier enabled) {
-        ctx.addWidget(new Button(x, y + 18, w, label.equals("↕") ? 16 : 12, Component.literal(label), b -> action.run(), s -> s.get()) {
-            @Override
-            protected net.minecraft.network.chat.MutableComponent createNarrationMessage() {
-                return "↕".equals(label) ? GuidePlates.label("order."+sort).copy() : super.createNarrationMessage();
-            }
-            @Override
-            protected void renderWidget(GuiGraphics g, int mx, int my, float partial) {
-                active = enabled.getAsBoolean();
-                if (active && isFocused())
-                    g.renderOutline(getX(), getY(), width, height, GuidePlates.ACCENT);
-            }
-            @Override
-            public void onPress() {
-                if (enabled.getAsBoolean())
-                    super.onPress();
-            }
-        }, page);
+        GuideUi.control(ctx, page, x, y, w, label,
+                () -> "↕".equals(label) ? GuidePlates.label("order." + sort) : Component.literal(label), action, enabled);
     }
     static void render(GuiGraphics g, IComponentRenderContext ctx, String species, int side, int mx, int my) {
         var l = layout(species);
@@ -122,17 +132,14 @@ final class SpecimenPages {
         var font = Minecraft.getInstance().font;
         if (i < l.text.size()) {
             for (var line : l.text.get(i)) g.drawString(font, line.text, 2, line.y, line.color, false);
+            if (l.plants != null && l.plants.page == i) renderTamingPlants(g, ctx, l.plants.y, mx, my);
         } else {
             boolean first = i == l.text.size();
             if (first) {
                 if (sort == 2) {
                     g.renderItem(net.minecraft.world.item.Items.BOOK.getDefaultInstance(), 7, 0);
                 } else {
-                    var clock = net.minecraft.resources.ResourceLocation.withDefaultNamespace(
-                            sort == 0 ? "item/clock_00" : "item/clock_32");
-                    var sprite = Minecraft.getInstance().getTextureAtlas(
-                            net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS).apply(clock);
-                    g.blit(7, 0, 0, 16, 16, sprite);
+                    GuideUi.clock(g, sort == 0);
                 }
                 GuidePlates.centered(g, Component.translatable("guide.yagens_mobs.recorded_count",
                         l.keys.size(), l.total).getString(), 68, 4, 85, GuidePlates.ACCENT);
@@ -140,8 +147,13 @@ final class SpecimenPages {
                 if (ctx.isAreaHovered(mx, my, 7, 0, 16, 16))
                     ctx.setHoverTooltipComponents(List.of(GuidePlates.label("order." + sort)));
             }
-            if (l.keys.isEmpty())
-                g.drawWordWrap(font, GuidePlates.label("observe"), 3, 38, 109, GuidePlates.INK);
+            if (l.keys.isEmpty()) {
+                int y = 38;
+                for (var line : font.split(GuidePlates.label("observe"), 109)) {
+                    g.drawString(font, line, 3, y, GuidePlates.INK, false);
+                    y += 10;
+                }
+            }
             int start = (i - l.text.size()) * 4;
             for (int n = 0; n < 4 && start + n < l.keys.size(); n++) {
                 String v = l.keys.get(start + n), key = species + "/" + v;
@@ -149,7 +161,7 @@ final class SpecimenPages {
                 var photo = PortraitTextures.get(key);
                 g.renderOutline(x, y, 54, 40, GuidePlates.RULE);
                 if (photo != null)
-                    g.blit(photo, x + 1, y + 1, 52, 38, 0, 0, 128, 96, 128, 96);
+                    GuideUi.portrait(g, photo, x + 1, y + 1);
                 String caption = Arrays.stream(v.split("/"))
                                          .map(k
                                                  -> (species.equals("kavat")
@@ -172,5 +184,20 @@ final class SpecimenPages {
         if (side == 1 && i + 1 < l.pages())
             GuidePlates.centered(g, "▶", 106, 140, 18, GuidePlates.ACCENT);
     }
+    private static void renderTamingPlants(GuiGraphics g, IComponentRenderContext ctx, int top, int mx, int my) {
+        for (int i = 0; i < TAMING_COLORS.size(); i++) {
+            var color = TAMING_COLORS.get(i);
+            var stack = new ItemStack(color.plant());
+            int x = 1 + PLANT_COLUMN_WIDTH * (i % PLANT_COLUMNS);
+            int y = top + PLANT_ROW_HEIGHT * (i / PLANT_COLUMNS);
+            g.renderItem(stack, x + (PLANT_COLUMN_WIDTH - 16) / 2, y);
+            var label = GuidePlates.label("variant." + color.id());
+            GuidePlates.centered(g, label.getString(), x + PLANT_COLUMN_WIDTH / 2, y + 17,
+                    PLANT_COLUMN_WIDTH, GuidePlates.INK);
+            if (ctx.isAreaHovered(mx, my, x, y, PLANT_COLUMN_WIDTH, PLANT_ROW_HEIGHT))
+                ctx.setHoverTooltipComponents(List.of(stack.getHoverName()));
+        }
+    }
+
     private SpecimenPages() {}
 }

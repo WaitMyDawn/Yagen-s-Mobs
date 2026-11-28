@@ -1,8 +1,8 @@
 # 游戏机制 / Gameplay
 
-本页记录当前仓库中已实现的玩法，数值以 **NeoForge 1.21.1** 为基准。沙漠鳐鱼、秃鹫、吊岩兽、泡囊鲵、迅敏节虫、蓄辉蝶、拾遗鳐和雪藏鼬均已接入五个构建目标。版本和前置依赖见 [README](README.md)，版本变更见 [更新日志](docs/changelog/)。
+本页记录当前仓库中已实现的玩法，数值以 **NeoForge 1.21.1** 为基准。十种生物均已接入五个构建目标。版本和前置依赖见 [README](README.md)，版本变更见 [更新日志](docs/changelog/)。
 
-This guide documents implemented gameplay in the current source tree, using **NeoForge 1.21.1** for its values. Desert Skates, Condrocs, Rock Hangers, Bubble Salamanders, Velocipods, Lumen Butterflies, Salvage Rays, and Snowcache Weasels are available on all five build targets. See the [README](README.md) for versions and dependencies and the [changelog](docs/changelog/) for release history.
+This guide documents implemented gameplay in the current source tree, using **NeoForge 1.21.1** for its values. All ten creatures are available on all five build targets. See the [README](README.md) for versions and dependencies and the [changelog](docs/changelog/) for release history.
 
 ## 目录 / Contents
 
@@ -25,19 +25,19 @@ This guide documents implemented gameplay in the current source tree, using **Ne
 
 **帕秋莉手册（Patchouli）联动**：Forge 1.20.1、NeoForge 1.21.1 和 Fabric 1.21.1 使用对应平台的 Patchouli。Fabric 1.21.11 使用社区移植版 [Patchouli: Fabric Edition](https://www.curseforge.com/minecraft/mc-mods/patchouli-fabric-edition)。Fabric 26.3 暂无此图鉴联动。
 
-安装对应手册后，每位玩家首次进入世界时会获得一本生物图鉴。已有存档的玩家也会在安装手册后首次登录时获得图鉴。图鉴遗失后，可用一本书和一根羽毛无序合成。右键翻开双页目录，每页最多展示六张生物模型卡片，按三列两行排列。点击卡片可阅读属性、生成、掉落、驯服、繁殖及玩法。玩法页之后收录变种照片。
+安装对应手册后，每位玩家首次进入世界时会获得一本生物图鉴。已有存档的玩家也会在安装手册后首次登录时获得图鉴。图鉴遗失后，可用一本书和一根羽毛无序合成。右键翻开双页目录，每页最多展示六张生物模型卡片，按三列两行排列。点击卡片可阅读属性、生成、相关物品、驯服、繁殖及玩法。「相关物品」包含掉落物和其他获取途径。蓄辉蝶的驯服页按体色展示原版植物图标，悬停可查看植物名称。玩法页之后收录变种照片。
 
 使用望远镜瞄准 64 格内无遮挡的生物，即可为自己记录观察结果，无需携带图鉴。记录随玩家保存，死亡后保留。混色泡囊鲵按混色类别收录，图中为示例花纹。
 
-在 NeoForge 1.21.1 上，各节连续排版。变种页显示「已记录 x/y」和自己见过的变种。服务端使用模组模型和纹理生成静态图，图片由同一存档内的观察者共用。悬停可见自己第一次观察的游戏日，精确到 0.1 日。点击变种首页左上角的图标切换顺序。日间时钟表示从早到晚，夜间时钟表示从晚到早，书本表示字典序。库娃每组完整外观单独收录，共 960 种。客户端配置 `kavatGuideSortOrder` 控制字典序的优先部位，默认为 `breed,coat,ear,tail`。旧图鉴的库娃记录只含单项特征，需要重新观察才能登记组合。其他支持图鉴的平台仍使用问号卡片和独立部位记录。
+在支持图鉴的四个版本上，各节连续排版。变种页显示「已记录 x/y」和自己见过的变种。服务端使用模组模型和纹理生成静态图，图片由同一存档内的观察者共用。悬停可见自己第一次观察的游戏日，精确到 0.1 日。点击变种首页左上角的图标切换顺序。日间时钟表示从早到晚，夜间时钟表示从晚到早，书本表示字典序。库娃每组完整外观单独收录，共 960 种。客户端配置 `kavatGuideSortOrder` 控制字典序的优先部位，默认为 `breed,coat,ear,tail`。旧图鉴的库娃记录只含单项特征，需要重新观察才能登记组合。旧存档里可明确识别的其他变种仍会显示，首次观察日期标作未知。
 
 **Patchouli integration** — Install Patchouli for Forge 1.20.1, NeoForge 1.21.1 or Fabric 1.21.1. Fabric 1.21.11 uses the community port [Patchouli: Fabric Edition](https://www.curseforge.com/minecraft/mc-mods/patchouli-fabric-edition). The Field Guide is currently unavailable on Fabric 26.3.
 
-Each player receives a Field Guide on their first login with the reader installed, including in existing worlds. Craft a book and a feather together for a replacement. Open the guide to browse up to six live model cards per page. Select a card to read about attributes, habitat, drops, taming, breeding and behavior, then turn to the variant photographs.
+Each player receives a Field Guide on their first login with the reader installed, including in existing worlds. Craft a book and a feather together for a replacement. Open the guide to browse up to six live model cards per page. Select a card to read about attributes, habitat, related items, taming, breeding and behavior, then turn to the variant photographs. Related Items covers drops and other ways to obtain items from the creature. The butterfly taming section pairs each color with its vanilla plant icon. Hover over an icon to see the plant name.
 
 Aim a spyglass at an unobstructed creature within 64 blocks to record a sighting, even without carrying the guide. Discoveries belong to the player and survive death. Mixed salamanders share a coat category and use a representative photograph.
 
-On NeoForge 1.21.1, sections flow across the spread. The gallery counts discovered variants and shows only those you have seen. The server renders a static image from the mod assets and shares that image across the save. Hover over a card to see your own first sighting to the nearest tenth of a game day. Click the icon on the first gallery page to cycle between a daytime clock (oldest first), a nighttime clock (newest first), and a book (alphabetical). Each of the 960 Kavat appearances has its own entry. Set `kavatGuideSortOrder` in the client config to reorder the four traits. It defaults to `breed,coat,ear,tail`. Earlier Kavat notebooks recorded independent traits, so sight the animal again to register its combination. Other supported platforms retain their original question-mark galleries.
+On all four platforms with the Field Guide, sections flow across the spread. The gallery counts discovered variants and shows only those you have seen. The server renders a static image from the mod assets and shares that image across the save. Hover over a card to see your own first sighting to the nearest tenth of a game day. Click the icon on the first gallery page to cycle between a daytime clock (oldest first), a nighttime clock (newest first), and a book (alphabetical). Each of the 960 Kavat appearances has its own entry. Set `kavatGuideSortOrder` in the client config to reorder the four traits. It defaults to `breed,coat,ear,tail`. Earlier Kavat notebooks recorded independent traits, so sight the animal again to register its combination. Other unambiguous discoveries from older worlds remain visible with an unknown date.
 
 <a id="spawning"></a>
 ## 生成与配置 / Spawning and configuration
@@ -156,9 +156,9 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 <a id="bubble-salamander"></a>
 ## 泡囊鲵 / Bubble Salamander
 
-**剪取泡囊。** 手持剪刀右键未佩戴的成年泡囊鲵，会掉落一个泡囊。野生个体可直接剪取，驯服的个体只接受主人操作。剪下的泡囊保留来源体色，混色泡囊在手上有附魔光泽，放置后膜面有流动的虹彩。相邻泡囊只在整片膜的外缘显示边框。玩家可以在内上浮、下潜和疾游，头部进入泡囊时会像在空气中一样恢复氧气。泡囊内部视野清晰，游入真实水体时恢复水下雾和遮罩。剪取后的泡囊鲵暂时无法佩戴，活动满 6,000 个游戏刻（正常速度下五分钟）后恢复。装桶或卸载区块会暂停计时，放出或重新加载后接着生长。
+**剪取泡囊。** 手持剪刀右键未佩戴的成年泡囊鲵，会掉落一个泡囊。野生个体可直接剪取，驯服的个体只接受主人操作。剪取会掉落与来源体色对应的独立泡囊物品。白化对应白色泡囊，混色对应彩色泡囊。彩色泡囊在手上有附魔光泽，放置后膜面有流动的虹彩。各色泡囊相邻时只在整片膜的外缘显示边框。相邻的彩色泡囊每帧都在边缘接续虹彩和透明度。旧存档中的泡囊保留颜色，再次放置或挖下时转换成对应色款。玩家可以在内上浮、下潜和疾游，头部进入泡囊时会像在空气中一样恢复氧气。泡囊内部视野清晰，游入真实水体时恢复水下雾和遮罩。剪取后的泡囊鲵暂时无法佩戴，活动满 6,000 个游戏刻（正常速度下五分钟）后恢复。装桶或卸载区块会暂停计时，放出或重新加载后接着生长。
 
-**Shearing.** Use shears on an unworn adult to collect one Air Bladder. Anyone can shear a wild adult. A tamed adult accepts only its owner. The membrane retains the color of the salamander. Mixed bladders glint as items and shimmer with moving rainbow colors when placed. Adjoining blocks share a continuous outer rim. Players can rise, dive and sprint-swim inside, and regain air while their head is within a bladder. The interior has clear visibility. Underwater fog and the screen overlay resume on entering real water. The salamander can be worn again after 6,000 entity ticks, or five minutes at normal speed. Time spent in a bucket or an unloaded chunk pauses regrowth.
+**Shearing.** Use shears on an unworn adult to collect one Air Bladder. Anyone can shear a wild adult. A tamed adult accepts only its owner. Each coat drops its own bladder item and block. Albino salamanders drop white bladders and mixed coats drop rainbow bladders. Rainbow bladders glint as items and shimmer with moving colors when placed. Adjoining bladders of any color share a continuous outer rim. The color and translucency of adjacent rainbow membranes match at the seam throughout the animation. Legacy bladders keep their color and convert to the matching variant when placed or broken. Players can rise, dive and sprint-swim inside, and regain air while their head is within a bladder. The interior has clear visibility. Underwater fog and the screen overlay resume on entering real water. The salamander can be worn again after 6,000 entity ticks, or five minutes at normal speed. Time spent in a bucket or an unloaded chunk pauses regrowth.
 
 在 NeoForge 1.21.1，主人传送到水中时，处于水中跟随模式的泡囊鲵会尝试在附近水域与主人会合。等待中的个体留在等待点。 / On NeoForge 1.21.1, a following Bubble Salamander rejoins its owner in nearby water when the owner teleports into water. Waiting salamanders stay at their waiting point.
 
@@ -285,16 +285,18 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 
 - 雪藏鼬有 10 点生命值，成年和幼年各有蓝、浅蓝、浅粉、白色四种配色。用生兔肉必定驯服，生鸡肉有三分之一概率。给两只靠近的已驯服成年雪藏鼬各喂一块生兔肉或生鸡肉即可繁殖，繁殖后冷却 5 分钟。求偶期间会暂停整理。幼体可以驯服和上肩，长大后开始工作。
 - 主人空手右键后，成年雪藏鼬坐在头顶，幼年雪藏鼬坐在肩上。乘坐期间，潜行右键箱子可循环切换这只鼬对该箱子的**存取、只存、只取**模式，大箱子视为一个箱子。空手潜行右键其他方块让它下来，并从新地点开始找箱子。
+- 成年雪藏鼬坐在头顶时，按住潜行可查看它当前的工作点。金色轮廓标出工作点，青色轮廓标出半径 16 格内可识别的容器。放下后，工作点会更新到新位置。
 - 成年驯服后会搜索工作点半径 16 格内的箱子，距离同时计算水平和高度。派发配方图沿用已设定的工作点。它按箱子里第一个非空格的创造模式标签分类，物品属于多个标签时采用标签列表中的首个分类标签。未列入任何分类标签的物品归为一类。空箱收到第一件物品后建立自己的分类。
 - 它优先搬同标签的一批，一次最多搬九格。已装上的货物找不到同类位置时，优先放进最近且能容下整批的箱子，放置时先用箱尾。普通箱里的异类货物有合适去处才会启动搬运。箱位、模式和权限在物品实际转移时再次校验，未放下的货物会留在雪藏鼬身上，等待箱子变化。
 - The weasel has 10 health. Adults and juveniles each come in blue, light blue, light pink, and white. Raw rabbit always tames it. Raw chicken succeeds one third of the time. Feed two nearby tamed adults one raw rabbit or raw chicken each to breed them. They pause work while courting and have a five-minute breeding cooldown. Juveniles can be tamed and ride on a shoulder, and they start work as adults.
 - Right-click the weasel with an empty hand to pick it up. Adults perch on your head and juveniles perch on your shoulder. While carrying a weasel, sneak-right-click a chest to cycle **deposit and withdraw**, **deposit only**, and **withdraw only** for that weasel. Both halves of a large chest share one mode. Sneak-right-click another block with an empty hand to set it down and assign a new work area.
+- Sneak while carrying an adult Snowcache Weasel on your head to see its current work point. Gold outlines the work point, and teal outlines eligible containers within 16 blocks. Setting the weasel down assigns the new work point.
 - A tamed adult searches for chests within a three-dimensional radius of 16 blocks from its assigned work point. Blueprint jobs use the same work point. The first occupied slot defines the chest’s creative tab. Items on multiple tabs use the first category tab in tab order. Items absent from category tabs share an uncategorized group. The first item placed in an empty chest establishes its category.
 - The weasel carries up to nine stacks of the same category per trip. If a matching chest cannot receive the remaining cargo, it first looks for the nearest chest that can hold the entire batch and starts by appending to occupied slots. Items in ordinary mixed chests are only picked up for a matching or empty destination. Permission, capacity, and interaction mode are rechecked during transfers.
 
 雪藏鼬每吃一份生兔肉或生鸡肉就回满生命，繁殖冷却期间也能给受伤个体喂食。 / Eating raw rabbit or chicken fully heals a Snowcache Weasel. An injured weasel can eat during its breeding cooldown.
 
-**雪藏鼬绒毛。** 雪藏鼬每次成功从实物容器取放物品，有 **2%** 概率掉一撮。手持绒毛，另一只手拿样品，右键箱子或当前版本支持的已放置精妙背包固定这个物品，潜行右键改为固定样品所属的创造模式分类。设置新分类消耗一撮绒毛，清空容器后仍保留。另一只手空着时，右键查看当前分类，潜行右键清除。 / Each successful weasel transfer at a physical container has a **2%** chance to drop one fur. Hold fur in one hand and a sample in the other. Use it on a chest or a supported placed Sophisticated Backpack to pin the item, or sneak-use to pin the sample's creative tab. Setting a new label consumes one fur and survives emptying the container. Use with no sample to inspect the label, or sneak-use to erase it.
+**雪藏鼬绒毛。** 雪藏鼬每次成功从实物容器取放物品，有 **2%** 概率掉一撮。主手持绒毛，副手拿样品，右键箱子或当前版本支持的已放置精妙背包固定这个物品，潜行右键改为固定样品所属的创造模式分类。设置新分类消耗一撮绒毛，清空容器后仍保留。副手空着时，右键查看当前分类，潜行右键清除。 / Each successful weasel transfer at a physical container has a **2%** chance to drop one fur. Hold fur in your main hand and a sample in your offhand. Use it on a chest or a supported placed Sophisticated Backpack to pin the item, or sneak-use to pin the sample's creative tab. Setting a new label consumes one fur and survives emptying the container. Use with an empty offhand to inspect the label, or sneak-use to erase it.
 
 ### 配方图 / Recipe Blueprint
 
@@ -322,6 +324,8 @@ NeoForge 1.21.1 中，十种生物都可以随区块保存，远离玩家也会�
 | Fabric 26.3 | Fabric 3.0.0 | Fabric Continuation 3.24.1.3 | — | Create Fly 6.0.9-2 |
 
 Fabric 26.3 同时安装精妙背包移植版和 JEI 时，背包前置要求 JEI 31.16.0.87 或更新版本。 / On Fabric 26.3, the backpack port’s dependency requires JEI 31.16.0.87 or newer when both are installed.
+
+在 Fabric 1.21.1 上，Create Reforged 6.0.10.2 和精妙核心 Fabric 移植版 1.2.9.21.168 同时加载时会在客户端烘焙模型阶段崩溃。为这两个版本分别使用独立实例。 / On Fabric 1.21.1, Create Reforged 6.0.10.2 and the Sophisticated Core Fabric port 1.2.9.21.168 crash during client model baking when installed together. Use separate instances for these two builds.
 
 - **更多箱子与精妙背包**按第一个非空格分类，优先级固定为 100。把背包放在地上后才能让雪藏鼬访问。携带自己的雪藏鼬潜行右键，可以为这只鼬独立设置该箱子或背包的存取模式。背包移动后保留设置。
 - **RS 终端与合成终端**默认只取，作为配方图任务的材料来源。携带自己的雪藏鼬打开终端可以切换其存取模式。**输入器**只存、**输出器**只取，通过端口面向的箱子、木桶或支持的背包交接。在它们原有的界面里可以编辑优先级，默认 98。
@@ -401,7 +405,7 @@ Xaero 小地图按品种显示笑面型、镜像型或噬血型的头像。噬�
   - 笑面 → 镜像 → 噬血 / Smeeta → Adarza → Vasca
   - 长耳长毛 → 长耳 → 中耳 → 折耳 / Tufted → Long → Medium → Folded
   - 凤尾 → 扇尾 → 鱼尾 → 叶尾 → 箭尾 / Phoenix → Fan → Fish → Leaf → Arrow
-  - 铜棕 → 铁灰 → 金黄 → 钻石蓝 → 绿宝石绿 → 青金石蓝 → 红石红 → 雪白 → 凋零黑 → 龙息紫 → 紫颂花白 → 孢子粉 / Copper → Iron → Gold → Diamond → Emerald → Lapis → Redstone → Snow → Wither → Dragon breath → Chorus flower → Spore blossom
+  - 铜棕 → 铁灰 → 金黄 → 钻石蓝 → 绿宝石绿 → 青金石蓝 → 红石红 → 雪白 → 凋零黑 → 龙息紫 → 紫颂花白 → 孢子粉 → 岩浆红 → 菌光体橙 → 樱花粉 → 沙漠黄 → 铜棕 / Copper → Iron → Gold → Diamond → Emerald → Lapis → Redstone → Snow → Wither → Dragon breath → Chorus flower → Spore blossom → Magma red → Shroomlight orange → Cherry pink → Desert yellow → Copper
 - 驯服的库娃死亡后，主人可在空闲孵化器的已故库娃列表选中该个体，消耗一份对应材料复活，或二次确认永久删除。复活保留个体身份、命名、性状、代数、提取标记和剩余模板次数。 / Select a deceased companion in an idle incubator and spend one matching material to revive it, or confirm twice to erase its record. Identity, name, traits, generation and both lifetime sampling limits survive revival.
 
 | 品种 / Breed | 能力 / Ability |

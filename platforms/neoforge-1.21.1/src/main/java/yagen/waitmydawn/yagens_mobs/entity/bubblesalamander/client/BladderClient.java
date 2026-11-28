@@ -2,6 +2,8 @@ package yagen.waitmydawn.yagens_mobs.entity.bubblesalamander.client;
 
 import net.minecraft.client.resources.model.BakedModel;
 import java.util.IdentityHashMap;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.BlockPos;
@@ -40,20 +42,28 @@ public final class BladderClient {
 
     @SubscribeEvent
     public static void models(ModelEvent.ModifyBakingResult event) {
-        var id = ResourceLocation.fromNamespaceAndPath(ModIdentity.ID, "air_bladder");
-        var wrappers = new IdentityHashMap<BakedModel, ConnectedBladderModel>();
-        event.getModels().replaceAll((key, model) -> key.id().equals(id) && !key.variant().equals("inventory")
-                ? wrappers.computeIfAbsent(model, ConnectedBladderModel::new) : model);
+        var wrappers = new IdentityHashMap<Block, IdentityHashMap<BakedModel, ConnectedBladderModel>>();
+        event.getModels().replaceAll((key, model) -> {
+            if (key.variant().equals("inventory")) return model;
+            Block block = BuiltInRegistries.BLOCK.get(key.id());
+            if (!(block instanceof AirBladderBlock)) return model;
+            return wrappers.computeIfAbsent(block, ignored -> new IdentityHashMap<>())
+                    .computeIfAbsent(model, baked -> new ConnectedBladderModel(baked, block));
+        });
     }
 
     @SubscribeEvent
     public static void blocks(RegisterColorHandlersEvent.Block event) {
-        event.register((state, world, pos, index) -> tint(state.getValue(AirBladderBlock.COLOR)), ModBlocks.AIR_BLADDER.get());
+        var handler = (net.minecraft.client.color.block.BlockColor) (state, world, pos, index) -> tint(AirBladderBlock.color(state));
+        event.register(handler, ModBlocks.AIR_BLADDER.get());
+        ModBlocks.AIR_BLADDERS.values().forEach(block -> event.register(handler, block.get()));
     }
 
     @SubscribeEvent
     public static void items(RegisterColorHandlersEvent.Item event) {
-        event.register((stack, index) -> tint(AirBladderBlock.color(stack)), ModItems.AIR_BLADDER.get());
+        var handler = (net.minecraft.client.color.item.ItemColor) (stack, index) -> tint(AirBladderBlock.color(stack));
+        event.register(handler, ModItems.AIR_BLADDER.get());
+        ModItems.AIR_BLADDERS.values().forEach(item -> event.register(handler, item.get()));
     }
 
     @SubscribeEvent

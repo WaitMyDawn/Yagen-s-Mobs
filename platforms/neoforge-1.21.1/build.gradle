@@ -82,10 +82,9 @@ runs {
     server { argument '--nogui' }
 }
 
-sourceSets.main.java.srcDir('../../common/src/bladder/vision/java')
-sourceSets.main.resources.srcDir('../../common/src/bladder/resources')
+apply from: '../../gradle/bladder.gradle'
 
-apply from: 'field-guide.gradle'
+apply from: '../../gradle/field-guide.gradle'
 
 tasks.withType(ClasspathSerializer).configureEach { serializer ->
     // NeoGradle writes absolute paths even though its input fingerprint ignores paths.

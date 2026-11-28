@@ -1,1 +1,0 @@
-{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"yagens_mobs:air_bladder","functions":[{"function":"minecraft:copy_state","block":"yagens_mobs:air_bladder","properties":["color"]}]}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}

@@ -35,24 +35,31 @@ def require(condition, message):
 
 def verify_field_guide(project, archive, target, enabled):
     shared = project / "common/src/fieldGuide/resources"
+    modern = shared.parent / "modernResources"
+    modern_assets = [source for source in modern.rglob("*") if source.is_file()]
     catalog = "assets/yagens_mobs/patchouli_books/field_guide/en_us/entries/catalog.json"
+    archive_entries = set(archive.namelist())
+    for source in modern_assets:
+        name = source.relative_to(modern).as_posix()
+        if enabled and target == "fabric-1.21.11":
+            require(name in archive_entries and archive.read(name) == source.read_bytes(),
+                    f"{target} differs from the modern field guide: {name}")
+        else:
+            require(name not in archive_entries, f"{target} ships an unused modern field guide asset: {name}")
     if not enabled:
-        require(catalog not in archive.namelist(), f"{target} ships a catalog without a reader")
+        require(catalog not in archive_entries, f"{target} ships a catalog without a reader")
         return
 
     roster = "yagen/waitmydawn/yagens_mobs/guide/species.txt"
-    override = project / "platforms" / target / "src/main/resources" / roster
+    entry_directory = catalog.rsplit("/", 1)[0] + "/"
     photographs = "assets/yagens_mobs/textures/gui/field_guide/"
-    if override.is_file():
-        require(archive.read(roster) == override.read_bytes(), f"{target} field guide roster differs")
-        require(not any(p.startswith(photographs) for p in archive.namelist()), f"{target} ships obsolete plates")
+    require(not any(name.startswith(photographs) for name in archive.namelist()),
+            f"{target} ships obsolete field guide plates")
     for source in shared.rglob("*"):
         if source.is_file():
             name = source.relative_to(shared).as_posix()
-            if override.is_file() and (name == roster or name.startswith(photographs) or
-                                       name.startswith(catalog.rsplit("/", 1)[0] + "/")):
-                continue
-            require(archive.read(name) == source.read_bytes(), f"{target} differs from shared field guide: {name}")
+            if not name.startswith((photographs, entry_directory)):
+                require(archive.read(name) == source.read_bytes(), f"{target} differs from shared field guide: {name}")
     species = archive.read(roster).decode().split()
     require(bool(species) and len(species) == len(set(species)), f"{target} invalid species list")
     pages = json.loads(archive.read(catalog))["pages"]
@@ -60,9 +67,8 @@ def verify_field_guide(project, archive, target, enabled):
     for name in species:
         entry = catalog.replace("/catalog.json", f"/{name}.json")
         require(entry in archive.namelist(), f"Missing entry: {name}")
-        if override.is_file():
-            expected = [dict(type="yagens_mobs:field_plates", species=name, offset=side) for side in (0, 1)]
-            require(json.loads(archive.read(entry))["pages"] == expected, f"{target} invalid spread: {name}")
+        expected = [dict(type="yagens_mobs:field_plates", species=name, offset=side) for side in (0, 1)]
+        require(json.loads(archive.read(entry))["pages"] == expected, f"{target} invalid spread: {name}")
 
 
 def verify_jar(project, target, jar):
@@ -110,10 +116,29 @@ def verify_jar(project, target, jar):
         water = json.loads(archive.read(f"data/minecraft/tags/{fluid_tag}/water.json"))
         require(f"{shared['mod_id']}:bladder_medium" in water["values"], f"{target} missing swimming medium")
         loot = "loot_tables" if legacy else "loot_table"
-        bladder_loot = f"data/{shared['mod_id']}/{loot}/blocks/air_bladder.json"
-        source_loot = bladder / f"data/{shared['mod_id']}/loot_table/blocks/air_bladder.json"
-        require(json.loads(archive.read(bladder_loot)) == json.loads(source_loot.read_bytes()),
-                f"{target} air bladder loot differs")
+        bladder_loot = f"data/{shared['mod_id']}/{loot}/blocks"
+        fixed_colors = {
+            "green": "green", "albino": "white", "pink": "pink", "yellow": "yellow",
+            "black": "black", "brown": "brown", "red": "red", "blue": "blue", "mixed": "rainbow",
+        }
+        old_bladder = f"{shared['mod_id']}:air_bladder"
+        legacy_table = json.loads(archive.read(f"{bladder_loot}/air_bladder.json"))
+        legacy_entries = legacy_table["pools"][0]["entries"]
+        compatibility_drops = []
+        for coat, color in fixed_colors.items():
+            name = f"{color}_air_bladder"
+            item = {"type": "minecraft:item", "name": f"{shared['mod_id']}:{name}"}
+            compatibility_drops.append({**item, "conditions": [{
+                "condition": "minecraft:block_state_property", "block": old_bladder, "properties": {"color": coat},
+            }]})
+            loot_table = json.loads(archive.read(f"{bladder_loot}/{name}.json"))
+            require(loot_table["pools"][0]["entries"] == [item], f"{target} {name} must drop itself")
+            require(f"{assets}/blockstates/{name}.json" in entries, f"{target} missing {name} blockstates")
+            require(f"{assets}/models/item/{name}.json" in entries, f"{target} missing {name} item model")
+            if minecraft in ("1.21.11", "26.3"):
+                require(f"{assets}/items/{name}.json" in entries, f"{target} missing {name} item definition")
+        require(legacy_entries == [{"type": "minecraft:alternatives", "children": compatibility_drops}],
+                f"{target} legacy bladder loot must preserve color")
         animation_folder = "geckolib/animations" if gecko_major >= 5 else "animations"
         index_path = f"{assets}/kavat/animation_index.json"
         reference = project / "platforms/neoforge-1.21.1/src/main/resources"

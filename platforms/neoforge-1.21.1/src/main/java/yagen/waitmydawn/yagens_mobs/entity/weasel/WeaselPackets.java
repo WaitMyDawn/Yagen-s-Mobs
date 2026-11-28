@@ -26,9 +26,12 @@ public final class WeaselPackets {
     static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("1");
         registrar.playToServer(Request.TYPE, Request.CODEC, (payload, context) -> {
-            if (context.player() instanceof ServerPlayer owner && !owner.isSpectator() && owner.isAlive()
-                    && SnowcacheWeasels.blueprintsEnabled()) {
-                handle(owner, payload.tag());
+            if (context.player() instanceof ServerPlayer owner && !owner.isSpectator() && owner.isAlive()) {
+                if (payload.tag().get(WeaselWorkPreview.KEY) instanceof net.minecraft.nbt.LongArrayTag preview) {
+                    WeaselWorkPreview.respond(owner, owner.serverLevel(), preview, tag -> PacketDistributor.sendToPlayer(owner, new Opening(tag)));
+                } else if (SnowcacheWeasels.blueprintsEnabled()) {
+                    handle(owner, payload.tag());
+                }
             }
         });
         registrar.playToClient(Opening.TYPE, Opening.CODEC, (payload, context) -> WeaselClient.open(payload.tag()));
